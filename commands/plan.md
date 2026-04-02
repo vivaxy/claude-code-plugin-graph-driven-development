@@ -161,9 +161,95 @@ Changes applied to docs/gdd/:
 - Updated: flow-request.md
 - Created: flow-auth.md
 
-Next steps:
-1. Run /gdd:plan-review to validate the updated diagrams
-2. Run /gdd:code to begin implementation
+Starting automated diagram review...
+```
+
+## Step 7: Automated Subagent Review Loop
+
+After applying the changes, immediately run a full diagram review as a subagent. Repeat until the verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`.
+
+### Review Logic (run as subagent)
+
+Perform the following review checks on the diagrams that were just written. This is identical to the full `gdd:plan-review` logic:
+
+**Scope**: The diagram files modified or created in Step 6.
+
+**Review Dimensions**:
+
+#### 7a. Completeness Check
+
+- Does every major external interaction have a flow diagram?
+- Does every top-level module/service appear in at least one architecture diagram?
+- Are all error paths, failure modes, and edge cases represented?
+- Are all state transitions captured?
+
+For each gap: `[SEVERITY] [COMPLETENESS] <description> — Suggestion: add <X> to <diagram>`
+
+#### 7b. Consistency Check
+
+- Do the same entities appear with the same names across all diagrams?
+- Do flow diagrams agree with architecture diagrams about which module owns each step?
+- Are there contradictions between diagrams?
+- Do "Key Decisions" in related diagrams contradict each other?
+
+For each inconsistency: `[SEVERITY] [CONSISTENCY] <description> — Found in: <file1> vs <file2>`
+
+#### 7c. Boundary and Edge Case Check
+
+- What happens when a user provides invalid input?
+- What happens when an external service is unavailable?
+- What happens when a database operation fails?
+- Are timeout/retry behaviors captured where relevant?
+- Are authentication/authorization boundaries clear?
+
+For each missing edge case: `[SEVERITY] [EDGE_CASE] <scenario> — Impact: <what could go wrong>`
+
+#### 7d. Feasibility and Design Quality Check
+
+- Does any part of the design seem overly complex?
+- Does the design introduce tight coupling between modules that should be independent?
+- Are there circular dependencies in the architecture diagram?
+- Is the separation of concerns clear?
+
+For each concern: `[SEVERITY] [FEASIBILITY] <concern> — Consider: <alternative>`
+
+#### 7e. Mermaid Syntax Sanity Check
+
+- Are all node IDs valid (no special characters, no spaces)?
+- Are all referenced nodes actually defined in the same diagram?
+- Do flow directions make sense?
+
+For each issue: `[WARNING] [SYNTAX] <description>`
+
+### Review Verdict
+
+Assign one of:
+- `APPROVED` — No critical issues, no warnings
+- `APPROVED_WITH_WARNINGS` — No critical issues, but has warnings
+- `NEEDS_WORK` — Has at least one critical issue; main agent must fix before proceeding
+- `BLOCKED` — Fundamental design problem; main agent must rethink the approach
+
+### Fix-and-Retry Loop
+
+**If verdict is `NEEDS_WORK` or `BLOCKED`**:
+
+1. Output the full review report
+2. As the main agent, fix all `[CRITICAL]` issues directly in the `docs/gdd/` files (update diagrams to address the problems identified)
+3. Go back to the subagent review and run it again
+4. Repeat until verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`
+
+**If verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`**:
+
+Output the final summary:
+```
+GDD Plan Review: APPROVED [/ APPROVED_WITH_WARNINGS]
+
+Files reviewed: flow-request.md, arch-modules.md (...)
+Issues found: N critical (fixed), N warnings, N suggestions
+
+<If APPROVED_WITH_WARNINGS, list the warnings here>
+
+Ready to implement. Run /gdd:code to begin implementation.
 ```
 
 </process>

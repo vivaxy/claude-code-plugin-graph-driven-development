@@ -80,53 +80,35 @@ Before writing any code:
 /gdd:plan Add user authentication with JWT tokens
 ```
 
-Claude analyzes the current diagrams, presents the proposed changes in the conversation, and waits for your confirmation before writing anything to `docs/gdd/`.
+Claude analyzes the current diagrams, presents the proposed changes in the conversation, and waits for your confirmation before writing anything to `docs/gdd/`. After applying the changes, Claude automatically runs a diagram review as a subagent — fixing critical issues and re-reviewing until the diagrams are approved.
 
-### 3. Review the Plan
-
-```
-/gdd:plan-review
-```
-
-Claude checks the diagrams for completeness, consistency, and design quality. Fix any critical issues before coding.
-
-### 4. Implement
+### 3. Implement
 
 ```
 /gdd:code Implement JWT authentication middleware
 ```
 
-Claude reads the diagrams, extracts implementation constraints, then writes code that follows the defined boundaries and flows. Any necessary deviations are recorded.
-
-### 5. Review the Code
-
-```
-/gdd:code-review
-```
-
-Claude verifies the implementation against the diagrams (Part 1) and reviews code quality (Part 2). The report tells you what to fix and whether diagram updates are needed.
+Claude reads the diagrams, extracts implementation constraints, then writes code that follows the defined boundaries and flows. Any necessary deviations are recorded. After implementation, Claude automatically runs a code review as a subagent — fixing critical issues and re-reviewing until the code is approved.
 
 ---
 
 ## The GDD Workflow
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
-│  /gdd:init  │────▶│  /gdd:plan  │────▶│ /gdd:plan-review │
-│ (once/reset)│     │  (per req.) │     │   (per req.)    │
-└─────────────┘     └─────────────┘     └────────┬────────┘
-                                                  │ APPROVED
-                                                  ▼
-                                        ┌─────────────────┐
-                                        │   /gdd:code     │
-                                        │  (implement)    │
-                                        └────────┬────────┘
-                                                  │
-                                                  ▼
-                                        ┌─────────────────┐
-                                        │ /gdd:code-review│
-                                        │  (verify)       │
-                                        └─────────────────┘
+┌─────────────┐     ┌────────────────────────────────────┐
+│  /gdd:init  │────▶│  /gdd:plan                         │
+│ (once/reset)│     │  Propose → confirm → apply         │
+└─────────────┘     │  Subagent review → fix → re-review │
+                    │  └────── until APPROVED ──────┘    │
+                    └──────────────┬─────────────────────┘
+                                   │
+                                   ▼
+                    ┌────────────────────────────────────┐
+                    │  /gdd:code                         │
+                    │  Read diagrams → implement         │
+                    │  Subagent review → fix → re-review │
+                    │  └────── until APPROVED ──────┘    │
+                    └────────────────────────────────────┘
 ```
 
 Diagrams live in `docs/gdd/`. They change first, code follows.
@@ -198,20 +180,9 @@ Propose diagram updates for a new requirement and apply them after confirmation.
 - Analyzes impact of the requirement
 - Presents the proposed Before/After diagram changes in the conversation
 - Writes the approved changes directly to `docs/gdd/` after user confirmation
+- Automatically runs a subagent diagram review loop — fixing critical issues and re-reviewing until the diagrams reach `APPROVED` or `APPROVED_WITH_WARNINGS`
 
 **When to use**: Before starting any new feature or change.
-
----
-
-### `/gdd:plan-review`
-
-Review diagrams for quality and completeness.
-
-- Checks completeness, consistency, edge cases, and feasibility
-- Outputs a report with `[CRITICAL]`, `[WARNING]`, `[SUGGESTION]` findings
-- Gives a verdict: `APPROVED`, `APPROVED_WITH_WARNINGS`, `NEEDS_WORK`, or `BLOCKED`
-
-**When to use**: After updating diagrams, before coding.
 
 ---
 
@@ -222,20 +193,9 @@ Implement code guided by GDD diagrams.
 - Reads diagrams and extracts implementation constraints
 - Writes code that follows defined module boundaries and flow order
 - Records any necessary deviations in `docs/gdd/drafts/draft-deviation-*.md`
+- Automatically runs a subagent code review loop (diagram alignment + code quality) — fixing critical issues and re-reviewing until the implementation reaches `APPROVED` or `APPROVED_WITH_WARNINGS`
 
 **When to use**: When diagrams are approved and you're ready to implement.
-
----
-
-### `/gdd:code-review`
-
-Review code against GDD diagrams and for quality.
-
-- **Part 1 — Diagram Alignment**: Verifies code matches diagrams
-- **Part 2 — Code Quality**: Identifies bugs, complexity, and maintainability issues
-- Outputs verdict: `APPROVED`, `APPROVED_WITH_WARNINGS`, or `NEEDS_WORK`
-
-**When to use**: After implementation, before merging.
 
 ---
 

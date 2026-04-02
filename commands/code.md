@@ -165,7 +165,7 @@ adding it is out of scope for this task.
 **Required diagram update**: Remove RetryQueue node from flow-request.md,
 replace with direct 400 response path.
 
-**Action needed**: Run /gdd:plan to update the diagram, then /gdd:code-review
+**Action needed**: Run /gdd:plan to update the diagram
 ```
 
 After recording, continue implementing the practical solution.
@@ -189,10 +189,110 @@ Constraint compliance:
 Deviations recorded:
 - docs/gdd/drafts/draft-deviation-<timestamp>.md (2 deviations)
 
-Next steps:
-1. Run /gdd:code-review to verify implementation against diagrams
-2. Address recorded deviations: run /gdd:plan to update diagrams
-   then /gdd:plan-review before closing the task
+Starting automated code review...
+```
+
+## Step 7: Automated Subagent Code Review Loop
+
+After completing implementation, immediately run a full code review as a subagent. Repeat until the verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`.
+
+### Review Logic (run as subagent)
+
+Perform the following review checks on the code that was just written. This is identical to the full `gdd:code-review` logic:
+
+**Scope**: All files modified during Step 4, plus any existing deviation records in `docs/gdd/drafts/draft-deviation-*.md`.
+
+Read in parallel:
+1. All GDD diagram files in `docs/gdd/` (excluding `drafts/`)
+2. All code files in scope
+3. Any existing deviation records
+
+#### 7a. Diagram Alignment Review
+
+For each flow diagram, trace through the diagram and verify the code:
+
+For each node in the flow diagram:
+1. Find the corresponding code (function, method, handler, etc.)
+2. Verify the code does what the node describes
+3. Verify the transition to the next node is implemented
+4. Verify branching conditions match the diagram's decision points
+
+For each architecture diagram:
+1. Find each module/component in the code
+2. Verify imports/dependencies match the diagram's edges
+3. Check for undeclared dependencies (module imports something not shown in the arch diagram)
+4. Check for missing dependencies (diagram shows a connection, code doesn't have it)
+
+Deviation categories:
+- `[DEVIATION: MISSING]` — Diagram shows X, code does not implement X
+- `[DEVIATION: EXTRA]` — Code implements X, diagram does not show X
+- `[DEVIATION: WRONG_ORDER]` — Code does A then B, diagram shows B then A
+- `[DEVIATION: WRONG_BOUNDARY]` — Code puts X in Module A, diagram puts X in Module B
+- `[DEVIATION: MISSING_ERROR_PATH]` — Diagram shows error path, code has no error handling
+- `[DEVIATION: ALREADY_RECORDED]` — This deviation exists in a draft-deviation file (just note it)
+
+For each deviation, include:
+- Severity: `[CRITICAL]` (wrong behavior), `[WARNING]` (risky shortcut), `[INFO]` (minor drift)
+- Diagram reference: exact file and node name
+- Code reference: exact file and line range
+- Recommendation: fix the code, OR update the diagram
+
+#### 7b. Code Quality Review
+
+**Correctness**:
+- Are there off-by-one errors, null pointer risks, or unhandled exceptions?
+- Are all code paths reachable?
+- Do the tests actually test what they claim to test?
+
+**Simplicity**:
+- Is there a simpler way to express this logic?
+- Are there unnecessary abstractions or indirections?
+- Is there duplicated logic that could be extracted?
+
+**Maintainability**:
+- Would a new team member understand this code in 6 months?
+- Are complex algorithms explained with comments?
+- Is the function/method size appropriate?
+
+**Consistency**:
+- Does the code follow the patterns established in the rest of the codebase?
+- Are naming conventions consistent with existing code?
+
+Quality issue severity:
+- `[CRITICAL]` — Will likely cause bugs in production
+- `[WARNING]` — Technical debt that will cause problems as the codebase grows
+- `[SUGGESTION]` — Minor improvement, take it or leave it
+
+### Review Verdict
+
+Assign one of:
+- `APPROVED` — No critical issues in either dimension
+- `APPROVED_WITH_WARNINGS` — No critical issues, but has warnings worth addressing
+- `NEEDS_WORK` — Has at least one critical issue in either dimension; main agent must fix before proceeding
+
+### Fix-and-Retry Loop
+
+**If verdict is `NEEDS_WORK`**:
+
+1. Output the full review report (both Diagram Alignment and Code Quality sections)
+2. As the main agent, fix all `[CRITICAL]` issues directly in the code files
+3. If diagram updates are needed (e.g., to reconcile recorded deviations), run `/gdd:plan` first, then continue
+4. Go back to the subagent review and run it again
+5. Repeat until verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`
+
+**If verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`**:
+
+Output the final summary:
+```
+GDD Code Review: APPROVED [/ APPROVED_WITH_WARNINGS]
+
+Files reviewed: <list of code files>
+Diagrams compared: <list of diagram files>
+Issues found: N critical (fixed), N warnings, N suggestions
+
+<If APPROVED_WITH_WARNINGS, list the warnings here>
+
+Implementation complete. If deviations were recorded, run /gdd:plan to update diagrams.
 ```
 
 </process>

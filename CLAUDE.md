@@ -88,14 +88,12 @@ Draft files in `docs/gdd/drafts/` follow this structure:
 ## GDD Development Workflow
 
 ```
-gdd:init → gdd:plan → gdd:plan-review → gdd:code → gdd:code-review
+gdd:init → gdd:plan → gdd:code
 ```
 
 1. **`/gdd:init`**: Scan project, auto-detect type, generate initial diagrams in `docs/gdd/`
-2. **`/gdd:plan`**: For a new requirement, generate a draft proposal in `docs/gdd/drafts/`
-3. **`/gdd:plan-review`**: Review diagrams for completeness, consistency, and feasibility
-4. **`/gdd:code`**: Implement code guided by the approved diagrams
-5. **`/gdd:code-review`**: Verify code matches diagrams and meets quality standards
+2. **`/gdd:plan`**: For a new requirement, update diagrams and automatically run a subagent review loop until diagrams are approved
+3. **`/gdd:code`**: Implement code guided by the approved diagrams, then automatically run a subagent code review loop until implementation is approved
 
 ## Agent Behavior Rules
 
