@@ -252,6 +252,37 @@ Issues found: N critical (fixed), N warnings, N suggestions
 Ready to implement. Run /gdd:code to begin implementation.
 ```
 
+## Step 8: Write Todo List
+
+After diagrams are approved, generate a concrete implementation todo list and write it to `docs/gdd/todos.md`.
+
+Each todo item must be derived from the approved diagram changes — one item per distinct implementation task (e.g., one per new module, one per new API endpoint, one per new flow path).
+
+Format each item as:
+
+```
+- [ ] <short task title> — <diagram reference, e.g. flow-request.md → NewNode>
+```
+
+Write the full block to `docs/gdd/todos.md`:
+
+```markdown
+## <Requirement summary, one line> — <YYYY-MM-DD>
+
+- [ ] Task 1 — <diagram ref>
+- [ ] Task 2 — <diagram ref>
+...
+```
+
+If `docs/gdd/todos.md` does not exist, create it. If it already exists, append the new block at the bottom.
+
+Output confirmation:
+```
+Todo list written to docs/gdd/todos.md (N items).
+
+Run /gdd:code to implement the first task.
+```
+
 </process>
 
 <guidelines>

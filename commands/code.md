@@ -50,6 +50,27 @@ Continuing with the current (pre-draft) diagrams...
 ```
 Continue with a note, do not block.
 
+## Step 1b: Read Todo List
+
+Before parsing `$ARGUMENTS`, check if `docs/gdd/todos.md` exists.
+
+**If it exists and `$ARGUMENTS` is empty:**
+
+1. Read `docs/gdd/todos.md`
+2. Find the first unchecked item (first line matching `- [ ] ...`)
+3. Use that item's task title as the task for this session — treat it as if the user passed it as `$ARGUMENTS`
+4. Output:
+   ```
+   Reading from docs/gdd/todos.md...
+   Next task: <task title> (<diagram ref>)
+   ```
+
+**If `$ARGUMENTS` is provided by the user:** use `$ARGUMENTS` as-is (ignore the todo list for task selection).
+
+**If `docs/gdd/todos.md` does not exist or has no unchecked items:** continue to Step 2 and ask the user for the task.
+
+> Note: Do NOT mark the todo item as complete in this step. Mark it complete (change `- [ ]` to `- [x]`) only after Step 6 (Implementation Summary) succeeds.
+
 ## Step 2: Understand the Task
 
 Parse `$ARGUMENTS` — the feature or task to implement. If unclear, ask one focused clarifying question before proceeding.
@@ -191,6 +212,11 @@ Deviations recorded:
 
 Starting automated code review...
 ```
+
+Then, if this task was read from `docs/gdd/todos.md` in Step 1b, mark it as complete:
+
+- Find the matching `- [ ] <task title>` line in `docs/gdd/todos.md`
+- Change it to `- [x] <task title>`
 
 ## Step 7: Automated Subagent Code Review Loop
 
