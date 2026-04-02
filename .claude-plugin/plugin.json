@@ -5,8 +5,8 @@
   "author": {
     "name": "GDD Contributors"
   },
-  "homepage": "https://github.com/your-org/gdd-plugin",
-  "repository": "https://github.com/your-org/gdd-plugin",
+  "homepage": "https://github.com/vivaxy/claude-code-plugin-graph-driven-development",
+  "repository": "https://github.com/vivaxy/claude-code-plugin-graph-driven-development",
   "license": "MIT",
   "keywords": [
     "graph",

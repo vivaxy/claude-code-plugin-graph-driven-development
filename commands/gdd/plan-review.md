@@ -1,7 +1,7 @@
 ---
 name: gdd:plan-review
 description: Review GDD diagrams for completeness, consistency, and feasibility — catch design gaps before coding begins
-argument-hint: "[--draft <draft-file>] [--focus <area>]"
+argument-hint: "[<target>]"
 allowed-tools:
   - Read
   - Write
@@ -25,11 +25,9 @@ Verify GDD is initialized (same as gdd:plan Step 1). If not, stop and direct to 
 
 ## Step 2: Determine Review Scope
 
-**Default scope**: All files in `docs/gdd/` (excluding `drafts/`)
+**Default scope（无 `<target>` 参数时）**: 运行 `git diff --name-only HEAD`，找出 `docs/gdd/` 下有变更的文件作为主要 review 对象；若未发现任何变更文件，则 fallback 到 `docs/gdd/` 下所有文件（排除 `drafts/`）。
 
-**If `--draft <path>` is provided**: Review the specified draft file AND the current diagrams together, treating the draft's "After (Proposed)" diagrams as if they were the current state
-
-**If `--focus <area>` is provided**: Prioritize review around the named area/module/flow, but still read all diagrams
+**If `<target>` is provided**: 将用户指定的内容（文件路径、draft 文件名或任意描述）作为 review 对象，替代默认检测逻辑。
 
 ## Step 3: Read All Diagram Files
 

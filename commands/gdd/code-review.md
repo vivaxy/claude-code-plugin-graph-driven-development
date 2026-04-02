@@ -1,7 +1,7 @@
 ---
 name: gdd:code-review
 description: Review code implementation against GDD diagrams — verify alignment with design and identify quality improvements
-argument-hint: "[--files <glob>] [--since <git-ref>]"
+argument-hint: "[<target>]"
 allowed-tools:
   - Read
   - Write
@@ -28,13 +28,9 @@ Verify GDD is initialized. If not, stop and direct to `/gdd:init`.
 
 ## Step 2: Determine Code Review Scope
 
-**Default**: Use `git diff HEAD~1` or `git status` to find recently changed files.
+**Default scope（无 `<target>` 参数时）**: 运行 `git diff --name-only HEAD` 找出当前上下文中修改过的代码文件作为 review 对象；若未发现任何变更文件，则 fallback 到运行 `git diff HEAD~1 --name-only` 获取最近一次提交的变更文件。
 
-**If `--files <glob>` is provided**: Review only matching files.
-
-**If `--since <git-ref>` is provided**: Review all files changed since that ref (`git diff <ref> --name-only`).
-
-If no changed files are found, ask the user which files to review.
+**If `<target>` is provided**: 将用户指定的内容（文件路径、glob 表达式或任意描述）作为 review 对象，替代默认检测逻辑。
 
 ## Step 3: Read Diagrams and Code
 
