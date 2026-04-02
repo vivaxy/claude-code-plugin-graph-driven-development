@@ -69,7 +69,7 @@ Before parsing `$ARGUMENTS`, check if `docs/gdd/todos.md` exists.
 
 **If `docs/gdd/todos.md` does not exist or has no unchecked items:** continue to Step 2 and ask the user for the task.
 
-> Note: Do NOT mark the todo item as complete in this step. Mark it complete (change `- [ ]` to `- [x]`) only after Step 6 (Implementation Summary) succeeds.
+> Note: Do NOT remove the todo item in this step. Remove it from `docs/gdd/todos.md` only after the user confirms the final code review result in Step 7.
 
 ## Step 2: Understand the Task
 
@@ -213,11 +213,6 @@ Deviations recorded:
 Starting automated code review...
 ```
 
-Then, if this task was read from `docs/gdd/todos.md` in Step 1b, mark it as complete:
-
-- Find the matching `- [ ] <task title>` line in `docs/gdd/todos.md`
-- Change it to `- [x] <task title>`
-
 ## Step 7: Automated Subagent Code Review Loop
 
 After completing implementation, immediately run a full code review as a subagent. Repeat until the verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`.
@@ -320,6 +315,13 @@ Issues found: N critical (fixed), N warnings, N suggestions
 
 Implementation complete. If deviations were recorded, run /gdd:plan to update diagrams.
 ```
+
+Then wait for the user to confirm there are no further issues.
+
+Once the user confirms, if this task was read from `docs/gdd/todos.md` in Step 1b, remove it from the todo list:
+
+- Find the matching `- [ ] <task title>` line in `docs/gdd/todos.md`
+- Delete that line from the file
 
 </process>
 
