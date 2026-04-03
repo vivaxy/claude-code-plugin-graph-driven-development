@@ -1,7 +1,7 @@
 {
   "name": "gdd",
   "description": "Graph Driven Development: enforce development process consistency through flowcharts and architecture diagrams",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "GDD Contributors"
   },
