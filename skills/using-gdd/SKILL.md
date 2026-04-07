@@ -15,10 +15,10 @@ GDD enforces a diagrams-first development process: update architecture and flow 
 
 | Task type | GDD required? |
 |-----------|--------------|
-| Implement a new feature | YES — run `/gdd:plan` first |
-| Add a new API endpoint or route | YES |
-| Refactor a module's structure | YES |
-| Add a new component / service | YES |
+| Implement a new feature | YES — invoke `gdd:plan` skill |
+| Add a new API endpoint or route | YES — invoke `gdd:plan` skill |
+| Refactor a module's structure | YES — invoke `gdd:plan` skill |
+| Add a new component / service | YES — invoke `gdd:plan` skill |
 | Fix a bug in existing code | NO |
 | Fix a typo or rename | NO |
 | Write or update tests | NO |
@@ -35,26 +35,25 @@ GDD enforces a diagrams-first development process: update architecture and flow 
    - YES → check project state:
 
 2. Does `docs/gdd/` exist with at least one `flow-*.md` AND one `arch-*.md`?
-   - NO → offer `/gdd:init` first, then `/gdd:plan`
-   - YES → run `/gdd:plan` (then `/gdd:code` to implement)
+   - NO → offer to run `gdd:init` first, then invoke `gdd:plan`
+   - YES → invoke `gdd:plan` skill directly with the user's requirement as the argument
 
 ## When GDD Is Not Initialized
 
-Say:
+Briefly inform the user, then ask for confirmation before invoking `gdd:init` (since it scans the project and creates files):
 
-> This project doesn't have GDD diagrams yet. Before implementing, I'll need to map the current architecture first.
+> This project doesn't have GDD diagrams yet. I'll need to map the current architecture first via `gdd:init`, then run `gdd:plan` to design the changes.
 >
-> Run `/gdd:init` to generate the initial diagrams, then I'll run `/gdd:plan` to design the changes before writing any code.
->
-> Would you like me to start with `/gdd:init` now?
+> Shall I start with `gdd:init` now?
+
+If the user confirms, invoke the `gdd:init` skill. After it completes, invoke the `gdd:plan` skill with the original requirement as the argument.
 
 ## When GDD Is Initialized
 
-Say:
+Do not wait for user confirmation. Immediately:
 
-> GDD is active. I'll run `/gdd:plan` first to update the architecture diagrams for this feature, then implement via `/gdd:code`.
-
-Then invoke `gdd:plan` with the user's requirement as the argument.
+1. Say one line: "GDD is active — running `gdd:plan` for your requirement."
+2. Invoke the `gdd:plan` skill with the user's requirement as the argument.
 
 ## Instruction Priority
 

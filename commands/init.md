@@ -5,11 +5,9 @@ argument-hint: "[--force]"
 allowed-tools:
   - Read
   - Write
-  - Edit
   - Glob
   - Grep
   - Bash
-  - TodoWrite
 ---
 
 <objective>

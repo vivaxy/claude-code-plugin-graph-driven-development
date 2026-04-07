@@ -10,6 +10,7 @@ allowed-tools:
   - Grep
   - Bash
   - TodoWrite
+  - Agent
 ---
 
 <objective>
@@ -36,40 +37,42 @@ Run /gdd:init to generate the initial diagram set, then:
 ```
 STOP.
 
-**If unreviewed drafts exist:**
+**If deviation records exist:**
 ```
-Warning: Unreviewed draft proposals exist in docs/gdd/drafts/:
-- draft-plan-2026-01-23-10-30.md — "Add authentication flow"
+Note: Unresolved deviation records exist in docs/gdd/drafts/:
+- draft-deviation-<timestamp>.md — recorded during a prior coding session
 
-These drafts contain planned diagram changes that have NOT been applied yet.
+These deviations mean the diagrams may not match the current code.
+Consider running /gdd:plan to update the diagrams before proceeding.
 
-If this task depends on those planned changes, apply the drafts first:
-  /gdd:plan --apply docs/gdd/drafts/draft-plan-2026-01-23-10-30.md
-
-Continuing with the current (pre-draft) diagrams...
+Continuing with the current diagrams...
 ```
 Continue with a note, do not block.
 
-## Step 1b: Read Todo List
+## Step 1.5: Apply Pending Diagram Changes (conditional)
 
-Before parsing `$ARGUMENTS`, check if `docs/gdd/todos.md` exists.
+If `/gdd:plan` was just approved in this conversation (the plan content contains Before/After Mermaid diffs), apply those diagram changes to `docs/gdd/` before coding:
 
-**If it exists and `$ARGUMENTS` is empty:**
+1. For each "Modifying: \<filename.md\>" entry in the approved plan:
+   - Read the current file content
+   - Replace the Mermaid diagram block with the "After" content from the plan
+   - Update the `**Last Updated**` date to today
+   - Write the full file back using `Write`
 
-1. Read `docs/gdd/todos.md`
-2. Find the first unchecked item (first line matching `- [ ] ...`)
-3. Use that item's task title as the task for this session — treat it as if the user passed it as `$ARGUMENTS`
-4. Output:
-   ```
-   Reading from docs/gdd/todos.md...
-   Next task: <task title> (<diagram ref>)
-   ```
+2. For each "New File: \<filename.md\>" entry in the approved plan:
+   - Create the new file in `docs/gdd/` using the standard diagram file format
+   - Write it using `Write`
 
-**If `$ARGUMENTS` is provided by the user:** use `$ARGUMENTS` as-is (ignore the todo list for task selection).
+Output confirmation before proceeding:
+```
+Applied diagram changes from approved plan:
+- Updated: flow-request.md
+- Created: flow-auth.md
 
-**If `docs/gdd/todos.md` does not exist or has no unchecked items:** continue to Step 2 and ask the user for the task.
+Proceeding with implementation...
+```
 
-> Note: Do NOT remove the todo item in this step. Remove it from `docs/gdd/todos.md` only after the user confirms the final code review result in Step 7.
+If no plan was recently approved (this is a standalone coding task), skip this step.
 
 ## Step 2: Understand the Task
 
@@ -215,90 +218,25 @@ Starting automated code review...
 
 ## Step 7: Automated Subagent Code Review Loop
 
-After completing implementation, immediately run a full code review as a subagent. Repeat until the verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`.
+After completing implementation, spawn a subagent to run the code review. Repeat until the verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`.
 
-### Review Logic (run as subagent)
+### How to Invoke
 
-Perform the following review checks on the code that was just written. This is identical to the full `gdd:code-review` logic:
+Use the Agent tool to invoke the `gdd:code-review` skill as a subagent:
 
-**Scope**: All files modified during Step 4, plus any existing deviation records in `docs/gdd/drafts/draft-deviation-*.md`.
-
-Read in parallel:
-1. All GDD diagram files in `docs/gdd/` (excluding `drafts/`)
-2. All code files in scope
-3. Any existing deviation records
-
-#### 7a. Diagram Alignment Review
-
-For each flow diagram, trace through the diagram and verify the code:
-
-For each node in the flow diagram:
-1. Find the corresponding code (function, method, handler, etc.)
-2. Verify the code does what the node describes
-3. Verify the transition to the next node is implemented
-4. Verify branching conditions match the diagram's decision points
-
-For each architecture diagram:
-1. Find each module/component in the code
-2. Verify imports/dependencies match the diagram's edges
-3. Check for undeclared dependencies (module imports something not shown in the arch diagram)
-4. Check for missing dependencies (diagram shows a connection, code doesn't have it)
-
-Deviation categories:
-- `[DEVIATION: MISSING]` — Diagram shows X, code does not implement X
-- `[DEVIATION: EXTRA]` — Code implements X, diagram does not show X
-- `[DEVIATION: WRONG_ORDER]` — Code does A then B, diagram shows B then A
-- `[DEVIATION: WRONG_BOUNDARY]` — Code puts X in Module A, diagram puts X in Module B
-- `[DEVIATION: MISSING_ERROR_PATH]` — Diagram shows error path, code has no error handling
-- `[DEVIATION: ALREADY_RECORDED]` — This deviation exists in a draft-deviation file (just note it)
-
-For each deviation, include:
-- Severity: `[CRITICAL]` (wrong behavior), `[WARNING]` (risky shortcut), `[INFO]` (minor drift)
-- Diagram reference: exact file and node name
-- Code reference: exact file and line range
-- Recommendation: fix the code, OR update the diagram
-
-#### 7b. Code Quality Review
-
-**Correctness**:
-- Are there off-by-one errors, null pointer risks, or unhandled exceptions?
-- Are all code paths reachable?
-- Do the tests actually test what they claim to test?
-
-**Simplicity**:
-- Is there a simpler way to express this logic?
-- Are there unnecessary abstractions or indirections?
-- Is there duplicated logic that could be extracted?
-
-**Maintainability**:
-- Would a new team member understand this code in 6 months?
-- Are complex algorithms explained with comments?
-- Is the function/method size appropriate?
-
-**Consistency**:
-- Does the code follow the patterns established in the rest of the codebase?
-- Are naming conventions consistent with existing code?
-
-Quality issue severity:
-- `[CRITICAL]` — Will likely cause bugs in production
-- `[WARNING]` — Technical debt that will cause problems as the codebase grows
-- `[SUGGESTION]` — Minor improvement, take it or leave it
-
-### Review Verdict
-
-Assign one of:
-- `APPROVED` — No critical issues in either dimension
-- `APPROVED_WITH_WARNINGS` — No critical issues, but has warnings worth addressing
-- `NEEDS_WORK` — Has at least one critical issue in either dimension; main agent must fix before proceeding
+```
+Invoke the `gdd:code-review` skill via the Agent tool.
+Pass the list of code files modified during Step 4 as the argument.
+```
 
 ### Fix-and-Retry Loop
 
 **If verdict is `NEEDS_WORK`**:
 
-1. Output the full review report (both Diagram Alignment and Code Quality sections)
-2. As the main agent, fix all `[CRITICAL]` issues directly in the code files
-3. If diagram updates are needed (e.g., to reconcile recorded deviations), run `/gdd:plan` first, then continue
-4. Go back to the subagent review and run it again
+1. Read the full review report returned by the subagent
+2. Fix all `[CRITICAL]` issues directly in the code files
+3. If diagram updates are needed (e.g., to reconcile recorded deviations), invoke `gdd:plan` first, then continue
+4. Spawn the subagent again
 5. Repeat until verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`
 
 **If verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`**:
@@ -317,11 +255,6 @@ Implementation complete. If deviations were recorded, run /gdd:plan to update di
 ```
 
 Then wait for the user to confirm there are no further issues.
-
-Once the user confirms, if this task was read from `docs/gdd/todos.md` in Step 1b, remove it from the todo list:
-
-- Find the matching `- [ ] <task title>` line in `docs/gdd/todos.md`
-- Delete that line from the file
 
 </process>
 
