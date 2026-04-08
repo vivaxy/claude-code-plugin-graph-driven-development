@@ -133,22 +133,13 @@ Compose the full diagram changes and call ExitPlanMode with the complete proposa
 **Change type**: Major update / Minor update
 **Reason**: <Why this change is needed>
 
-#### Before
+#### Changes
 
-\`\`\`mermaid
-<full current diagram content — copied verbatim from file>
-\`\`\`
-
-#### After
-
-\`\`\`mermaid
-<full proposed diagram content>
-\`\`\`
-
-#### What Changed
-
-- Added node X to represent Y
-- New edge from A to B because Z
+- Added node `X` — <purpose>
+- Removed node `Y` — <reason>
+- New edge `A → B` — <reason>
+- Renamed `OldName` → `NewName` — <reason>
+- New subgraph `GroupName` wrapping nodes A, B, C — <reason>
 
 ---
 
@@ -178,7 +169,7 @@ After the user approves this plan, run `/gdd:code` to apply the diagram changes 
 </process>
 
 <guidelines>
-- "Before" sections must be copied verbatim from the actual current diagram files — never paraphrase
+- "Changes" sections must list every node and edge modification precisely — use node IDs from the actual diagram files
 - Proposed diagrams must be syntactically valid Mermaid — test mentally by reading the graph structure
 - If a requirement is too large (affects > 5 diagrams), consider splitting into sub-requirements
 - This command is read-only — no files are written. All changes are applied by `/gdd:code`
