@@ -1,0 +1,20 @@
+{
+  "name": "analyze",
+  "description": "Problem Analysis: decompose complex problems, apply first-principles thinking, find root causes, and build visual conceptual models",
+  "version": "1.0.0",
+  "author": {
+    "name": "vivaxy"
+  },
+  "homepage": "https://github.com/vivaxy/claude-code-plugins-vivaxy",
+  "repository": "https://github.com/vivaxy/claude-code-plugins-vivaxy",
+  "license": "MIT",
+  "keywords": [
+    "analysis",
+    "first-principles",
+    "decomposition",
+    "root-cause",
+    "mental-model",
+    "systems-thinking",
+    "problem-solving"
+  ]
+}

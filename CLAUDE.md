@@ -16,6 +16,12 @@ plugins/gdd/          — Graph Driven Development plugin
   hooks/              — SessionStart hook (session-start bash script + hooks.json)
   docs/gdd/           — GDD diagram spec and example docs
   CLAUDE.md           — GDD behavior rules injected into user projects
+plugins/analyze/      — Problem Analysis plugin
+  .claude-plugin/     — Plugin metadata (plugin.json)
+  commands/           — /analyze:problem and /analyze:model commands
+  skills/             — using-analyze orientation skill
+  hooks/              — SessionStart hook injecting using-analyze context
+  CLAUDE.md           — Brief usage note injected into user projects
 marketplace.json      — Marketplace manifest listing available plugins
 ```
 
@@ -36,9 +42,13 @@ The `marketplace.json` at the repo root is the distribution manifest — it list
 
 Version is tracked in `plugins/<name>/.claude-plugin/plugin.json`. The `marketplace.json` at root also contains a version field for each plugin — keep both in sync when releasing.
 
+## Language
+
+All plugin content — commands, skills, hooks, docs, output messages, and comments — must be written in **English**.
+
 ## Key Conventions
 
 - Command prompts use `$ARGUMENTS` to reference user-provided arguments
 - Mermaid diagrams in docs use `<br>` for line breaks inside node labels (not `\n`)
 - Hook scripts must handle both Claude Code (`CLAUDE_PLUGIN_ROOT`) and Cursor (`CURSOR_PLUGIN_ROOT`) environments
-- The `session-start` hook reads the `using-gdd` skill content and injects it as session context via `additionalContext`
+- The `session-start` hook reads the plugin's orientation skill and injects it as session context via `additionalContext`

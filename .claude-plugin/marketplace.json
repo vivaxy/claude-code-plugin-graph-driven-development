@@ -13,6 +13,15 @@
       "author": {
         "name": "vivaxy"
       }
+    },
+    {
+      "name": "analyze",
+      "description": "Problem Analysis: decompose complex problems, apply first-principles thinking, find root causes, and build visual conceptual models",
+      "version": "1.0.0",
+      "source": "./plugins/analyze/",
+      "author": {
+        "name": "vivaxy"
+      }
     }
   ]
 }
