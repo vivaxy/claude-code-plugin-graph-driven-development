@@ -1,6 +1,6 @@
 {
   "name": "analyze",
-  "description": "Problem Analysis: decompose complex problems, apply first-principles thinking, find root causes, and build visual conceptual models",
+  "description": "Problem Analysis: collect facts into facts.md, decompose with MECE, trace root causes, build visual models, and surface key questions as conclusions",
   "version": "1.0.0",
   "author": {
     "name": "vivaxy"

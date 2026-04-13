@@ -17,8 +17,10 @@ Suggest `/analyze:problem` when the user:
 - Presents a vague, complex, or multi-layered problem ("why is X happening?", "how should I approach Y?")
 - Is reasoning by analogy ("everyone does it this way, should we?") — first-principles thinking would help
 - Has a problem with unclear root cause (symptoms are visible but causes are not)
-- Needs to make an important decision with many trade-offs
+- Needs to frame a problem for a team before deciding what to do
 - Is stuck and not sure where to start
+
+Note: `/analyze:problem` writes a `facts.md` file (persistent fact record) and concludes with **key questions to investigate** — not action recommendations. It is most valuable when the problem needs rigorous framing before action.
 
 Do **not** suggest it for:
 - Simple factual questions with clear answers

@@ -1,25 +1,26 @@
 ---
 name: analyze:problem
-description: Analyze a complex problem — decompose it, apply first-principles thinking, trace root causes, and build a visual model
+description: Analyze a complex problem — collect facts into facts.md, decompose, trace root causes, build a visual model, and surface key questions
 argument-hint: "<problem description>"
 allowed-tools:
   - Read
   - Glob
   - Grep
   - WebSearch
+  - Write
 ---
 
 <objective>
-Apply a structured, first-principles-driven analysis to the problem described in `$ARGUMENTS`. Produce a clear, actionable report that goes from raw problem statement to precise understanding to concrete paths forward — with a visual diagram anchoring the analysis.
+Apply a structured analysis to the problem described in `$ARGUMENTS`. Move through three phases — Facts, Model, Key Questions — and produce a `facts.md` file as a persistent, authoritative source of truth that anchors every subsequent reasoning step.
 
-The core principle: **find the essence, not just the surface**. Strip away analogies, conventions, and inherited assumptions. Rebuild understanding from what is fundamentally and provably true.
+The core principle: **facts first, model second, questions last**. Never state a fact in Steps 3–7 that is not recorded in `facts.md`. Conclusions take the form of key questions to investigate, not action recommendations.
 </objective>
 
 <process>
 
 ## Step 1: Restate the Problem
 
-Rewrite the problem in one precise sentence. Eliminate ambiguity by making the following explicit:
+Rewrite the problem in one precise sentence. Make the following explicit:
 - **Who** is affected
 - **What** is actually broken or unclear (symptom vs. problem)
 - **Where** (system, context, scope)
@@ -28,46 +29,64 @@ Rewrite the problem in one precise sentence. Eliminate ambiguity by making the f
 
 If the problem statement is too vague to restate precisely, ask one focused clarifying question and stop. Do not ask multiple questions at once.
 
-## Step 2: First Principles Analysis
+## Step 2: Collect Facts → Write `facts.md`
 
-Strip away all analogies, conventions, and inherited thinking. Identify what is **fundamentally and provably true** about this problem.
+Strip away all analogies, conventions, and inherited thinking. For each claim embedded in the problem statement, ask: *"Do I know this is true, or am I just accepting it?"*
 
-For each assumption embedded in the problem statement, ask: *"Do I know this is true, or am I just accepting it because it seems obvious?"*
+Collect facts into four categories, assigning each an ID (F1, F2, …):
 
-Produce:
-- **Verified facts** — things that can be directly observed or measured
-- **Challenged assumptions** — things that seemed true but, on inspection, might not be
-- **Fundamental constraints** — physical, logical, or system-level limits that cannot be changed
+- **Verified facts** (F#) — things directly observable or measurable; cite sources or evidence
+- **Challenged assumptions** (A#) — things accepted as true but not yet verified; note what would confirm or refute each
+- **Hard constraints** (C#) — physical, logical, or system-level limits that cannot be changed
+- **Evidence gaps** (G#) — things we do not know but need to know; these will directly generate Key Questions in Step 7
+
+Then **write all of the above to `.claude/analysis/<slug>/facts.md`** using the Write tool, where `<slug>` is a kebab-case short title derived from the problem (e.g., `api-latency-spike`, `onboarding-drop-off`). Create the directory path if it does not exist. Use this format:
+
+```markdown
+# Facts: <short problem title>
+
+## Verified Facts
+- F1: <fact> — <source or evidence>
+- F2: ...
+
+## Challenged Assumptions
+- A1: <assumption> — <what would confirm or refute it>
+- A2: ...
+
+## Hard Constraints
+- C1: <constraint>
+- C2: ...
+
+## Evidence Gaps
+- G1: <what we don't know> — <why it matters>
+- G2: ...
+```
+
+Every subsequent step must reference this file. Do not introduce new facts in Steps 3–7 — if you discover something new, go back and add it to `.claude/analysis/<slug>/facts.md` first.
 
 ## Step 3: Decompose
 
-Break the problem into independent sub-problems. For each:
-- Give it a short name
-- State what it specifically is
-- Note its scope (contained or cross-cutting)
+Break the problem into sub-problems that are mutually exclusive and collectively exhaustive (MECE). Only decompositions consistent with `facts.md` are valid. For each sub-problem:
 
-Use this structure:
 ```
 Sub-problem A: <name>
   What: <description>
   Scope: contained | cross-cutting
-
-Sub-problem B: <name>
-  ...
+  Relevant facts: F#, A#, C#
 ```
 
 Analyze each sub-problem independently before looking at interactions.
 
 ## Step 4: Root Cause Tracing
 
-For each sub-problem, trace causality using up to 5 levels of "Why":
+For each sub-problem, trace causality using up to 5 levels of "Why". Each "Why" must cite a fact ID from `facts.md`, or be explicitly labeled `[assumption]`:
 
 ```
 Symptom: <observable effect>
-Why 1: <immediate cause>
-Why 2: <cause of that cause>
+Why 1: <immediate cause> [F# or assumption]
+Why 2: <cause of that cause> [F# or assumption]
 Why 3: ...
-Root cause: <the underlying reason that, if fixed, prevents the symptom>
+Root cause: <underlying reason that, if fixed, prevents the symptom>
 ```
 
 Distinguish:
@@ -83,7 +102,7 @@ Choose the diagram type based on the problem:
 - **System with interactions** → `graph TD` (components + relationships)
 - **Process / sequence** → `flowchart TD`
 
-Generate the Mermaid diagram. Use `<br>` for line breaks inside node labels. Ensure valid syntax.
+Generate the Mermaid diagram. Node labels may reference fact IDs (e.g., `F1`, `G2`) to make the model traceable. Use `<br>` for line breaks inside node labels. Ensure valid syntax.
 
 ```mermaid
 <diagram here>
@@ -91,32 +110,33 @@ Generate the Mermaid diagram. Use `<br>` for line breaks inside node labels. Ens
 
 Add a brief legend explaining what the diagram shows.
 
-## Step 6: Reconstruct — Emergent Properties and Tensions
+## Step 6: Synthesize — Emergent Properties and Tensions
 
-Now zoom back out. After analyzing the parts, describe:
+Zoom back out. After analyzing the parts, describe — grounded in `facts.md`:
 - **Interactions**: how sub-problems affect each other
-- **Emergent properties**: effects that only appear when parts combine (not visible in any single sub-problem)
-- **Core tension**: what fundamental trade-off or conflict is at the heart of this problem?
+- **Emergent properties**: effects that only appear when parts combine
+- **Core tension**: the fundamental trade-off or conflict at the heart of this problem
 
-This is the section where synthesis happens — the reconstructed understanding should be richer than the original problem statement.
+This section should produce a richer understanding than the original problem statement.
 
-## Step 7: Paths Forward
+## Step 7: Key Questions
 
-Based on first principles (not "what others usually do"), propose 2–4 paths forward. For each:
+Derive 3–7 key questions from the model. Each question must be rooted in a root cause, evidence gap, or challenged assumption identified above. For each:
 
 ```
-### Option <N>: <name>
+### Q<N>: <question>
 
-**Addresses**: which root cause(s) this targets
-**Approach**: what to actually do
-**Trade-offs**:
-  - Pro: ...
-  - Con: ...
-  - Risk: ...
-**First-principles justification**: why this is sound from fundamentals, not convention
+**Targets**: which sub-problem / root cause / gap this addresses
+**Unlocks**: what becomes possible once this is answered
+**Type**: Diagnostic | Decision | Risk
+**Priority**: High | Medium  (impact × uncertainty)
 ```
 
-End with a **Recommendation** — the single option you'd prioritize and why.
+- **Diagnostic**: clarifies what is actually true
+- **Decision**: resolves a choice between options
+- **Risk**: surfaces a threat that may need mitigation
+
+Order questions by priority (High first). Do not include recommendations or action plans — the conclusion is what to investigate, not what to do.
 
 </process>
 
@@ -127,24 +147,24 @@ Structure the full output as:
 
 ## Problem Analysis: <short title>
 
+> Facts recorded in `.claude/analysis/<slug>/facts.md`
+
 ### 1. Restated Problem
 <one precise sentence>
 
-### 2. First Principles
-**Verified facts:**
-- ...
+### 2. Facts
+*(See `facts.md` — summary below)*
 
-**Challenged assumptions:**
-- ...
-
-**Fundamental constraints:**
-- ...
+**Verified facts:** F1, F2, …
+**Challenged assumptions:** A1, A2, …
+**Hard constraints:** C1, C2, …
+**Evidence gaps:** G1, G2, …
 
 ### 3. Decomposition
-<sub-problems>
+<sub-problems with fact references>
 
 ### 4. Root Causes
-<causal chains per sub-problem>
+<causal chains with fact citations>
 
 ### 5. Visual Model
 ```mermaid
@@ -155,18 +175,18 @@ Structure the full output as:
 ### 6. Synthesis
 <interactions, emergent properties, core tension>
 
-### 7. Paths Forward
-<options with trade-offs>
-
-**Recommendation**: ...
+### 7. Key Questions
+<Q1 through QN, ordered by priority>
 
 ---
 </output-format>
 
 <guidelines>
-- Never skip Step 2 (First Principles) — it is what distinguishes this analysis from a surface-level summary
+- Never skip Step 2 — writing `.claude/analysis/<slug>/facts.md` is what separates this analysis from a surface-level summary
+- Never state a fact in Steps 3–7 that is not in that file; if new facts emerge, add them there first
+- Evidence gaps (G#) are first-class outputs — they directly generate Key Questions
 - The diagram must be generated even if simple — visual representation forces structural clarity
-- If the problem touches code in the current project, use Read/Glob/Grep to gather relevant context before analyzing
+- If the problem touches code in the current project, use Read/Glob/Grep to gather relevant context before Step 2
 - Keep each step focused; avoid repetition across steps
 - If `$ARGUMENTS` is empty, ask the user to describe the problem they want analyzed
 </guidelines>
