@@ -9,20 +9,19 @@ This is a Claude Code plugin collection. It contains plugins and a marketplace m
 ## Structure
 
 ```
-plugins/gdd/          — Graph Driven Development plugin
+plugins/sdd/          — Spec Driven Development plugin
   .claude-plugin/     — Plugin metadata (plugin.json)
-  commands/           — Slash command definitions (*.md with YAML frontmatter)
   skills/             — Subagent skill definitions (SKILL.md files)
   hooks/              — SessionStart hook (session-start bash script + hooks.json)
-  docs/gdd/           — GDD diagram spec and example docs
-  CLAUDE.md           — GDD behavior rules injected into user projects
+  docs/               — SDD diagram spec and example docs
+  CLAUDE.md           — SDD behavior rules injected into user projects
 plugins/analyze/      — Problem Analysis plugin
   .claude-plugin/     — Plugin metadata (plugin.json)
   commands/           — /analyze:problem and /analyze:model commands
   skills/             — using-analyze orientation skill
   hooks/              — SessionStart hook injecting using-analyze context
   CLAUDE.md           — Brief usage note injected into user projects
-marketplace.json      — Marketplace manifest listing available plugins
+.claude-plugin/marketplace.json      — Marketplace manifest listing available plugins
 ```
 
 ## Plugin Architecture
@@ -36,11 +35,11 @@ Each plugin lives in `plugins/<name>/` and contains:
 - **`hooks/<event-name>`** — Shell scripts executed by hooks; must output JSON (`hookSpecificOutput.additionalContext` for Claude Code)
 - **`CLAUDE.md`** — Content injected into the user's project when the plugin is installed
 
-The `marketplace.json` at the repo root is the distribution manifest — it lists plugins with their local `source` paths. Users register it once with `/plugin marketplace add <path>` then install plugins by name.
+The `.claude-plugin/marketplace.json` at the repo root is the distribution manifest — it lists plugins with their local `source` paths. Users register it once with `/plugin marketplace add <path>` then install plugins by name.
 
 ## Versioning
 
-Version is tracked in `plugins/<name>/.claude-plugin/plugin.json`. The `marketplace.json` at root also contains a version field for each plugin — keep both in sync when releasing.
+Version is tracked in `plugins/<name>/.claude-plugin/plugin.json`. The `.claude-plugin/marketplace.json` at root also contains a version field for each plugin — keep both in sync when releasing.
 
 ## Language
 

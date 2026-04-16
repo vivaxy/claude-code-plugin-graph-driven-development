@@ -4,15 +4,15 @@ A collection of Claude Code plugins by vivaxy.
 
 ## Plugins
 
-### [Graph Driven Development (GDD)](plugins/gdd/)
+### [Spec Driven Development (SDD)](plugins/sdd/)
 
-Enforces development process consistency through Mermaid flowcharts and architecture diagrams.
+Enforces development process consistency through design documents, Mermaid flowcharts, and architecture diagrams.
 
-**Core idea**: Diagrams are the source of truth. They change before code, and code is reviewed against them.
+**Core idea**: Documents and diagrams are the source of truth. They change before code, and code is reviewed against them.
 
-Commands: `/gdd:init`, `/gdd:plan`, `/gdd:code`
+Skills: `sdd:plan`, `sdd:code`
 
-See [plugins/gdd/README.md](plugins/gdd/README.md) for full documentation and installation instructions.
+See [plugins/sdd/README.md](plugins/sdd/README.md) for full documentation and installation instructions.
 
 ---
 

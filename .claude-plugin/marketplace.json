@@ -6,10 +6,10 @@
   },
   "plugins": [
     {
-      "name": "gdd",
-      "description": "Graph Driven Development: enforce development process consistency through design documents, flowcharts, and architecture diagrams",
-      "version": "1.0.4",
-      "source": "./plugins/gdd/",
+      "name": "sdd",
+      "description": "Spec Driven Development: enforce development process consistency through design documents, flowcharts, and architecture diagrams",
+      "version": "0.1.0",
+      "source": "./plugins/sdd/",
       "author": {
         "name": "vivaxy"
       }

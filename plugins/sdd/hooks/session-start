@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# SessionStart hook for gdd plugin
+# SessionStart hook for sdd plugin
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Read using-gdd skill content
-using_gdd_content=$(cat "${PLUGIN_ROOT}/skills/using-gdd/SKILL.md" 2>&1 || echo "Error reading using-gdd skill")
+# Read using-sdd skill content
+using_sdd_content=$(cat "${PLUGIN_ROOT}/skills/using-sdd/SKILL.md" 2>&1 || echo "Error reading using-sdd skill")
 
 # Escape string for JSON embedding
 escape_for_json() {
@@ -20,8 +20,8 @@ escape_for_json() {
     printf '%s' "$s"
 }
 
-using_gdd_escaped=$(escape_for_json "$using_gdd_content")
-session_context="<IMPORTANT>\nGDD (Graph Driven Development) is active.\n\n${using_gdd_escaped}\n</IMPORTANT>"
+using_sdd_escaped=$(escape_for_json "$using_sdd_content")
+session_context="<IMPORTANT>\nSDD (Spec Driven Development) is active.\n\n${using_sdd_escaped}\n</IMPORTANT>"
 
 # Output context injection as JSON.
 # Cursor hooks expect additional_context (snake_case).

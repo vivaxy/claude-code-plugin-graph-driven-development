@@ -1,5 +1,5 @@
 ---
-name: gdd:plan
+name: sdd:plan
 description: Plan a new requirement — write/update design documents and flowcharts/architecture diagrams to reflect the proposed changes, with user confirmation before writing
 allowed-tools:
   - Read
@@ -12,11 +12,11 @@ allowed-tools:
 ---
 
 <objective>
-For a given requirement or feature request, analyze the existing GDD documents and diagrams and produce a proposal showing exactly how they need to change. The plan covers both prose design documents (`doc-*.md`) and diagram files (`flow-*.md`, `arch-*.md`).
+For a given requirement or feature request, analyze the existing SDD documents and diagrams and produce a proposal showing exactly how they need to change. The plan covers both prose design documents (`doc-*.md`) and diagram files (`flow-*.md`, `arch-*.md`).
 
 Enter plan mode to do all exploration and design work, then call ExitPlanMode to present the full proposal for user approval.
 
-The core principle: **documents and diagrams change first, code follows**. This skill proposes changes and, once approved, writes the document and diagram files. After that, run `gdd:code` to implement the feature.
+The core principle: **documents and diagrams change first, code follows**. This skill proposes changes and, once approved, writes the document and diagram files. After that, run `sdd:code` to implement the feature.
 </objective>
 
 <process>
@@ -184,7 +184,7 @@ Applied changes from approved plan:
 Documents and diagrams are ready. Proceeding with implementation...
 ```
 
-Then invoke the `gdd:code` skill with the original requirement as the argument.
+Then invoke the `sdd:code` skill with the original requirement as the argument.
 
 </process>
 

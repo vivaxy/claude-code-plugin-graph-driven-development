@@ -1,6 +1,6 @@
 ---
-name: gdd:code
-description: Implement a feature guided by GDD documents and diagrams — extract design constraints from design documents, flowcharts, and architecture diagrams before writing code
+name: sdd:code
+description: Implement a feature guided by SDD documents and diagrams — extract design constraints from design documents, flowcharts, and architecture diagrams before writing code
 allowed-tools:
   - Read
   - Write
@@ -13,9 +13,9 @@ allowed-tools:
 ---
 
 <objective>
-Implement a feature or task by first extracting implementation constraints from the GDD design documents and diagrams, then writing code that strictly adheres to those constraints.
+Implement a feature or task by first extracting implementation constraints from the SDD design documents and diagrams, then writing code that strictly adheres to those constraints.
 
-The documents and diagrams are the source of truth. If the code needs to deviate from them, that deviation must be recorded — NOT silently done. Document and diagram updates happen through `gdd:plan`, not during coding.
+The documents and diagrams are the source of truth. If the code needs to deviate from them, that deviation must be recorded — NOT silently done. Document and diagram updates happen through `sdd:plan`, not during coding.
 </objective>
 
 <process>
@@ -27,7 +27,7 @@ The documents and diagrams are the source of truth. If the code needs to deviate
 
 **If docs/ is not initialized:**
 
-Do NOT stop. Invoke the `gdd:plan` skill with the current task as the argument, which will create the initial documents and diagrams first.
+Do NOT stop. Invoke the `sdd:plan` skill with the current task as the argument, which will create the initial documents and diagrams first.
 
 **If deviation records exist:**
 ```
@@ -35,7 +35,7 @@ Note: Unresolved deviation records exist in docs/drafts/:
 - draft-deviation-<timestamp>.md — recorded during a prior coding session
 
 These deviations mean the diagrams may not match the current code.
-Consider running gdd:plan to update the diagrams before proceeding.
+Consider running sdd:plan to update the diagrams before proceeding.
 
 Continuing with the current diagrams...
 ```
@@ -79,7 +79,7 @@ Extract:
 Produce an internal constraint checklist before writing any code:
 
 ```
-GDD Implementation Constraints for: <task name>
+SDD Implementation Constraints for: <task name>
 
 REQUIREMENTS (from doc-*.md):
 - <requirement 1>
@@ -210,7 +210,7 @@ adding it is out of scope for this task.
 **Required update**: Remove RetryQueue node from flow-request.md,
 replace with direct 400 response path.
 
-**Action needed**: Run gdd:plan to update the diagram
+**Action needed**: Run sdd:plan to update the diagram
 ```
 
 After recording, continue implementing the practical solution.
@@ -220,7 +220,7 @@ After recording, continue implementing the practical solution.
 After completing implementation, output:
 
 ```
-GDD Implementation Complete
+SDD Implementation Complete
 
 Task: <task name>
 Files modified: N files
@@ -244,10 +244,10 @@ After completing implementation, spawn a subagent to run the code review. Repeat
 
 ### How to Invoke
 
-Use the Agent tool to invoke the `gdd:code-review` skill as a subagent:
+Use the Agent tool to invoke the `sdd:code-review` skill as a subagent:
 
 ```
-Invoke the `gdd:code-review` skill via the Agent tool.
+Invoke the `sdd:code-review` skill via the Agent tool.
 Pass the list of code files modified during Step 5 as the argument.
 ```
 
@@ -257,7 +257,7 @@ Pass the list of code files modified during Step 5 as the argument.
 
 1. Read the full review report returned by the subagent
 2. Fix all `[CRITICAL]` issues directly in the code files
-3. If diagram updates are needed (e.g., to reconcile recorded deviations), invoke `gdd:plan` first, then continue
+3. If diagram updates are needed (e.g., to reconcile recorded deviations), invoke `sdd:plan` first, then continue
 4. Spawn the subagent again
 5. Repeat until verdict is `APPROVED` or `APPROVED_WITH_WARNINGS`
 
@@ -265,7 +265,7 @@ Pass the list of code files modified during Step 5 as the argument.
 
 Output the final summary:
 ```
-GDD Code Review: APPROVED [/ APPROVED_WITH_WARNINGS]
+SDD Code Review: APPROVED [/ APPROVED_WITH_WARNINGS]
 
 Files reviewed: <list of code files>
 Documents and diagrams compared: <list of files>
@@ -273,7 +273,7 @@ Issues found: N critical (fixed), N warnings, N suggestions
 
 <If APPROVED_WITH_WARNINGS, list the warnings here>
 
-Implementation complete. If deviations were recorded, run gdd:plan to update documents and diagrams.
+Implementation complete. If deviations were recorded, run sdd:plan to update documents and diagrams.
 ```
 
 Then wait for the user to confirm there are no further issues.

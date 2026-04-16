@@ -1,25 +1,25 @@
-w---
-name: gdd:plan-review
-description: Review GDD design documents and diagram files for completeness, consistency, edge cases, design quality, and Mermaid syntax — returns APPROVED, APPROVED_WITH_WARNINGS, NEEDS_WORK, or BLOCKED
-argument-hint: "<space-separated list of files to review>"
+---
+name: sdd:plan-review
+description: Review SDD diagram files for completeness, consistency, edge cases, design quality, and Mermaid syntax — returns APPROVED, APPROVED_WITH_WARNINGS, NEEDS_WORK, or BLOCKED
+argument-hint: "<space-separated list of diagram files to review>"
 allowed-tools:
   - Read
   - Glob
 ---
 
 <SUBAGENT-STOP>
-This skill is intended to be invoked as a subagent by `gdd:plan`. If you are the main agent running `gdd:plan`, do not execute this skill inline — spawn it as a subagent via the Agent tool.
+This skill is intended to be invoked as a subagent by `sdd:plan`. If you are the main agent running `sdd:plan`, do not execute this skill inline — spawn it as a subagent via the Agent tool.
 </SUBAGENT-STOP>
 
 <objective>
-Review the GDD design documents and diagram files specified in `$ARGUMENTS` (or all files in `docs/` if no arguments given) across six dimensions. Produce a structured report and assign a verdict.
+Review the SDD diagram files specified in `$ARGUMENTS` (or all files in `docs/` if no arguments given) across six dimensions. Produce a structured report and assign a verdict.
 </objective>
 
 <process>
 
-## Step 1: Read Documents and Diagrams
+## Step 1: Read Diagrams
 
-Read all files in scope:
+Read all diagram files in scope:
 - If `$ARGUMENTS` lists specific files, read those.
 - Otherwise, read all `*.md` files in `docs/` (excluding `drafts/`).
 
@@ -92,8 +92,8 @@ BLOCKED             — Fundamental design problem; main agent must rethink the 
 ## Step 4: Output Report
 
 ```
-GDD Design Review Report
-========================
+SDD Diagram Review Report
+=========================
 Files reviewed: <list>
 Verdict: <APPROVED | APPROVED_WITH_WARNINGS | NEEDS_WORK | BLOCKED>
 

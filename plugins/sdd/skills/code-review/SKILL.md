@@ -1,6 +1,6 @@
 ---
-name: gdd:code-review
-description: Review implemented code for alignment with GDD design documents and diagrams, and code quality — returns APPROVED, APPROVED_WITH_WARNINGS, or NEEDS_WORK
+name: sdd:code-review
+description: Review implemented code for document/diagram alignment and code quality — returns APPROVED, APPROVED_WITH_WARNINGS, or NEEDS_WORK
 argument-hint: "<space-separated list of code files to review>"
 allowed-tools:
   - Read
@@ -9,22 +9,22 @@ allowed-tools:
 ---
 
 <SUBAGENT-STOP>
-This skill is intended to be invoked as a subagent by `gdd:code`. If you are the main agent running `gdd:code`, do not execute this skill inline — spawn it as a subagent via the Agent tool.
+This skill is intended to be invoked as a subagent by `sdd:code`. If you are the main agent running `sdd:code`, do not execute this skill inline — spawn it as a subagent via the Agent tool.
 </SUBAGENT-STOP>
 
 <objective>
-Review the code files specified in `$ARGUMENTS` against the GDD design documents and diagrams in `docs/`. Check alignment with design intent and code quality. Produce a structured report and assign a verdict.
+Review the code files specified in `$ARGUMENTS` against the SDD documents and diagrams in `docs/`. Check document/diagram alignment and code quality. Produce a structured report and assign a verdict.
 </objective>
 
 <process>
 
 ## Step 1: Read Everything in Parallel
 
-1. All GDD documents and diagram files in `docs/` (excluding `drafts/`)
+1. All SDD files in `docs/` (excluding `drafts/`)
 2. All code files listed in `$ARGUMENTS`
 3. Any existing deviation records in `docs/drafts/draft-deviation-*.md`
 
-## Step 2: Diagram Alignment Review
+## Step 2: Document/Diagram Alignment Review
 
 For each flow diagram, trace through every node and verify the code:
 
@@ -40,9 +40,14 @@ For each architecture diagram:
 3. Check for undeclared dependencies (module imports something not shown in the arch diagram)
 4. Check for missing dependencies (diagram shows a connection, code doesn't have it)
 
+For each design document (`doc-*.md`):
+
+1. Verify requirements listed in the document are implemented
+2. Check that key design decisions are reflected in the code
+
 Deviation categories:
-- `[DEVIATION: MISSING]` — Diagram shows X, code does not implement X
-- `[DEVIATION: EXTRA]` — Code implements X, diagram does not show X
+- `[DEVIATION: MISSING]` — Document/diagram shows X, code does not implement X
+- `[DEVIATION: EXTRA]` — Code implements X, document/diagram does not show X
 - `[DEVIATION: WRONG_ORDER]` — Code does A then B, diagram shows B then A
 - `[DEVIATION: WRONG_BOUNDARY]` — Code puts X in Module A, diagram puts X in Module B
 - `[DEVIATION: MISSING_ERROR_PATH]` — Diagram shows error path, code has no error handling
@@ -51,9 +56,9 @@ Deviation categories:
 
 For each deviation, include:
 - Severity: `[CRITICAL]` (wrong behavior), `[WARNING]` (risky shortcut), `[INFO]` (minor drift)
-- Diagram reference: exact file and node name
+- Document/diagram reference: exact file and node name
 - Code reference: exact file and line range
-- Recommendation: fix the code, OR update the diagram
+- Recommendation: fix the code, OR update the document/diagram
 
 ## Step 3: Code Quality Review
 
@@ -102,13 +107,13 @@ NEEDS_WORK          — At least one [CRITICAL] issue; main agent must fix befor
 ## Step 5: Output Report
 
 ```
-GDD Code Review Report
+SDD Code Review Report
 ======================
 Files reviewed: <list of code files>
-Design documents and diagrams compared: <list of files>
+Documents and diagrams compared: <list of files>
 Verdict: <APPROVED | APPROVED_WITH_WARNINGS | NEEDS_WORK>
 
-Diagram Alignment:
+Document/Diagram Alignment:
 <list all deviations>
 
 Code Quality:
