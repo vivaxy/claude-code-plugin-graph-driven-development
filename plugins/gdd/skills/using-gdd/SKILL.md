@@ -9,7 +9,7 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 # Using GDD (Graph Driven Development)
 
-GDD enforces a diagrams-first development process: update architecture and flow diagrams before writing code.
+GDD enforces a documents-and-diagrams-first development process: write design documents and update architecture/flow diagrams **before** writing any code.
 
 ## When GDD Applies
 
@@ -34,21 +34,23 @@ GDD enforces a diagrams-first development process: update architecture and flow 
    - NO → proceed normally
    - YES → check project state:
 
-2. Does `docs/gdd/` exist with at least one `flow-*.md` AND one `arch-*.md`?
-   - NO → offer to run `gdd:init` first, then invoke `gdd:plan`
+2. Does `docs/` exist with at least one `flow-*.md` AND one `arch-*.md`?
+   - NO → proactively create the missing documents, then invoke `gdd:plan`
    - YES → invoke `gdd:plan` skill directly with the user's requirement as the argument
 
-## When GDD Is Not Initialized
+## When docs/ Is Not Initialized
 
-Briefly inform the user, then ask for confirmation before invoking `gdd:init` (since it scans the project and creates files):
+Do NOT ask the user to run any setup command. Proactively create the initial documents yourself:
 
-> This project doesn't have GDD diagrams yet. I'll need to map the current architecture first via `gdd:init`, then run `gdd:plan` to design the changes.
->
-> Shall I start with `gdd:init` now?
+1. Briefly tell the user: "GDD is active — `docs/` is missing, so I'll generate the initial design documents and diagrams first."
+2. Scan the project (read key files: `package.json`, `README.md`, top-level dirs, up to 5 source files)
+3. Create `docs/` and generate the appropriate initial files:
+   - `docs/overview.md` — system context diagram
+   - At least one `docs/flow-*.md` — main flow diagram
+   - At least one `docs/arch-*.md` — module architecture diagram
+4. After generating, immediately invoke the `gdd:plan` skill with the original requirement as the argument
 
-If the user confirms, invoke the `gdd:init` skill. After it completes, invoke the `gdd:plan` skill with the original requirement as the argument.
-
-## When GDD Is Initialized
+## When docs/ Is Initialized
 
 Do not wait for user confirmation. Immediately:
 

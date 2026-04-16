@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "gdd",
-      "description": "Graph Driven Development: enforce development process consistency through flowcharts and architecture diagrams",
+      "description": "Graph Driven Development: enforce development process consistency through design documents, flowcharts, and architecture diagrams",
       "version": "1.0.4",
       "source": "./plugins/gdd/",
       "author": {

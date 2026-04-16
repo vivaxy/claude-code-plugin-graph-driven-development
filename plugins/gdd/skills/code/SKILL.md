@@ -1,7 +1,6 @@
 ---
 name: gdd:code
-description: Implement a feature guided by GDD diagrams — extract design constraints from flowcharts and architecture diagrams before writing code
-argument-hint: "<feature or task description>"
+description: Implement a feature guided by GDD documents and diagrams — extract design constraints from design documents, flowcharts, and architecture diagrams before writing code
 allowed-tools:
   - Read
   - Write
@@ -14,80 +13,56 @@ allowed-tools:
 ---
 
 <objective>
-Implement a feature or task by first extracting implementation constraints from the GDD diagrams, then writing code that strictly adheres to those constraints.
+Implement a feature or task by first extracting implementation constraints from the GDD design documents and diagrams, then writing code that strictly adheres to those constraints.
 
-The diagrams are the source of truth. If the code needs to deviate from the diagrams, that deviation must be recorded — NOT silently done. Diagram updates happen through `/gdd:plan`, not during coding.
+The documents and diagrams are the source of truth. If the code needs to deviate from them, that deviation must be recorded — NOT silently done. Document and diagram updates happen through `gdd:plan`, not during coding.
 </objective>
 
 <process>
 
-## Step 1: GDD Completeness Check
+## Step 1: docs/ Completeness Check
 
-1. Verify `docs/gdd/` exists with at least one `flow-*.md` and one `arch-*.md`
-2. Check `docs/gdd/drafts/` for unreviewed drafts
+1. Verify `docs/` exists with at least one `flow-*.md` and one `arch-*.md`
+2. Check `docs/drafts/` for unreviewed drafts
 
-**If GDD is not initialized:**
-```
-GDD diagrams are missing or incomplete.
+**If docs/ is not initialized:**
 
-Run /gdd:init to generate the initial diagram set, then:
-- If this is a new requirement: run /gdd:plan to update diagrams
-- Run /gdd:plan-review to validate
-- Then return to /gdd:code
-```
-STOP.
+Do NOT stop. Invoke the `gdd:plan` skill with the current task as the argument, which will create the initial documents and diagrams first.
 
 **If deviation records exist:**
 ```
-Note: Unresolved deviation records exist in docs/gdd/drafts/:
+Note: Unresolved deviation records exist in docs/drafts/:
 - draft-deviation-<timestamp>.md — recorded during a prior coding session
 
 These deviations mean the diagrams may not match the current code.
-Consider running /gdd:plan to update the diagrams before proceeding.
+Consider running gdd:plan to update the diagrams before proceeding.
 
 Continuing with the current diagrams...
 ```
 Continue with a note, do not block.
 
-## Step 1.5: Apply Pending Diagram Changes (conditional)
-
-If `/gdd:plan` was just approved in this conversation (the plan content contains Before/After Mermaid diffs), apply those diagram changes to `docs/gdd/` before coding:
-
-1. For each "Modifying: \<filename.md\>" entry in the approved plan:
-   - Read the current file content
-   - Replace the Mermaid diagram block with the "After" content from the plan
-   - Update the `**Last Updated**` date to today
-   - Write the full file back using `Write`
-
-2. For each "New File: \<filename.md\>" entry in the approved plan:
-   - Create the new file in `docs/gdd/` using the standard diagram file format
-   - Write it using `Write`
-
-Output confirmation before proceeding:
-```
-Applied diagram changes from approved plan:
-- Updated: flow-request.md
-- Created: flow-auth.md
-
-Proceeding with implementation...
-```
-
-If no plan was recently approved (this is a standalone coding task), skip this step.
-
 ## Step 2: Understand the Task
 
 Parse `$ARGUMENTS` — the feature or task to implement. If unclear, ask one focused clarifying question before proceeding.
 
-## Step 3: Extract Design Constraints from Diagrams
+## Step 3: Extract Design Constraints from Documents and Diagrams
 
-Read all relevant diagram files. For each relevant diagram, extract specific implementation constraints:
+Read all relevant files. For each relevant file, extract specific implementation constraints:
+
+### From Design Documents (doc-*.md)
+
+Extract:
+- **Requirements**: What must the feature do?
+- **Key decisions**: What design choices were already made and why?
+- **Constraints**: What must NOT be done?
+- **Open questions**: Are there unresolved items that affect implementation?
 
 ### From Architecture Diagrams (arch-*.md)
 
 Extract:
 - **Module boundaries**: Which module/file/package is responsible for this feature?
 - **Dependency direction**: Which modules does this feature depend on? Which modules must NOT be depended on?
-- **Interface contracts**: How does this module communicate with others? (function calls, events, HTTP, etc.)
+- **Interface contracts**: How does this module communicate with others?
 - **Ownership rules**: Does any existing module's boundary need to expand, or does this require a new one?
 
 ### From Flow Diagrams (flow-*.md)
@@ -105,6 +80,10 @@ Produce an internal constraint checklist before writing any code:
 
 ```
 GDD Implementation Constraints for: <task name>
+
+REQUIREMENTS (from doc-*.md):
+- <requirement 1>
+- <requirement 2>
 
 MODULE BOUNDARIES:
 - This feature belongs in: <module/file>
@@ -169,6 +148,7 @@ Implement the feature following the constraints. The tests written in Step 4 are
 
 ### Do
 
+- Follow requirements from design documents
 - Follow module boundaries exactly as defined in arch diagrams
 - Implement error handling for every error path shown in flow diagrams
 - Use the same naming as nodes/labels in the diagrams (consistency)
@@ -179,9 +159,9 @@ Implement the feature following the constraints. The tests written in Step 4 are
 
 - Import from modules outside the allowed dependency set
 - Skip error paths that are shown in the diagrams
-- Silently deviate from the diagram (see Step 6 if deviation is needed)
+- Silently deviate from the documents or diagrams (see Step 6 if deviation is needed)
 - "Improve" the architecture while coding — record it as a deviation instead
-- Write new tests here — tests belong in Step 4; if a missing test is found, pause, write it in failing state, confirm it fails, then implement
+- Write new tests here — tests belong in Step 4
 
 ### Track Progress with TodoWrite
 
@@ -192,7 +172,6 @@ TDD todos:
 [ ] Test: Validate input — flow-request.md → Validate node (write failing test)
 [ ] Test: Auth success path — flow-request.md → AuthCheck node (write failing test)
 [ ] Test: Auth failure → 401 — flow-request.md → Error node (write failing test)
-[ ] Test: DB write failure → Rollback — flow-data.md → Rollback node (write failing test)
 [ ] Run tests — verify all fail (TDD gate)
 [ ] Implement: Validate input
 [ ] Implement: Check authorization
@@ -204,11 +183,11 @@ TDD todos:
 
 ## Step 6: Record Deviations
 
-If during implementation you discover that the diagram is inaccurate, incomplete, or impractical:
+If during implementation you discover that a document or diagram is inaccurate, incomplete, or impractical:
 
-**Do NOT silently fix the diagram or deviate without recording.**
+**Do NOT silently fix the document/diagram or deviate without recording.**
 
-Instead, record the deviation in a `docs/gdd/drafts/draft-deviation-<timestamp>.md` file:
+Instead, record the deviation in a `docs/drafts/draft-deviation-<timestamp>.md` file:
 
 ```markdown
 # Diagram Deviation Record
@@ -219,19 +198,19 @@ Instead, record the deviation in a `docs/gdd/drafts/draft-deviation-<timestamp>.
 
 ## Deviation #1
 
-**Diagram**: flow-request.md
+**Document/Diagram**: flow-request.md
 **Node/Path**: ErrorHandler → RetryQueue
 
-**What the diagram says**: On validation error, send to RetryQueue
+**What the document/diagram says**: On validation error, send to RetryQueue
 **What was actually implemented**: Return 400 immediately (no retry queue)
 
 **Reason**: The RetryQueue service does not exist in the codebase and
 adding it is out of scope for this task.
 
-**Required diagram update**: Remove RetryQueue node from flow-request.md,
+**Required update**: Remove RetryQueue node from flow-request.md,
 replace with direct 400 response path.
 
-**Action needed**: Run /gdd:plan to update the diagram
+**Action needed**: Run gdd:plan to update the diagram
 ```
 
 After recording, continue implementing the practical solution.
@@ -247,13 +226,14 @@ Task: <task name>
 Files modified: N files
 
 Constraint compliance:
-- Module boundaries: FOLLOWED / N DEVIATIONS (see docs/gdd/drafts/)
+- Requirements: FOLLOWED / N DEVIATIONS (see docs/drafts/)
+- Module boundaries: FOLLOWED / N DEVIATIONS
 - Flow execution order: FOLLOWED / N DEVIATIONS
 - Error paths: FOLLOWED / N DEVIATIONS
-- TDD coverage: N failing tests written, N passing after implementation (N diagram decision points)
+- TDD coverage: N failing tests written, N passing after implementation
 
 Deviations recorded:
-- docs/gdd/drafts/draft-deviation-<timestamp>.md (2 deviations)
+- docs/drafts/draft-deviation-<timestamp>.md (2 deviations)
 
 Starting automated code review...
 ```
@@ -288,12 +268,12 @@ Output the final summary:
 GDD Code Review: APPROVED [/ APPROVED_WITH_WARNINGS]
 
 Files reviewed: <list of code files>
-Diagrams compared: <list of diagram files>
+Documents and diagrams compared: <list of files>
 Issues found: N critical (fixed), N warnings, N suggestions
 
 <If APPROVED_WITH_WARNINGS, list the warnings here>
 
-Implementation complete. If deviations were recorded, run /gdd:plan to update diagrams.
+Implementation complete. If deviations were recorded, run gdd:plan to update documents and diagrams.
 ```
 
 Then wait for the user to confirm there are no further issues.
@@ -301,9 +281,9 @@ Then wait for the user to confirm there are no further issues.
 </process>
 
 <guidelines>
-- The diagrams are the contract. If reality doesn't match, record the gap — don't silently bridge it
-- Extract constraints BEFORE writing code — never start coding and then check the diagram
+- Documents and diagrams are the contract. If reality doesn't match, record the gap — don't silently bridge it
+- Extract constraints BEFORE writing code — never start coding and then check the documents/diagrams
 - Tests come before code: write failing tests for every decision point before any production code; the TDD gate in Step 4 is not optional
-- Deviation records are not failures — they are valuable feedback that improves the diagrams
-- If you find yourself writing code for a module that doesn't appear in any diagram, that's a signal: either the diagram is incomplete (record it) or you're going out of scope
+- Deviation records are not failures — they are valuable feedback that improves the documents and diagrams
+- If you find yourself writing code for a module that doesn't appear in any document or diagram, that's a signal: either the docs are incomplete (record it) or you're going out of scope
 </guidelines>

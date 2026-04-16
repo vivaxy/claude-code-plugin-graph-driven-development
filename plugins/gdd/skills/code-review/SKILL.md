@@ -1,6 +1,6 @@
 ---
 name: gdd:code-review
-description: Review implemented code for diagram alignment and code quality — returns APPROVED, APPROVED_WITH_WARNINGS, or NEEDS_WORK
+description: Review implemented code for alignment with GDD design documents and diagrams, and code quality — returns APPROVED, APPROVED_WITH_WARNINGS, or NEEDS_WORK
 argument-hint: "<space-separated list of code files to review>"
 allowed-tools:
   - Read
@@ -13,16 +13,16 @@ This skill is intended to be invoked as a subagent by `gdd:code`. If you are the
 </SUBAGENT-STOP>
 
 <objective>
-Review the code files specified in `$ARGUMENTS` against the GDD diagrams in `docs/gdd/`. Check diagram alignment and code quality. Produce a structured report and assign a verdict.
+Review the code files specified in `$ARGUMENTS` against the GDD design documents and diagrams in `docs/`. Check alignment with design intent and code quality. Produce a structured report and assign a verdict.
 </objective>
 
 <process>
 
 ## Step 1: Read Everything in Parallel
 
-1. All GDD diagram files in `docs/gdd/` (excluding `drafts/`)
+1. All GDD documents and diagram files in `docs/` (excluding `drafts/`)
 2. All code files listed in `$ARGUMENTS`
-3. Any existing deviation records in `docs/gdd/drafts/draft-deviation-*.md`
+3. Any existing deviation records in `docs/drafts/draft-deviation-*.md`
 
 ## Step 2: Diagram Alignment Review
 
@@ -105,7 +105,7 @@ NEEDS_WORK          — At least one [CRITICAL] issue; main agent must fix befor
 GDD Code Review Report
 ======================
 Files reviewed: <list of code files>
-Diagrams compared: <list of diagram files>
+Design documents and diagrams compared: <list of files>
 Verdict: <APPROVED | APPROVED_WITH_WARNINGS | NEEDS_WORK>
 
 Diagram Alignment:

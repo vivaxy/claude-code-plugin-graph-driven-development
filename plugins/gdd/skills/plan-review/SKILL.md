@@ -1,7 +1,7 @@
----
+w---
 name: gdd:plan-review
-description: Review GDD diagram files for completeness, consistency, edge cases, design quality, and Mermaid syntax — returns APPROVED, APPROVED_WITH_WARNINGS, NEEDS_WORK, or BLOCKED
-argument-hint: "<space-separated list of diagram files to review>"
+description: Review GDD design documents and diagram files for completeness, consistency, edge cases, design quality, and Mermaid syntax — returns APPROVED, APPROVED_WITH_WARNINGS, NEEDS_WORK, or BLOCKED
+argument-hint: "<space-separated list of files to review>"
 allowed-tools:
   - Read
   - Glob
@@ -12,16 +12,16 @@ This skill is intended to be invoked as a subagent by `gdd:plan`. If you are the
 </SUBAGENT-STOP>
 
 <objective>
-Review the GDD diagram files specified in `$ARGUMENTS` (or all files in `docs/gdd/` if no arguments given) across six dimensions. Produce a structured report and assign a verdict.
+Review the GDD design documents and diagram files specified in `$ARGUMENTS` (or all files in `docs/` if no arguments given) across six dimensions. Produce a structured report and assign a verdict.
 </objective>
 
 <process>
 
-## Step 1: Read Diagrams
+## Step 1: Read Documents and Diagrams
 
-Read all diagram files in scope:
+Read all files in scope:
 - If `$ARGUMENTS` lists specific files, read those.
-- Otherwise, read all `*.md` files in `docs/gdd/` (excluding `drafts/`).
+- Otherwise, read all `*.md` files in `docs/` (excluding `drafts/`).
 
 ## Step 2: Run Review Checks
 
@@ -92,8 +92,8 @@ BLOCKED             — Fundamental design problem; main agent must rethink the 
 ## Step 4: Output Report
 
 ```
-GDD Diagram Review Report
-=========================
+GDD Design Review Report
+========================
 Files reviewed: <list>
 Verdict: <APPROVED | APPROVED_WITH_WARNINGS | NEEDS_WORK | BLOCKED>
 
