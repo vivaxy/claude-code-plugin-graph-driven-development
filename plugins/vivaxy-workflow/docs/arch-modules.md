@@ -10,12 +10,12 @@
 graph TD
     SessionStart["hooks/session-start<br>(SessionStart hook)"]
     UsingVivaxyWorkflow["skills/using-vivaxy-workflow<br>(routing skill)"]
-    ClarifySkill["skills/clarify<br>(vivaxy-workflow:clarify)"]
-    PlanSkill["skills/plan<br>(vivaxy-workflow:plan)"]
+    ClarifySkill["skills/main-clarify<br>(vivaxy-workflow:main:clarify)"]
+    PlanSkill["skills/main-plan<br>(vivaxy-workflow:main:plan)"]
     SubtaskExecuteSkill["skills/subtask-execute<br>(vivaxy-workflow:subtask-execute)"]
     SubtaskReviewSkill["skills/subtask-review<br>(subagent)"]
-    ReviewSkill["skills/review<br>(vivaxy-workflow:review)"]
-    DeliverSkill["skills/deliver<br>(vivaxy-workflow:deliver)"]
+    ReviewSkill["skills/main-review<br>(vivaxy-workflow:main:review)"]
+    DeliverSkill["skills/main-deliver<br>(vivaxy-workflow:main:deliver)"]
     WorkflowDocs["docs/<br>(design documents + diagram files)"]
     ProjectSrc["Project source files"]
 

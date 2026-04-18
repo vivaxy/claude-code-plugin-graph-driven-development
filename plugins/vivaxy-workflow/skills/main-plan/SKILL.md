@@ -1,5 +1,5 @@
 ---
-name: vivaxy-workflow:plan
+name: vivaxy-workflow:main:plan
 description: Decompose the clarified problem into subtasks — analyze existing docs, produce design documents and diagrams, define subtasks with acceptance criteria, get user approval, then write docs/doc-subtasks.md
 argument-hint: "<optional: specific aspect to focus on>"
 allowed-tools:
@@ -24,7 +24,7 @@ Call `EnterPlanMode` immediately. All exploration and analysis is read-only unti
 
 ## Step 1: Read Clarification
 
-Read `docs/doc-clarification.md`. If it does not exist, invoke `vivaxy-workflow:clarify` first and stop.
+Read `docs/doc-clarification.md`. If it does not exist, invoke `vivaxy-workflow:main:clarify` first and stop.
 
 Extract:
 - Problem statement

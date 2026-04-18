@@ -1,5 +1,5 @@
 ---
-name: vivaxy-workflow:clarify
+name: vivaxy-workflow:main:clarify
 description: Clarify the problem with the user before decomposing into subtasks — asks focused questions and writes docs/doc-clarification.md
 argument-hint: "<feature or problem description>"
 allowed-tools:
@@ -93,7 +93,7 @@ Once the user confirms, create `docs/` if it does not exist, then write `docs/do
 - Non-goal 1
 ```
 
-Output: "Problem clarified and saved to `docs/doc-clarification.md`. Run `vivaxy-workflow:plan` to decompose into subtasks."
+Output: "Problem clarified and saved to `docs/doc-clarification.md`. Run `vivaxy-workflow:main:plan` to decompose into subtasks."
 
 </process>
 

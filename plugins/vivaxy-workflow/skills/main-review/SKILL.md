@@ -1,5 +1,5 @@
 ---
-name: vivaxy-workflow:review
+name: vivaxy-workflow:main:review
 description: End-to-end acceptance of the complete feature — verifies all subtasks accepted, runs test suite, checks original success criteria
 allowed-tools:
   - Read
@@ -98,7 +98,7 @@ All N subtasks: ACCEPTED ✓
 
 On FEATURE_ACCEPTED or FEATURE_ACCEPTED_WITH_WARNINGS, output:
 ```
-Feature accepted. Run `vivaxy-workflow:deliver` to close out.
+Feature accepted. Run `vivaxy-workflow:main:deliver` to close out.
 ```
 
 </process>

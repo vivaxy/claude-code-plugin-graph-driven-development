@@ -14,11 +14,11 @@ flowchart TD
     UsingVivaxyWorkflow -->|No — bug fix / docs| Passthrough([Proceed normally])
     UsingVivaxyWorkflow -->|Yes| CheckClarify{"doc-clarification.md<br>exists?"}
 
-    CheckClarify -->|No| Clarify["vivaxy-workflow:clarify<br>Q&A with user,<br>write doc-clarification.md"]
+    CheckClarify -->|No| Clarify["vivaxy-workflow:main:clarify<br>Q&A with user,<br>write doc-clarification.md"]
     Clarify --> CheckPlan{"doc-subtasks.md<br>exists?"}
 
     CheckClarify -->|Yes| CheckPlan
-    CheckPlan -->|No| Plan["vivaxy-workflow:plan<br>Decompose into subtasks,<br>write design docs + diagrams,<br>ExitPlanMode for approval,<br>write doc-subtasks.md"]
+    CheckPlan -->|No| Plan["vivaxy-workflow:main:plan<br>Decompose into subtasks,<br>write design docs + diagrams,<br>ExitPlanMode for approval,<br>write doc-subtasks.md"]
     Plan --> SubtaskLoop
 
     CheckPlan -->|Yes| SubtaskLoop{"Pending subtasks?"}
@@ -30,21 +30,21 @@ flowchart TD
     SubtaskVerdict -->|ACCEPTED| MarkAccepted[Mark subtask ACCEPTED<br>in doc-subtasks.md]
     MarkAccepted --> SubtaskLoop
 
-    SubtaskLoop -->|No — all ACCEPTED| Review["vivaxy-workflow:review<br>Verify all subtasks,<br>run test suite,<br>check success criteria"]
+    SubtaskLoop -->|No — all ACCEPTED| Review["vivaxy-workflow:main:review<br>Verify all subtasks,<br>run test suite,<br>check success criteria"]
     Review --> FeatureVerdict{Verdict}
     FeatureVerdict -->|FEATURE_BLOCKED| FixFeature[Fix blocking issues]
     FixFeature --> Review
-    FeatureVerdict -->|FEATURE_ACCEPTED| Deliver["vivaxy-workflow:deliver<br>Write retrospective,<br>clean up drafts,<br>deliver summary"]
+    FeatureVerdict -->|FEATURE_ACCEPTED| Deliver["vivaxy-workflow:main:deliver<br>Write retrospective,<br>clean up drafts,<br>deliver summary"]
     Deliver --> Done([Done])
 ```
 
 ## Key Decisions
 
 - Workflow state is detected from `docs/` file presence — the routing skill resumes from the correct phase automatically
-- `vivaxy-workflow:plan` uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate for the subtask plan
+- `vivaxy-workflow:main:plan` uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate for the subtask plan
 - Each subtask is independently executed and accepted before moving to the next
 - `vivaxy-workflow:subtask-review` is a read-only subagent — it never writes files
-- `vivaxy-workflow:review` runs the full test suite as part of end-to-end acceptance
+- `vivaxy-workflow:main:review` runs the full test suite as part of end-to-end acceptance
 - Deviations discovered during execution are recorded in `docs/drafts/` rather than silently modifying diagrams
 
 ## Notes

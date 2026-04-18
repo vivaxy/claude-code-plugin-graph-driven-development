@@ -1,5 +1,5 @@
 ---
-name: vivaxy-workflow:deliver
+name: vivaxy-workflow:main:deliver
 description: Retrospective, consolidate learnings, and deliver final results — writes doc-retrospective, cleans up drafts, summarizes what was built
 allowed-tools:
   - Read
@@ -20,7 +20,7 @@ Read `docs/doc-subtasks.md`. Confirm all subtasks have status ACCEPTED.
 
 If not all subtasks are ACCEPTED, stop and output:
 ```
-Feature is not yet accepted. Run `vivaxy-workflow:review` first.
+Feature is not yet accepted. Run `vivaxy-workflow:main:review` first.
 ```
 
 ## Step 2: Gather Delivery Materials

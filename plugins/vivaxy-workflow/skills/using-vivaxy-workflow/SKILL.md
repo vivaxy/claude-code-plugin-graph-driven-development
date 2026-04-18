@@ -9,7 +9,7 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 # Using vivaxy Workflow
 
-vivaxy Workflow enforces a structured 5-phase development process: clarify → plan → execute subtasks → review → deliver.
+vivaxy Workflow enforces a structured 5-phase development process: main:clarify → main:plan → execute subtasks → main:review → main:deliver.
 
 ## When vivaxy Workflow Applies
 
@@ -34,11 +34,11 @@ For feature tasks, detect the current workflow state by checking `docs/`:
 
 | Condition | Route to |
 |-----------|----------|
-| `docs/doc-clarification.md` does not exist | `vivaxy-workflow:clarify` |
-| `doc-clarification.md` exists, `doc-subtasks.md` does not exist | `vivaxy-workflow:plan` |
+| `docs/doc-clarification.md` does not exist | `vivaxy-workflow:main:clarify` |
+| `doc-clarification.md` exists, `doc-subtasks.md` does not exist | `vivaxy-workflow:main:plan` |
 | `doc-subtasks.md` exists with at least one PENDING subtask | `vivaxy-workflow:subtask-execute <first-pending-id>` |
-| All subtasks in `doc-subtasks.md` are ACCEPTED, no retrospective yet | `vivaxy-workflow:review` |
-| `doc-retrospective-*.md` does not exist after all subtasks accepted | `vivaxy-workflow:deliver` |
+| All subtasks in `doc-subtasks.md` are ACCEPTED, no retrospective yet | `vivaxy-workflow:main:review` |
+| `doc-retrospective-*.md` does not exist after all subtasks accepted | `vivaxy-workflow:main:deliver` |
 | Bug fix / non-feature task | Proceed normally |
 
 ## How to Route
@@ -50,7 +50,7 @@ Do not wait for user confirmation. Immediately:
 
 ## When vivaxy Workflow Is Not Initialized
 
-If `docs/` does not exist or `doc-clarification.md` is missing, invoke `vivaxy-workflow:clarify` directly. It will create `docs/` as needed.
+If `docs/` does not exist or `doc-clarification.md` is missing, invoke `vivaxy-workflow:main:clarify` directly. It will create `docs/` as needed.
 
 ## Instruction Priority
 

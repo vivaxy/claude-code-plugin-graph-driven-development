@@ -118,19 +118,19 @@ Draft files in `docs/drafts/` follow this structure:
 ## vivaxy Workflow Development Workflow
 
 ```
-vivaxy-workflow:clarify
-  → vivaxy-workflow:plan
+vivaxy-workflow:main:clarify
+  → vivaxy-workflow:main:plan
     → Loop: vivaxy-workflow:subtask-execute → vivaxy-workflow:subtask-review
-      → vivaxy-workflow:review
-        → vivaxy-workflow:deliver
+      → vivaxy-workflow:main:review
+        → vivaxy-workflow:main:deliver
 ```
 
-1. **`vivaxy-workflow:clarify`**: Clarify the problem with the user, write `docs/doc-clarification.md`
-2. **`vivaxy-workflow:plan`**: Decompose into subtasks, write design docs and diagrams, write `docs/doc-subtasks.md`
+1. **`vivaxy-workflow:main:clarify`**: Clarify the problem with the user, write `docs/doc-clarification.md`
+2. **`vivaxy-workflow:main:plan`**: Decompose into subtasks, write design docs and diagrams, write `docs/doc-subtasks.md`
 3. **`vivaxy-workflow:subtask-execute <ST-XX>`**: Execute one subtask (TDD), invoke `subtask-review` subagent, mark ACCEPTED
 4. **`vivaxy-workflow:subtask-review`**: Subagent — verifies acceptance criteria and doc alignment
-5. **`vivaxy-workflow:review`**: End-to-end feature acceptance — all subtasks, test suite, success criteria
-6. **`vivaxy-workflow:deliver`**: Retrospective, clean up drafts, deliver final summary
+5. **`vivaxy-workflow:main:review`**: End-to-end feature acceptance — all subtasks, test suite, success criteria
+6. **`vivaxy-workflow:main:deliver`**: Retrospective, clean up drafts, deliver final summary
 
 ## Agent Behavior Rules
 
