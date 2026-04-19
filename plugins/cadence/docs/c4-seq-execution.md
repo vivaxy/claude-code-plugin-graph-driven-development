@@ -25,8 +25,12 @@ sequenceDiagram
     Routing->>Routing: Clarification summary in conversation?
     alt No clarification
       Routing->>Clarify: Invoke
-      Clarify->>User: Ask clarifying questions (1-2 at a time)
+      Clarify->>User: AskUserQuestion — clarifying questions (1-2 at a time)
       User-->>Clarify: Answers
+      Clarify->>User: AskUserQuestion — confirm understanding
+      User-->>Clarify: Confirms or corrects
+      Clarify->>User: AskUserQuestion — confirm session type<br>(options: feature-dev / bugfix / doc-writing)
+      User-->>Clarify: Confirms
       Clarify-->>Routing: Clarification summary
     end
 

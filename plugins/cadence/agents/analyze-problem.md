@@ -28,6 +28,7 @@ tools:
   - Grep
   - WebSearch
   - Write
+  - AskUserQuestion
 ---
 
 <objective>
@@ -47,7 +48,7 @@ Rewrite the problem in one precise sentence. Make the following explicit:
 - **When** (always, intermittently, since when)
 - **What is NOT the problem** (boundary)
 
-If the problem statement is too vague to restate precisely, ask one focused clarifying question and stop. Do not ask multiple questions at once.
+If the problem statement is too vague to restate precisely, call `AskUserQuestion` with one focused clarifying question, then stop.
 
 ## Step 2: Collect Facts → Write `facts.md`
 
@@ -208,5 +209,5 @@ Structure the full output as:
 - The diagram must be generated even if simple — visual representation forces structural clarity
 - If the problem touches code in the current project, use Read/Glob/Grep to gather relevant context before Step 2
 - Keep each step focused; avoid repetition across steps
-- If the problem description is empty or unclear, ask one focused clarifying question and stop
+- If the problem description is empty or unclear, call `AskUserQuestion` with one focused clarifying question, then stop
 </guidelines>

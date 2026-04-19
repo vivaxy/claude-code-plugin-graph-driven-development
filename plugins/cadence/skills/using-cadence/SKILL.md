@@ -53,7 +53,7 @@ Do NOT invoke for:
 - Factual questions with clear answers
 - Cases where the user has already done the analysis
 
-Borderline case (ambiguous intent): ask one inline question — "This looks like a good case for structured analysis — want me to run it?" — then wait.
+Borderline case (ambiguous intent): call `AskUserQuestion` with the question "This looks like a good case for structured analysis — want me to run it?" and options `["Yes, run it", "No, skip"]`, then wait.
 
 ## Implement Phase
 
