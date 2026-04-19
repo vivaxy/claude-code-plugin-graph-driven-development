@@ -28,7 +28,7 @@ From `$ARGUMENTS`, extract:
 
 Read simultaneously:
 - `docs/doc-subtasks.md` — find the subtask's acceptance criteria and description
-- `docs/doc-clarification.md` — original problem context
+- Clarification summary from the current conversation context — original problem context
 - All relevant `docs/doc-*.md`, `docs/flow-*.md`, `docs/arch-*.md` files
 - All changed files listed in arguments
 - Any `docs/drafts/draft-deviation-<subtask-id>-*.md` files

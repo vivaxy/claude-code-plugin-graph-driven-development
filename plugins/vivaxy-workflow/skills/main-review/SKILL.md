@@ -9,14 +9,14 @@ allowed-tools:
 ---
 
 <objective>
-Verify that the complete feature satisfies the original success criteria from `docs/doc-clarification.md`. Check that all subtasks are ACCEPTED, run the full test suite, and confirm no unresolved deviations remain. Produce a verdict: FEATURE_ACCEPTED or FEATURE_BLOCKED.
+Verify that the complete feature satisfies the original success criteria from the clarification established in the current conversation. Check that all subtasks are ACCEPTED, run the full test suite, and confirm no unresolved deviations remain. Produce a verdict: FEATURE_ACCEPTED or FEATURE_BLOCKED.
 </objective>
 
 <process>
 
 ## Step 1: Read the Original Success Criteria
 
-Read `docs/doc-clarification.md`. Extract the success criteria — these are the definition of done for the entire feature.
+Use the clarification summary from the current conversation context. Extract the success criteria — these are the definition of done for the entire feature.
 
 ## Step 2: Verify All Subtasks Are Accepted
 
@@ -52,7 +52,7 @@ Fix the failing tests before feature acceptance.
 
 ## Step 5: Check Each Success Criterion
 
-For each success criterion from `doc-clarification.md`:
+For each success criterion from the clarification summary:
 - Is there evidence in the implementation that it is satisfied?
 - Is there a test that verifies it?
 

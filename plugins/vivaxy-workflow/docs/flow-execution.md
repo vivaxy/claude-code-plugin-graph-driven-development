@@ -12,9 +12,9 @@ flowchart TD
 
     Start --> UsingVivaxyWorkflow{"using-vivaxy-workflow<br>feature task?"}
     UsingVivaxyWorkflow -->|No — bug fix / docs| Passthrough([Proceed normally])
-    UsingVivaxyWorkflow -->|Yes| CheckClarify{"doc-clarification.md<br>exists?"}
+    UsingVivaxyWorkflow -->|Yes| CheckClarify{"Clarification<br>in conversation?"}
 
-    CheckClarify -->|No| Clarify["vivaxy-workflow:main:clarify<br>Q&A with user,<br>write doc-clarification.md"]
+    CheckClarify -->|No| Clarify["vivaxy-workflow:main:clarify<br>Q&A with user,<br>outputs clarification summary"]
     Clarify --> CheckPlan{"doc-subtasks.md<br>exists?"}
 
     CheckClarify -->|Yes| CheckPlan
@@ -40,7 +40,7 @@ flowchart TD
 
 ## Key Decisions
 
-- Workflow state is detected from `docs/` file presence — the routing skill resumes from the correct phase automatically
+- Clarification lives in conversation context; `doc-subtasks.md` presence drives phase resumption across sessions
 - `vivaxy-workflow:main:plan` uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate for the subtask plan
 - Each subtask is independently executed and accepted before moving to the next
 - `vivaxy-workflow:subtask-review` is a read-only subagent — it never writes files

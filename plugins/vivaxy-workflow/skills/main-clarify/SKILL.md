@@ -1,24 +1,23 @@
 ---
 name: vivaxy-workflow:main:clarify
-description: Clarify the problem with the user before decomposing into subtasks — asks focused questions and writes docs/doc-clarification.md
+description: Clarify the problem with the user before decomposing into subtasks — asks focused questions and confirms understanding in conversation
 argument-hint: "<feature or problem description>"
 allowed-tools:
   - Read
-  - Write
   - Glob
 ---
 
 <objective>
-Understand the feature or problem clearly enough to decompose it into subtasks. Ask focused questions, confirm understanding, and write `docs/doc-clarification.md` as the authoritative problem statement for all downstream skills.
+Understand the feature or problem clearly enough to decompose it into subtasks. Ask focused questions and confirm understanding through conversation. Do NOT write any files — clarification lives in the conversation only.
 </objective>
 
 <process>
 
 ## Step 1: Check for Existing Clarification
 
-Check if `docs/doc-clarification.md` already exists:
-- If it exists, read it and summarize the current problem statement to the user. Ask if it's still accurate or needs updating.
-- If it does not exist, proceed to Step 2.
+Check if a clarification summary has already been established earlier in the current conversation:
+- If it has, summarize the current problem statement to the user. Ask if it's still accurate or needs updating.
+- If it has not, proceed to Step 2.
 
 ## Step 2: Understand the Initial Request
 
@@ -54,52 +53,40 @@ Ask: "Does this capture it correctly, or is there anything to adjust?"
 
 Incorporate any corrections and re-confirm if needed.
 
-## Step 5: Write docs/doc-clarification.md
+## Step 5: Detect Session Type
 
-Once the user confirms, create `docs/` if it does not exist, then write `docs/doc-clarification.md`:
+Before writing the doc, infer the session type from the clarified content:
 
-```markdown
-# Problem Clarification
+| Signal in the clarified problem | Session Type |
+|---|---|
+| Adds new behavior, new API endpoint, new component, refactor of module structure | `feature-dev` |
+| Something is broken, defect, regression, error, "it used to work" | `bugfix` |
+| Writing or updating documentation, README, guides, specs, changelogs | `doc-writing` |
+| Designing a system, exploring options, modeling, architecture decision, no immediate coding | `architecture` |
 
-> **Type**: Clarification
-> **Last Updated**: YYYY-MM-DD
-> **Covers**: One-line description of the feature/problem
+State the inferred type to the user: "I'm classifying this as a `<type>` session. Does that sound right?"
 
-## Problem Statement
+If the user corrects it, use their correction.
 
-<What is being built and why>
+## Step 6: Confirm and Hand Off
 
-## Scope
+Once the user confirms, output a concise summary in conversation:
 
-### In Scope
-- Item 1
-- Item 2
+- **Problem**: one-line statement
+- **In Scope**: bullet list
+- **Out of Scope**: bullet list
+- **Constraints**: bullet list
+- **Success Criteria**: measurable bullet list
+- **Non-Goals**: bullet list
+- **Session Type**: `<type>`
 
-### Out of Scope
-- Item 1
-
-## Constraints
-
-- Constraint 1
-- Constraint 2
-
-## Success Criteria
-
-- Criterion 1 (measurable)
-- Criterion 2 (measurable)
-
-## Non-Goals
-
-- Non-goal 1
-```
-
-Output: "Problem clarified and saved to `docs/doc-clarification.md`. Run `vivaxy-workflow:main:plan` to decompose into subtasks."
+Output: "Problem clarified. Ready to proceed with `vivaxy-workflow:main:plan`."
 
 </process>
 
 <guidelines>
 - Ask one or two questions at a time — iterative dialogue, not an interrogation dump
 - Success criteria must be measurable, not vague ("users can log in" not "authentication works")
-- Never write `doc-clarification.md` until the user has confirmed the summary
-- If the user says "just proceed" or "skip clarification", write a minimal `doc-clarification.md` from what you know and proceed
+- Never output the final summary until the user has confirmed the understanding
+- If the user says "just proceed" or "skip clarification", output a minimal summary from what you know and proceed
 </guidelines>

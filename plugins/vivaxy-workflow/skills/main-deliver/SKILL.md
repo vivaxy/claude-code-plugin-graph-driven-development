@@ -26,7 +26,7 @@ Feature is not yet accepted. Run `vivaxy-workflow:main:review` first.
 ## Step 2: Gather Delivery Materials
 
 Read in parallel:
-- `docs/doc-clarification.md` — original problem and success criteria
+- Clarification summary from the current conversation context — original problem and success criteria
 - `docs/doc-subtasks.md` — all subtasks and their status
 - All `docs/drafts/draft-deviation-*.md` files
 - Git log for the feature (use Bash: `git log --oneline -20`)

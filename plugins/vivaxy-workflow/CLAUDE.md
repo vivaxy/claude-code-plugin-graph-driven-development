@@ -15,7 +15,6 @@ The `docs/` directory contains the authoritative design documents and diagrams f
 | `arch-*.md` | Module dependency or component architecture diagrams | `arch-modules.md`, `arch-services.md` |
 | `arch-ddd-*.md` | DDD bounded context maps | `arch-ddd-contexts.md` |
 | `doc-*.md` | Prose design documents (requirements, decisions, specs) | `doc-auth-design.md`, `doc-api-spec.md` |
-| `doc-clarification.md` | Clarified problem statement, constraints, success criteria | `doc-clarification.md` |
 | `doc-subtasks.md` | Ordered subtask list with status tracking | `doc-subtasks.md` |
 | `doc-retrospective-*.md` | Post-delivery retrospective and learnings | `doc-retrospective-2026-04-18.md` |
 | `drafts/draft-*.md` | Pending plan proposals awaiting user approval | `drafts/draft-plan-2026-01-23.md` |
@@ -23,7 +22,6 @@ The `docs/` directory contains the authoritative design documents and diagrams f
 ### Completeness Rules
 
 `docs/` is considered **complete** when:
-- `doc-clarification.md` exists
 - `doc-subtasks.md` exists
 - No unapproved draft files exist in `docs/drafts/`
 
@@ -125,7 +123,7 @@ vivaxy-workflow:main:clarify
         → vivaxy-workflow:main:deliver
 ```
 
-1. **`vivaxy-workflow:main:clarify`**: Clarify the problem with the user, write `docs/doc-clarification.md`
+1. **`vivaxy-workflow:main:clarify`**: Clarify the problem with the user, produce a clarification summary in conversation
 2. **`vivaxy-workflow:main:plan`**: Decompose into subtasks, write design docs and diagrams, write `docs/doc-subtasks.md`
 3. **`vivaxy-workflow:subtask-execute <ST-XX>`**: Execute one subtask (TDD), invoke `subtask-review` subagent, mark ACCEPTED
 4. **`vivaxy-workflow:subtask-review`**: Subagent — verifies acceptance criteria and doc alignment
@@ -139,7 +137,7 @@ Use `vivaxy-workflow:analyze:model` to build a visual conceptual model of any do
 
 ## Agent Behavior Rules
 
-- **Clarify first**: Before any planning or coding, confirm the problem statement is written in `doc-clarification.md`
+- **Clarify first**: Before any planning or coding, confirm a clarification summary has been established in the current conversation
 - **Auto-initialize**: If `docs/` is missing or incomplete, proactively create the missing files — never block or ask the user to run a setup command
 - **Never modify diagram files directly** during `vivaxy-workflow:subtask-execute` — record deviations in `docs/drafts/`
 - **Always read** the relevant documents and diagram files before starting any implementation task

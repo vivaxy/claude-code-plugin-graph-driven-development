@@ -13,7 +13,7 @@ allowed-tools:
 ---
 
 <objective>
-Read the clarified problem from `docs/doc-clarification.md`, analyze the codebase and existing docs, decompose the work into ordered subtasks with acceptance criteria, produce or update design documents and diagrams, get user approval via ExitPlanMode, then write `docs/doc-subtasks.md`.
+Read the clarified problem from the current conversation context (established by `main:clarify`), analyze the codebase and existing docs, decompose the work into ordered subtasks with acceptance criteria, produce or update design documents and diagrams, get user approval via ExitPlanMode, then write `docs/doc-subtasks.md`.
 </objective>
 
 <process>
@@ -24,7 +24,7 @@ Call `EnterPlanMode` immediately. All exploration and analysis is read-only unti
 
 ## Step 1: Read Clarification
 
-Read `docs/doc-clarification.md`. If it does not exist, invoke `vivaxy-workflow:main:clarify` first and stop.
+Use the clarification summary from the current conversation context. If no clarification has been established yet, invoke `vivaxy-workflow:main:clarify` first and stop.
 
 Extract:
 - Problem statement

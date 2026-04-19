@@ -26,7 +26,7 @@ graph TD
     UsingVivaxyWorkflow -->|invokes| ReviewSkill
     UsingVivaxyWorkflow -->|invokes| DeliverSkill
 
-    ClarifySkill -->|writes doc-clarification.md| WorkflowDocs
+    ClarifySkill -->|outputs clarification summary to conversation| UsingVivaxyWorkflow
     PlanSkill -->|reads| WorkflowDocs
     PlanSkill -->|writes doc-subtasks.md + design docs| WorkflowDocs
     SubtaskExecuteSkill -->|reads| WorkflowDocs
