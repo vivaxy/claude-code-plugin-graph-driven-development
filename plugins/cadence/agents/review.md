@@ -56,7 +56,7 @@ In a single message, launch all of the following concurrently:
 - **`check` subagent**: pass all success criteria. Returns one result block per criterion.
 - **`verify` subagent** with dimension `docs-alignment`
 - **`verify` subagent** with dimension `plan-alignment`
-- **`verify` subagent** with dimension `code-quality`
+- **`code-review` subagent**: reviews staged git changes (falls back to HEAD diff) for style, bugs, and security
 
 Wait for all to complete before proceeding.
 
@@ -68,16 +68,19 @@ Using all results:
 - One or more tests failing
 - Any criterion result is NOT_SATISFIED
 - Any verify dimension result is FAIL
+- Code review verdict is NEEDS_WORK
 
 **FEATURE_ACCEPTED**: all of —
 - All tests passing
 - All criteria SATISFIED
 - All verify dimensions PASS
+- Code review verdict is APPROVED
 
 **FEATURE_ACCEPTED_WITH_WARNINGS**: all of —
 - All tests passing
 - All criteria SATISFIED or UNTESTED
 - All verify dimensions PASS or PASS_WITH_WARNINGS
+- Code review verdict is APPROVED or APPROVED_WITH_NOTES
 
 ## Step 5: Output Report
 
@@ -104,8 +107,8 @@ PASS | PASS_WITH_WARNINGS | FAIL
 PASS | PASS_WITH_WARNINGS | FAIL
 <findings or "No issues found.">
 
-### Code Quality
-PASS | PASS_WITH_WARNINGS | FAIL
+### Code Review
+APPROVED | APPROVED_WITH_NOTES | NEEDS_WORK
 <findings or "No issues found.">
 
 ### Deviations
