@@ -57,6 +57,7 @@ In a single message, launch all of the following concurrently:
 - **`verify` subagent** with dimension `docs-alignment`
 - **`verify` subagent** with dimension `plan-alignment`
 - **`code-review` subagent**: reviews staged git changes (falls back to HEAD diff) for style, bugs, and security
+- **`verify` subagent** with dimension `bugfix-regression` — *only if the clarification summary contains Reproduction Steps*. Pass it the Reproduction Steps and Root Cause from the clarification summary.
 
 Wait for all to complete before proceeding.
 
@@ -67,7 +68,7 @@ Using all results:
 **FEATURE_BLOCKED**: any of —
 - One or more tests failing
 - Any criterion result is NOT_SATISFIED
-- Any verify dimension result is FAIL
+- Any verify dimension result is FAIL (including `bugfix-regression` FAIL)
 - Code review verdict is NEEDS_WORK
 
 **FEATURE_ACCEPTED**: all of —
@@ -110,6 +111,11 @@ PASS | PASS_WITH_WARNINGS | FAIL
 ### Code Review
 APPROVED | APPROVED_WITH_NOTES | NEEDS_WORK
 <findings or "No issues found.">
+
+### Bugfix Regression
+*(present only for bugfix sessions)*
+PASS | FAIL
+<"Reproduction steps no longer trigger the bug." or description of failure>
 
 ### Deviations
 <none | list of unresolved deviations>

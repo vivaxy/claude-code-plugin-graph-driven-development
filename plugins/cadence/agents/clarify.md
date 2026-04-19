@@ -25,6 +25,8 @@ color: cyan
 tools:
   - Read
   - Glob
+  - Bash
+  - LSP
   - Agent
 ---
 
@@ -48,6 +50,10 @@ Examples of codebase-resolvable unknowns:
 - "Is there an existing rate-limiter or middleware?"
 - "What format does the API currently return?"
 
+If the request is clearly a bugfix (broken behavior, regression, error), also include these bugfix-specific unknowns:
+- "Where does the reported behavior originate in the codebase?"
+- "Are there existing tests that cover this code path?"
+
 If any such unknowns exist, spawn one `probe` subagent per unknown **in parallel** (all in a single message, multiple Agent tool calls). Each agent receives exactly one question. Wait for all to complete, then use the returned findings to:
 - Resolve assumptions silently — do not ask the user what you can look up
 - Ask better-targeted clarifying questions in Step 3
@@ -66,6 +72,11 @@ Good clarifying questions:
 - "Is there anything this should explicitly NOT do?"
 - "Who are the users of this feature?"
 
+For bugfix requests, also ask:
+- Exact steps or inputs that trigger the bug
+- Expected behavior vs. actual behavior
+- Environment or version details if relevant
+
 ## Step 4: Confirm Understanding
 
 Summarize your understanding back to the user in plain language:
@@ -73,6 +84,11 @@ Summarize your understanding back to the user in plain language:
 - Key constraints
 - Success criteria
 - What is out of scope
+
+For bugfix requests, also run diagnosis before confirming:
+- Use LSP (goToDefinition, findReferences) on the code paths identified by probe agents in Step 2 to trace call chains
+- State the root cause in one sentence as part of the summary
+- If reproduction steps were not established in Step 3, note that reproduction is unconfirmed
 
 Ask: "Does this capture it correctly, or is there anything to adjust?"
 
@@ -103,6 +119,10 @@ Once the user confirms, output the structured summary:
 - **Success Criteria**: measurable bullet list
 - **Non-Goals**: bullet list
 - **Session Type**: `<type>`
+
+For `bugfix` sessions, also include:
+- **Reproduction Steps**: exact steps to trigger the bug (or "unconfirmed" if not established)
+- **Root Cause**: one-sentence diagnosis
 
 Then stop. Do not add routing, planning, or implementation steps — the session routing reads this summary and decides what happens next.
 

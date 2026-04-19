@@ -15,7 +15,7 @@ C4Component
     Component(usingCadence, "using-cadence", "Routing skill", "Single entry point — detects feature tasks and routes to the correct phase")
     Component(clarify, "clarify agent", "Clarification agent", "Q&A with user, spawns probe subagents for unknowns, outputs clarification summary")
     Component(plan, "plan agent", "Planning agent", "Reads docs/, designs C4 diagrams, writes plan file, gets approval via ExitPlanMode")
-    Component(review, "main-review skill", "Review skill", "Runs test suite, checks success criteria, assigns FEATURE_ACCEPTED or FEATURE_BLOCKED")
+    Component(review, "review agent", "Review agent", "Runs test suite, checks success criteria and alignment, assigns FEATURE_ACCEPTED or FEATURE_BLOCKED")
     Component(deliver, "deliver", "Delivery skill", "Outputs retrospective and final summary to conversation")
   }
 
