@@ -29,7 +29,7 @@ Invoke the `clarify` agent when either:
 |---|---|
 | No plan in conversation | `plan` agent |
 | Plan approved, implementation not started | implement phase (see below) |
-| All steps implemented and verified | `cadence:main:review` → `cadence:main:deliver` |
+| All steps implemented and verified | `review` agent → `cadence:main:deliver` |
 
 ## Implement Phase
 
@@ -43,7 +43,7 @@ After the plan agent completes and the user approves the plan:
    - After the subagent completes, verify the result: use `Read` on each file the step was supposed to change and confirm the expected change is present.
    - If verification passes: mark the task `completed` with `TaskUpdate` and proceed to the next step.
    - If verification fails: surface the failure to the user ("Step N failed verification: <what was expected vs. what was found>"). Do not proceed until resolved.
-4. After all steps are verified: route to `cadence:main:review`.
+4. After all steps are verified: spawn the `review` agent via the Agent tool.
 
 ## How to Route
 

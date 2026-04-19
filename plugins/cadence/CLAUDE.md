@@ -83,13 +83,13 @@ Mermaid diagram types by file:
 ```
 cadence:main:clarify
   → cadence:main:plan
-    → cadence:main:review
+    → review agent
       → cadence:main:deliver
 ```
 
 1. **`cadence:main:clarify`**: Clarify the problem with the user, produce a clarification summary in conversation
 2. **`cadence:main:plan`**: Analyze docs, define implementation approach, update diagrams, get approval
-3. **`cadence:main:review`**: End-to-end feature acceptance — test suite, success criteria
+3. **`review` agent**: End-to-end feature acceptance — test suite, success criteria, docs/plan/code alignment
 4. **`cadence:main:deliver`**: Output retrospective to conversation, deliver final summary
 
 ## Analyze Skills
