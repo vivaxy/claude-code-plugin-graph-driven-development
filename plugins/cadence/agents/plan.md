@@ -121,7 +121,8 @@ How to verify the implementation end-to-end.
 
 ## Summary
 
-One or two sentences: what changes and what the outcome is.
+- <bullet summarizing what changes>
+- <bullet summarizing the outcome>
 ```
 
 If the user rejects the plan, incorporate their feedback and call `ExitPlanMode` again.
