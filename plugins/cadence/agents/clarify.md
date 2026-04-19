@@ -87,7 +87,6 @@ Infer the session type from the clarified content:
 | Adds new behavior, new API endpoint, new component, refactor of module structure | `feature-dev` |
 | Something is broken, defect, regression, error, "it used to work" | `bugfix` |
 | Writing or updating documentation, README, guides, specs, changelogs | `doc-writing` |
-| Designing a system, exploring options, modeling, architecture decision, no immediate coding | `architecture` |
 
 State the inferred type to the user: "I'm classifying this as a `<type>` session. Does that sound right?"
 

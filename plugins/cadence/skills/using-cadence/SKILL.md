@@ -9,35 +9,41 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 # Using Cadence
 
-Cadence enforces a session-type-specific procedure. Every non-trivial session starts with `main:clarify`, which detects the session type. The procedure for the rest of the session is determined by that type.
+Cadence enforces a fixed procedure for every non-trivial session: clarify → plan → implement → review → deliver.
 
-## Session Types and Their Procedures
+## Procedure (all session types)
 
-| Session Type | Procedure |
-|---|---|
-| `feature-dev` | clarify → plan → implement → review → deliver |
-| `bugfix` | clarify → reproduce → diagnose → fix → verify |
-| `doc-writing` | clarify → collect facts -> outline → write → review |
+clarify → plan → implement → review → deliver
 
 ## Routing Logic
 
-### 1. Clarification gate — clarify when the request is not covered
+### 1. Clarification gate
 
 Invoke the `clarify` agent when either:
 - No clarification summary exists in the current conversation, OR
 - The request is unrelated to the established session (different problem domain, different goal)
 
-### 2. Clarification verified → route by session type
+### 2. Clarification verified → route by state
 
-Use the Session Type from the clarification summary in the current conversation, then route:
+| Condition | Route to |
+|---|---|
+| No plan in conversation | `plan` agent |
+| Plan approved, implementation not started | implement phase (see below) |
+| All steps implemented and verified | `cadence:main:review` → `cadence:main:deliver` |
 
-| Session Type | Condition | Route to |
-|---|---|---|
-| `feature-dev` | No plan in conversation | `plan` agent |
-| `feature-dev` | Plan approved, not yet reviewed | `cadence:main:review` → `cadence:main:deliver` |
-| `bugfix` | Any state | `cadence:main:bugfix` |
-| `doc-writing` | Any state | `cadence:main:doc-writing` |
-| `architecture` | Any state | `cadence:main:architecture` |
+## Implement Phase
+
+After the plan agent completes and the user approves the plan:
+
+1. **Apply doc changes**: Create or update each file listed in the plan's `## Docs to Change` table.
+2. **Create todos**: Read the approved plan's `## Implementation Steps` list. Call `TaskCreate` for each step — one task per step, in order.
+3. **Execute each step sequentially**:
+   - Mark the task `in_progress` with `TaskUpdate`.
+   - Spawn a `general-purpose` subagent via the `Agent` tool. Give it the step description, the list of files to change (from the plan's "Source Code to Change" table), and full context from the plan (problem statement, constraints, key decisions).
+   - After the subagent completes, verify the result: use `Read` on each file the step was supposed to change and confirm the expected change is present.
+   - If verification passes: mark the task `completed` with `TaskUpdate` and proceed to the next step.
+   - If verification fails: surface the failure to the user ("Step N failed verification: <what was expected vs. what was found>"). Do not proceed until resolved.
+4. After all steps are verified: route to `cadence:main:review`.
 
 ## How to Route
 
