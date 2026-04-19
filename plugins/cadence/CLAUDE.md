@@ -94,7 +94,7 @@ cadence:main:clarify
 
 ## Analyze Skills
 
-Use `cadence:analyze:problem` to run a structured analysis on any complex problem.
+Cadence auto-invokes the `analyze-problem` agent when it detects a complex problem. You can also trigger it explicitly by describing your problem.
 
 ## Agent Behavior Rules
 

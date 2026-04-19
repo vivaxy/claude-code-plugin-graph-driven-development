@@ -9,11 +9,9 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 # Using Cadence
 
-Cadence enforces a fixed procedure for every non-trivial session: clarify → plan → implement → review → deliver.
-
 ## Procedure (all session types)
 
-clarify → plan → implement → review → deliver
+clarify → (analyze-problem | plan) → implement → review → deliver
 
 ## Routing Logic
 
@@ -30,6 +28,20 @@ Invoke the `clarify` agent when either:
 | No plan in conversation | `plan` agent |
 | Plan approved, implementation not started | implement phase (see below) |
 | All steps implemented and verified | `review` agent → `cadence:main:deliver` |
+
+#### Analyze gate
+
+Invoke the `analyze-problem` agent instead of `plan` when ALL of these are true:
+- The clarification summary exists and the session type is diagnostic/exploratory
+- The problem has at least one of: unclear root cause, multiple interacting sub-problems, competing hypotheses with no clear winner, or high stakes where wrong diagnosis is costly
+- The user has NOT said "just answer it", "skip the analysis", or equivalent
+
+Do NOT invoke for:
+- Well-defined implementation tasks ("add a button", "fix this typo")
+- Factual questions with clear answers
+- Cases where the user has already done the analysis
+
+Borderline case (ambiguous intent): ask one inline question — "This looks like a good case for structured analysis — want me to run it?" — then wait.
 
 ## Implement Phase
 

@@ -1,7 +1,28 @@
 ---
-name: cadence:analyze:problem
-description: Analyze a complex problem — collect facts into facts.md, decompose, trace root causes, build a visual model, and surface key questions
-allowed-tools:
+name: analyze-problem
+description: Use this agent to run a structured problem analysis — collect facts into facts.md, decompose with MECE, trace root causes, build a visual model, and surface key questions. Auto-invoked when Claude detects a complex problem. Examples:
+
+<example>
+Context: User presents a multi-layered problem with unclear root cause.
+user: "Our API latency has spiked since the deploy — not sure why"
+assistant: "Cadence is active — spawning `analyze-problem` agent."
+<commentary>
+The using-cadence skill detects a complex problem with unclear root cause and auto-invokes this agent.
+</commentary>
+</example>
+
+<example>
+Context: User is stuck and doesn't know where to start.
+user: "Our onboarding drop-off rate keeps increasing and we've tried several things"
+assistant: "Cadence is active — spawning `analyze-problem` agent."
+<commentary>
+Multiple failed attempts and unclear root cause are high-confidence auto-invoke signals.
+</commentary>
+</example>
+
+model: inherit
+color: cyan
+tools:
   - Read
   - Glob
   - Grep
@@ -10,7 +31,7 @@ allowed-tools:
 ---
 
 <objective>
-Apply a structured analysis to the problem described in `$ARGUMENTS`. Move through three phases — Facts, Model, Key Questions — and produce a `facts.md` file as a persistent, authoritative source of truth that anchors every subsequent reasoning step.
+Apply a structured analysis to the problem described in the invocation context. Move through three phases — Facts, Model, Key Questions — and produce a `facts.md` file as a persistent, authoritative source of truth that anchors every subsequent reasoning step.
 
 The core principle: **facts first, model second, questions last**. Never state a fact in Steps 3–7 that is not recorded in `facts.md`. Conclusions take the form of key questions to investigate, not action recommendations.
 </objective>
@@ -187,5 +208,5 @@ Structure the full output as:
 - The diagram must be generated even if simple — visual representation forces structural clarity
 - If the problem touches code in the current project, use Read/Glob/Grep to gather relevant context before Step 2
 - Keep each step focused; avoid repetition across steps
-- If `$ARGUMENTS` is empty, ask the user to describe the problem they want analyzed
+- If the problem description is empty or unclear, ask one focused clarifying question and stop
 </guidelines>
