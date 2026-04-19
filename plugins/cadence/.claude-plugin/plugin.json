@@ -1,7 +1,7 @@
 {
   "name": "cadence",
   "description": "Cadence: enforce development process consistency through design documents, flowcharts, architecture diagrams, and structured problem analysis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "vivaxy"
   },
