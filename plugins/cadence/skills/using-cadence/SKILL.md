@@ -13,7 +13,17 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 clarify → (analyze-problem | plan) → implement → review → deliver
 
+Trivial tasks skip this entire workflow — see the early-exit gate below.
+
 ## Routing Logic
+
+**Early exit — trivial tasks**: If the request is trivial, skip the entire Cadence workflow and respond directly. A task is trivial when it meets **either** of these criteria:
+- **Small scope**: typo fix, variable rename, localized change (within one file, no cross-module impact), or any change with no design decisions
+- **Informational**: factual question, code explanation, or request that requires no code changes
+
+When the task is ambiguous, err toward non-trivial — proceed through Cadence unless you are confident it meets the criteria above.
+
+→ If trivial, stop here. Otherwise, continue to step 1.
 
 ### 1. Clarification gate
 
@@ -65,10 +75,6 @@ Do not wait for user confirmation before routing. Immediately:
    - Spawning an agent: "Cadence is active — spawning `<agent>` agent."
    - Invoking a skill: "Cadence is active — routing to `cadence:<skill>`."
 2. Spawn the agent (via Agent tool) or invoke the skill (via Skill tool) as appropriate.
-
-## Trivial tasks — still clarify if no session established
-
-Even for trivial tasks, apply the clarification gate. If no clarification summary exists, spawn the `clarify` agent first. Only skip clarification when a session is already established and the request clearly fits within it.
 
 ## Instruction Priority
 
