@@ -23,7 +23,7 @@ Cadence enforces a session-type-specific procedure. Every non-trivial session st
 
 ### 1. Clarification gate — clarify when the request is not covered
 
-Invoke `cadence:main:clarify` when either:
+Invoke the `clarify` agent when either:
 - No clarification summary exists in the current conversation, OR
 - The request is unrelated to the established session (different problem domain, different goal)
 
