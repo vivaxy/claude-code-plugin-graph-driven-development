@@ -11,27 +11,29 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 ## Procedure (all session types)
 
-clarify → (analyze-problem | plan) → implement → review → deliver
-
-Trivial tasks skip this entire workflow — see the early-exit gate below.
+clarify → (trivial-exit | analyze-problem | plan) → implement → review → deliver
 
 ## Routing Logic
 
-**Early exit — trivial tasks**: If the request is trivial, skip the entire Cadence workflow and respond directly. A task is trivial when it meets **either** of these criteria:
-- **Small scope**: typo fix, variable rename, localized change (within one file, no cross-module impact), or any change with no design decisions
-- **Informational**: factual question, code explanation, or request that requires no code changes
+### 1. Clarification gate — always first
 
-When the task is ambiguous, err toward non-trivial — proceed through Cadence unless you are confident it meets the criteria above.
-
-→ If trivial, stop here. Otherwise, continue to step 1.
-
-### 1. Clarification gate
+**Do not explore the codebase or enter plan mode before this step.**
 
 Invoke the `clarify` agent when either:
 - No clarification summary exists in the current conversation, OR
 - The request is unrelated to the established session (different problem domain, different goal)
 
-### 2. Clarification verified → route by state
+### 2. Trivial exit
+
+After clarify returns: if the clarified request is trivial, stop and respond directly. A task is trivial when it meets **either** of these criteria:
+- **Small scope**: typo fix, variable rename, localized change (within one file, no cross-module impact), or any change with no design decisions
+- **Informational**: factual question, code explanation, or request that requires no code changes
+
+When the task is ambiguous, err toward non-trivial — proceed unless you are confident it meets the criteria above.
+
+→ If trivial, stop here — do not proceed to step 3 or invoke any agents. Otherwise, continue to step 3.
+
+### 3. Route by state
 
 | Condition | Route to |
 |---|---|
@@ -42,7 +44,7 @@ Invoke the `clarify` agent when either:
 #### Analyze gate
 
 Invoke the `analyze-problem` agent instead of `plan` when ALL of these are true:
-- The clarification summary exists and the session type is diagnostic/exploratory
+- The session type is diagnostic/exploratory
 - The problem has at least one of: unclear root cause, multiple interacting sub-problems, competing hypotheses with no clear winner, or high stakes where wrong diagnosis is costly
 - The user has NOT said "just answer it", "skip the analysis", or equivalent
 
@@ -69,9 +71,7 @@ After the plan agent completes and the user approves the plan:
 
 ## How to Route
 
-**After the clarify agent returns**: immediately re-evaluate the routing table in section 2 above and proceed — do not wait for user input.
-
-Do not wait for user confirmation before routing. Immediately:
+**After the clarify agent returns**: immediately evaluate step 2 (trivial-exit). If not trivial, evaluate step 3 (routing table). Do not wait for user input. Immediately:
 
 1. Say one line matching the destination:
    - Spawning an agent: "Cadence is active — spawning `<agent>` agent."
