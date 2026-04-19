@@ -27,7 +27,7 @@ Invoke `cadence:main:clarify` when either:
 - No clarification summary exists in the current conversation, OR
 - The request is unrelated to the established session (different problem domain, different goal)
 
-### 2. Clarification exists → route by session type
+### 2. Clarification verified → route by session type
 
 Use the Session Type from the clarification summary in the current conversation, then route:
 
@@ -55,8 +55,7 @@ Even for trivial tasks, apply the clarification gate. If no clarification summar
 
 1. User's explicit instructions (CLAUDE.md, direct requests) — highest
 2. Cadence routing — for all non-trivial tasks
-3. Analyze skill suggestions — for complex, unclear, or high-stakes problems
-4. Default behavior — for everything else
+3. Default behavior — for everything else
 
 If the user says "just implement it, skip the workflow" — respect that.
 
