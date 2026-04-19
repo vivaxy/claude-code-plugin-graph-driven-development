@@ -95,7 +95,6 @@ cadence:main:clarify
 ## Analyze Skills
 
 Use `cadence:analyze:problem` to run a structured analysis on any complex problem.
-Use `cadence:analyze:model` to build a visual conceptual model of any domain or system.
 
 ## Agent Behavior Rules
 
