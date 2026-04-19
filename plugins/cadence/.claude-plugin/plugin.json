@@ -1,0 +1,25 @@
+{
+  "name": "cadence",
+  "description": "Cadence: enforce development process consistency through design documents, flowcharts, architecture diagrams, and structured problem analysis",
+  "version": "0.2.0",
+  "author": {
+    "name": "vivaxy"
+  },
+  "homepage": "https://github.com/vivaxy/claude-code-plugins-vivaxy",
+  "repository": "https://github.com/vivaxy/claude-code-plugins-vivaxy",
+  "license": "MIT",
+  "keywords": [
+    "spec",
+    "specification",
+    "diagram",
+    "architecture",
+    "workflow",
+    "process",
+    "mermaid",
+    "design-first",
+    "analysis",
+    "first-principles",
+    "decomposition",
+    "root-cause"
+  ]
+}
