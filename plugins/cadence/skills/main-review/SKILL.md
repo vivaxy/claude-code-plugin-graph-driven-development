@@ -1,6 +1,6 @@
 ---
 name: cadence:main:review
-description: End-to-end acceptance of the complete feature — verifies all subtasks accepted, runs test suite, checks original success criteria
+description: End-to-end acceptance of the complete feature — runs test suite, checks original success criteria, confirms no unresolved deviations
 allowed-tools:
   - Read
   - Glob
@@ -9,7 +9,7 @@ allowed-tools:
 ---
 
 <objective>
-Verify that the complete feature satisfies the original success criteria from the clarification established in the current conversation. Check that all subtasks are ACCEPTED, run the full test suite, and confirm no unresolved deviations remain. Produce a verdict: FEATURE_ACCEPTED or FEATURE_BLOCKED.
+Verify that the complete feature satisfies the original success criteria from the clarification established in the current conversation. Run the full test suite and confirm no unresolved deviations remain. Produce a verdict: FEATURE_ACCEPTED or FEATURE_BLOCKED.
 </objective>
 
 <process>
@@ -18,18 +18,7 @@ Verify that the complete feature satisfies the original success criteria from th
 
 Use the clarification summary from the current conversation context. Extract the success criteria — these are the definition of done for the entire feature.
 
-## Step 2: Verify All Subtasks Are Accepted
-
-Read the subtask plan from the current conversation context. Check that every subtask has status ACCEPTED.
-
-If any subtask has status PENDING or IN_PROGRESS or NEEDS_WORK, stop and output:
-```
-FEATURE_BLOCKED: The following subtasks are not yet ACCEPTED:
-- ST-XX: <title> (status: <status>)
-Run `cadence:subtask-execute ST-XX` to continue.
-```
-
-## Step 3: Check for Unresolved Deviations
+## Step 2: Check for Unresolved Deviations
 
 Read deviation records from the current conversation context. If any exist, review them.
 
@@ -37,7 +26,7 @@ Deviations are acceptable if they are documented and the impact is understood. F
 - Has not been acknowledged (no resolution note)
 - Affects a success criterion
 
-## Step 4: Run the Full Test Suite
+## Step 3: Run the Full Test Suite
 
 Run the project's full test suite using Bash. Use the test command from the project's `package.json`, `Makefile`, or equivalent.
 
@@ -50,7 +39,7 @@ FEATURE_BLOCKED: <N> tests failing.
 Fix the failing tests before feature acceptance.
 ```
 
-## Step 5: Check Each Success Criterion
+## Step 4: Check Each Success Criterion
 
 For each success criterion from the clarification summary:
 - Is there evidence in the implementation that it is satisfied?
@@ -58,23 +47,20 @@ For each success criterion from the clarification summary:
 
 Mark each: SATISFIED / NOT_SATISFIED / UNTESTED
 
-## Step 6: Assign Verdict
+## Step 5: Assign Verdict
 
-**FEATURE_ACCEPTED**: All subtasks ACCEPTED, all tests pass, all success criteria SATISFIED.
+**FEATURE_ACCEPTED**: All tests pass, all success criteria SATISFIED.
 
-**FEATURE_ACCEPTED_WITH_WARNINGS**: All subtasks ACCEPTED, all tests pass, all success criteria SATISFIED, but minor issues remain (e.g., unresolved deviation docs, UNTESTED criteria with low risk). List warnings.
+**FEATURE_ACCEPTED_WITH_WARNINGS**: All tests pass, all success criteria SATISFIED, but minor issues remain (e.g., unresolved deviation docs, UNTESTED criteria with low risk). List warnings.
 
-**FEATURE_BLOCKED**: Any subtask not ACCEPTED, any test failing, or any success criterion NOT_SATISFIED.
+**FEATURE_BLOCKED**: Any test failing, or any success criterion NOT_SATISFIED.
 
-## Step 7: Output Report
+## Step 6: Output Report
 
 ```
 ## Feature Review
 
 **Verdict**: FEATURE_ACCEPTED | FEATURE_ACCEPTED_WITH_WARNINGS | FEATURE_BLOCKED
-
-### Subtask Status
-All N subtasks: ACCEPTED ✓
 
 ### Test Suite
 <N> tests passing, 0 failing ✓

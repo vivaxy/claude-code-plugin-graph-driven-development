@@ -1,13 +1,13 @@
 ---
 name: cadence:main:clarify
-description: Clarify the problem with the user before decomposing into subtasks — asks focused questions and confirms understanding in conversation
+description: Clarify the problem with the user — asks focused questions and confirms understanding in conversation
 allowed-tools:
   - Read
   - Glob
 ---
 
 <objective>
-Understand the feature or problem clearly enough to decompose it into subtasks. Ask focused questions and confirm understanding through conversation. Do NOT write any files — clarification lives in the conversation only.
+Understand the feature or problem clearly enough to plan an implementation approach. Ask focused questions and confirm understanding through conversation. Do NOT write any files — clarification lives in the conversation only.
 </objective>
 
 <process>

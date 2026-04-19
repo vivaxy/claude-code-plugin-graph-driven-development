@@ -53,17 +53,14 @@ Additional context, constraints, or cross-references to other diagrams.
 ```
 cadence:main:clarify
   → cadence:main:plan
-    → Loop: cadence:subtask-execute → cadence:subtask-review
-      → cadence:main:review
-        → cadence:main:deliver
+    → cadence:main:review
+      → cadence:main:deliver
 ```
 
 1. **`cadence:main:clarify`**: Clarify the problem with the user, produce a clarification summary in conversation
-2. **`cadence:main:plan`**: Decompose into subtasks, update diagrams, output subtask plan to conversation
-3. **`cadence:subtask-execute <ST-XX>`**: Execute one subtask (TDD), invoke `subtask-review` subagent, mark ACCEPTED
-4. **`cadence:subtask-review`**: Subagent — verifies acceptance criteria and diagram alignment
-5. **`cadence:main:review`**: End-to-end feature acceptance — all subtasks, test suite, success criteria
-6. **`cadence:main:deliver`**: Output retrospective to conversation, deliver final summary
+2. **`cadence:main:plan`**: Analyze docs, define implementation approach, update diagrams, get approval
+3. **`cadence:main:review`**: End-to-end feature acceptance — test suite, success criteria
+4. **`cadence:main:deliver`**: Output retrospective to conversation, deliver final summary
 
 ## Analyze Skills
 
@@ -74,6 +71,4 @@ Use `cadence:analyze:model` to build a visual conceptual model of any domain or 
 
 - **Clarify first**: Before any planning or coding, confirm a clarification summary has been established in the current conversation
 - **Auto-initialize**: If `docs/` is missing or incomplete, proactively create the missing files — never block or ask the user to run a setup command
-- **Never modify diagram files directly** during `cadence:subtask-execute` — record deviations in the conversation
 - **Always read** the relevant diagram files before starting any implementation task
-- **Subtask status** is tracked in the conversation — output updated status blocks as work progresses

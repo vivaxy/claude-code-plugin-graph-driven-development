@@ -1,6 +1,6 @@
 ---
 name: cadence:main:plan
-description: Decompose the clarified problem into subtasks — analyze existing docs, produce design documents and diagrams, define subtasks with acceptance criteria, get user approval, then output the subtask plan to the conversation
+description: Plan the clarified feature — analyze existing docs, produce design documents and diagrams, define implementation approach, get user approval
 argument-hint: "<optional: specific aspect to focus on>"
 allowed-tools:
   - Read
@@ -13,7 +13,7 @@ allowed-tools:
 ---
 
 <objective>
-Read the clarified problem from the current conversation context (established by `main:clarify`), analyze the codebase and existing docs, decompose the work into ordered subtasks with acceptance criteria, produce or update design documents and diagrams, get user approval via ExitPlanMode, then output the approved subtask plan as a structured block in the conversation.
+Read the clarified problem from the current conversation context (established by `main:clarify`), analyze the codebase and existing docs, define the implementation approach, produce or update design documents and diagrams, get user approval via ExitPlanMode.
 </objective>
 
 <process>
@@ -43,25 +43,18 @@ Also scan the project root to understand the current codebase structure (Glob fo
 
 Build a mental model of what already exists and what needs to change.
 
-## Step 3: Decompose into Subtasks
+## Step 3: Define Implementation Approach
 
-Break the feature into ordered, independent-as-possible subtasks. For each subtask define:
-- **ID**: `ST-01`, `ST-02`, etc.
-- **Title**: imperative phrase (e.g., "Add user authentication endpoint")
-- **Description**: what needs to be built
-- **Acceptance Criteria**: 2–4 measurable criteria (what must be true for this subtask to be ACCEPTED)
-- **Dependencies**: list of subtask IDs that must be ACCEPTED first (empty if none)
-- **Scope**: which files/modules are expected to change
-
-Guidelines:
-- Each subtask should be completable in one focused session
-- Acceptance criteria must be specific and verifiable (e.g., "POST /login returns 200 with JWT token", not "login works")
-- Order subtasks so dependencies flow naturally (infrastructure before features, shared utilities before consumers)
+Describe the implementation:
+- What needs to be built or changed
+- Which files/modules are expected to change
+- Key design decisions and trade-offs
+- Success criteria mapping: how each criterion will be satisfied
 
 ## Step 4: Design Document and Diagram Impact Analysis
 
-For each subtask, determine which `docs/` files need to change:
-- **No change**: subtask has no architectural impact
+Determine which `docs/` files need to change:
+- **No change**: no architectural impact
 - **Minor update**: small addition to an existing file
 - **Major update**: new section, new flow path, new module
 - **New file needed**: new design area
@@ -77,26 +70,18 @@ Compose the proposal and call ExitPlanMode. The plan must include:
 
 **Feature**: <one-line summary from clarification>
 
-### Subtasks
+### Implementation Approach
 
-| ID | Title | Dependencies |
-|----|-------|--------------|
-| ST-01 | <title> | — |
-| ST-02 | <title> | ST-01 |
-
----
-
-#### ST-01: <Title>
-
-**Description**: <what to build>
-
-**Acceptance Criteria**:
-- <criterion 1>
-- <criterion 2>
+<description of what to build and how>
 
 **Expected scope**: <files/modules>
 
----
+### Success Criteria Mapping
+
+| Criterion | How it will be satisfied |
+|-----------|--------------------------|
+| <criterion 1> | <approach> |
+| <criterion 2> | <approach> |
 
 ### Document and Diagram Changes
 
@@ -111,55 +96,19 @@ If the user rejects the plan, incorporate their feedback and call ExitPlanMode a
 After the user approves (ExitPlanMode returns with approval):
 
 1. Create or update each diagram file in `docs/`
-2. Output the approved subtask plan as a structured block in the conversation:
-
-```markdown
-# Subtask Plan
-
-> **Type**: Subtask Plan
-> **Last Updated**: YYYY-MM-DD
-> **Feature**: <feature name from clarification>
-
-## Subtasks
-
-### ST-01: <Title>
-
-> **Status**: PENDING
-> **Dependencies**: —
-
-**Description**: <description>
-
-**Acceptance Criteria**:
-- [ ] <criterion 1>
-- [ ] <criterion 2>
-
-**Expected scope**: <files/modules>
-
----
-
-### ST-02: <Title>
-
-> **Status**: PENDING
-> **Dependencies**: ST-01
-
-...
-```
 
 Output:
 ```
 Plan applied:
 - Created/updated: docs/<file>.md
-- Subtask plan output to conversation (<N> subtasks: ST-01 through ST-0N)
 
-Run `cadence:subtask-execute ST-01` to begin.
+Ready to implement. Run `cadence:main:review` when done.
 ```
 
 </process>
 
 <guidelines>
-- Acceptance criteria must be verifiable, not subjective
-- If a subtask touches architecture or introduces a new module, always produce or update the relevant `arch-*.md` or `flow-*.md` diagram
+- Success criteria mapping must be specific and verifiable
+- If the feature touches architecture or introduces a new module, always produce or update the relevant `arch-*.md` or `flow-*.md` diagram
 - Diagrams must use valid Mermaid syntax; use `<br>` for line breaks in node labels
-- Keep subtasks focused — if a subtask would change more than 5 files, consider splitting it
-- The subtask plan output to conversation is the single source of truth for subtask status; do not track status anywhere else
 </guidelines>

@@ -15,7 +15,7 @@ Cadence enforces a session-type-specific procedure. Every non-trivial session st
 
 | Session Type | Procedure |
 |---|---|
-| `feature-dev` | clarify → plan → subtask-execute loop → review → deliver |
+| `feature-dev` | clarify → plan → implement → review → deliver |
 | `bugfix` | clarify → reproduce → diagnose → fix → verify |
 | `doc-writing` | clarify → collect facts -> outline → write → review |
 
@@ -33,9 +33,8 @@ Use the Session Type from the clarification summary in the current conversation,
 
 | Session Type | Condition | Route to |
 |---|---|---|
-| `feature-dev` | No subtask plan in conversation | `cadence:main:plan` |
-| `feature-dev` | Subtask plan in conversation with PENDING subtasks | `cadence:subtask-execute <first-pending-id>` |
-| `feature-dev` | All subtasks ACCEPTED, no retrospective | `cadence:main:review` → `cadence:main:deliver` |
+| `feature-dev` | No plan in conversation | `cadence:main:plan` |
+| `feature-dev` | Plan approved, not yet reviewed | `cadence:main:review` → `cadence:main:deliver` |
 | `bugfix` | Any state | `cadence:main:bugfix` |
 | `doc-writing` | Any state | `cadence:main:doc-writing` |
 | `architecture` | Any state | `cadence:main:architecture` |

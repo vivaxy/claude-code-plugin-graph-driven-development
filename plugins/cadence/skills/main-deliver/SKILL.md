@@ -13,24 +13,14 @@ Close out a completed feature: output a retrospective capturing what was built, 
 
 <process>
 
-## Step 1: Verify Feature Is Accepted
-
-Read the subtask plan from the current conversation context. Confirm all subtasks have status ACCEPTED.
-
-If not all subtasks are ACCEPTED, stop and output:
-```
-Feature is not yet accepted. Run `cadence:main:review` first.
-```
-
-## Step 2: Gather Delivery Materials
+## Step 1: Gather Delivery Materials
 
 Read in parallel:
 - Clarification summary from the current conversation context — original problem and success criteria
-- Subtask plan from the current conversation context — all subtasks and their status
 - Deviation records from the current conversation context
 - Git log for the feature (use Bash: `git log --oneline -20`)
 
-## Step 3: Output Retrospective
+## Step 2: Output Retrospective
 
 Output the retrospective to the conversation:
 
@@ -49,15 +39,6 @@ Output the retrospective to the conversation:
 
 <list of key files modified or created>
 
-## Subtask Summary
-
-| ID | Title | Notes |
-|----|-------|-------|
-| ST-01 | <title> | <any rework or deviations> |
-
-**Total subtasks**: N
-**Subtasks requiring rework**: N
-
 ## Deviations
 
 <List each deviation: what was planned vs. what was built and why. If none, write "None.">
@@ -71,7 +52,7 @@ Output the retrospective to the conversation:
 <Any follow-up tasks, known limitations, or future improvements. If none, write "None.">
 ```
 
-## Step 4: Deliver Final Summary
+## Step 3: Deliver Final Summary
 
 Output the final delivery summary to the user:
 
@@ -79,7 +60,6 @@ Output the final delivery summary to the user:
 ## Delivery Summary: <feature name>
 
 **Built**: <one-line description>
-**Subtasks**: N completed
 **Tests**: all passing
 
 ### What Was Built
