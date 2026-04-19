@@ -67,7 +67,32 @@ For each changed file, read its full content with the Read tool for context, the
 - Missing input validation at system boundaries
 - OWASP Top 10 issues relevant to the file's language and context
 
-## Step 4: Assign Severity
+## Step 4: Architecture and Design Review
+
+Review the diff as a whole (not per-file) across four architectural dimensions:
+
+**SOLID Principles and Architectural Patterns**
+- Single Responsibility: classes/modules have one reason to change
+- Open/Closed: extensions don't require modifying existing code
+- Liskov, Interface Segregation, Dependency Inversion applied where the language/framework supports them
+- Established patterns (e.g. repository, factory, observer) applied to the problem they solve, not as busywork
+
+**Separation of Concerns and Coupling**
+- Business logic, data access, and presentation are not mixed
+- Dependencies flow in the right direction; no circular imports
+- New code does not tighten coupling between previously independent modules
+- No obvious duplication of functionality already present in the same module or package
+
+**Integration with Existing Systems**
+- New code is consistent with existing conventions and APIs
+- Contracts (interfaces, schemas, event shapes) are respected
+
+**Scalability and Extensibility**
+- No hard-coded limits or assumptions that break under load
+- Extension points exist where variation is expected
+- No premature optimization, but no obvious bottlenecks introduced
+
+## Step 5: Assign Severity
 
 For each finding, assign one of:
 - `CRITICAL` — exploitable security vulnerability or data-loss bug
@@ -75,13 +100,13 @@ For each finding, assign one of:
 - `MINOR` — style issue, non-critical correctness concern, or improvement opportunity
 - `NOTE` — observation or suggestion with no impact on correctness
 
-## Step 5: Assign Verdict
+## Step 6: Assign Verdict
 
 - **APPROVED** — no CRITICAL or MAJOR findings
 - **APPROVED_WITH_NOTES** — no CRITICAL or MAJOR findings, but MINOR or NOTE findings exist
 - **NEEDS_WORK** — one or more CRITICAL or MAJOR findings
 
-## Step 6: Output Report
+## Step 7: Output Report
 
 ```
 ## Code Review
