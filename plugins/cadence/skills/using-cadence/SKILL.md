@@ -13,6 +13,12 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 clarify → (trivial-exit | analyze-problem | plan) → implement → review → deliver
 
+## Plan mode
+
+Plan mode does **not** skip Cadence. When plan mode is active, start Cadence as normal (spawn `clarify` first) — Cadence drives the whole workflow.
+
+The only integration point: call `ExitPlanMode` at the Cadence approval gate (after the `plan` agent returns with its plan), so plan-mode edit restrictions stay enforced until the user approves. After approval, the implement phase proceeds as normal.
+
 ## Routing Logic
 
 ### 1. Clarification gate — always first
