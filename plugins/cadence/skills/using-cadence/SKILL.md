@@ -15,9 +15,9 @@ clarify → (trivial-exit | analyze-problem | plan) → implement → review →
 
 ## Plan mode
 
-Plan mode does **not** skip Cadence. When plan mode is active, start Cadence as normal (spawn `clarify` first) — Cadence drives the whole workflow.
+Plan mode does **not** skip Cadence — Cadence drives the whole workflow regardless.
 
-The only integration point: call `ExitPlanMode` at the Cadence approval gate (after the `plan` agent returns with its plan), so plan-mode edit restrictions stay enforced until the user approves. After approval, the implement phase proceeds as normal.
+**Never call `EnterPlanMode` directly on the main thread when Cadence is active.** The `cadence:plan` subagent manages plan mode internally via its own `EnterPlanMode`/`ExitPlanMode` calls. If Claude Code plan mode is already active when Cadence routing fires, call `ExitPlanMode` first to unblock the `Agent` tool, then spawn the `cadence:plan` agent normally.
 
 ## Routing Logic
 
@@ -69,11 +69,15 @@ After the plan agent completes and the user approves the plan:
 2. **Create todos**: Read the approved plan's `## Implementation Steps` list. Call `TaskCreate` for each step — one task per step, in order.
 3. **Execute each step sequentially**:
    - Mark the task `in_progress` with `TaskUpdate`.
-   - Spawn a `general-purpose` subagent via the `Agent` tool. Give it the step description, the list of files to change (from the plan's "Source Code to Change" table), and full context from the plan (problem statement, constraints, key decisions).
+   - Spawn a `cadence:implement` subagent via the `Agent` tool. Give it the step description, the list of files to change (from the plan's "Source Code to Change" table), and full context from the plan (problem statement, constraints, key decisions).
    - After the subagent completes, verify the result: use `Read` on each file the step was supposed to change and confirm the expected change is present.
    - If verification passes: mark the task `completed` with `TaskUpdate` and proceed to the next step.
    - If verification fails: surface the failure to the user ("Step N failed verification: <what was expected vs. what was found>"). Do not proceed until resolved.
-4. After all steps are verified: spawn the `review` agent via the Agent tool.
+4. **After all steps are verified — this step is MANDATORY, never skip it:**
+   - Announce: "All steps complete — spawning `review` agent."
+   - Spawn the `cadence:review` subagent via the `Agent` tool.
+   - After the review agent returns: invoke `cadence:deliver` via the `Skill` tool.
+   - Do NOT summarize the work yourself or write a completion message before review runs.
 
 ## How to Route
 

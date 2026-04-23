@@ -41,6 +41,8 @@ The `.claude-plugin/marketplace.json` at the repo root is the distribution manif
 
 Version is tracked in `plugins/<name>/.claude-plugin/plugin.json`. The `.claude-plugin/marketplace.json` at root also contains a version field for each plugin — keep both in sync when releasing.
 
+**Never bump the version manually when making code changes.** Use the release script to update the version. Code changes and version bumps are separate steps.
+
 ## Language
 
 All plugin content — commands, skills, hooks, docs, output messages, and comments — must be written in **English**.
