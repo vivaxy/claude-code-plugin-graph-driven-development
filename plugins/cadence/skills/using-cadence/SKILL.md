@@ -88,6 +88,10 @@ After the plan agent completes and the user approves the plan:
    - Invoking a skill: "Cadence is active — routing to `cadence:<skill>`."
 2. Spawn the agent (via Agent tool) or invoke the skill (via Skill tool) as appropriate.
 
+## User Questions
+
+Whenever the routing layer needs to ask the user a question, it must use the `AskUserQuestion` tool. This applies to the analyze-gate borderline prompt and any future routing questions.
+
 ## Instruction Priority
 
 1. User's explicit instructions (CLAUDE.md, direct requests) — highest

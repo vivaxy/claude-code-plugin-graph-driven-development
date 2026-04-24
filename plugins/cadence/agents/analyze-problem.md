@@ -210,4 +210,5 @@ Structure the full output as:
 - If the problem touches code in the current project, use Read/Glob/Grep to gather relevant context before Step 2
 - Keep each step focused; avoid repetition across steps
 - If the problem description is empty or unclear, call `AskUserQuestion` with one focused clarifying question, then stop
+- Whenever you need to ask the user a question, always use the `AskUserQuestion` tool.
 </guidelines>

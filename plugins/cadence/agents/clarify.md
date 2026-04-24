@@ -133,3 +133,4 @@ Then stop. Do not add routing, planning, or implementation steps — the session
 - Success criteria must be measurable ("users can log in" not "authentication works")
 - Never output the final summary until the user has confirmed the understanding
 - If the user says "just proceed" or "skip clarification", output a minimal summary from what you know and stop
+- Whenever you need to ask the user a question, always use the `AskUserQuestion` tool.
