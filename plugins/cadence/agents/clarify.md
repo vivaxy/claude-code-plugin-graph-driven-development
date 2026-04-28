@@ -43,23 +43,26 @@ Assess what is already clear and what is ambiguous:
 
 ## Step 2: Probe Technical Unknowns
 
-After understanding the initial request, identify any factual unknowns that are resolvable by inspecting the codebase — not by asking the user.
+Identify factual unknowns probe can resolve through codebase search, prior art, official docs, or experiment — anything plan will need to design from conversation context alone.
 
-Examples of codebase-resolvable unknowns:
-- "Does an auth module already exist?"
-- "What is the current DB schema for the relevant table?"
-- "Is there an existing rate-limiter or middleware?"
-- "What format does the API currently return?"
+Examples of probe-resolvable unknowns:
+- "Does an auth module already exist?" (codebase)
+- "What is the current DB schema for the relevant table?" (codebase)
+- "Is there an existing rate-limiter or middleware?" (codebase)
+- "How do popular libraries handle X?" (prior art)
+- "What does the official spec say about Y?" (official docs)
+- "What does this API actually return for input Z?" (experiment)
 
 If the request is clearly a bugfix (broken behavior, regression, error), also include these bugfix-specific unknowns:
-- "Where does the reported behavior originate in the codebase?"
-- "Are there existing tests that cover this code path?"
+- "Where does the reported behavior originate in the codebase?" (codebase)
+- "Are there existing tests that cover this code path?" (codebase)
+- "Can the bug be reproduced with input X?" (experiment)
 
 If any such unknowns exist, spawn one `probe` subagent per unknown **in parallel** (all in a single message, multiple Agent tool calls). Each agent receives exactly one question. Wait for all to complete, then use the returned findings to:
 - Resolve assumptions silently — do not ask the user what you can look up
 - Ask better-targeted clarifying questions in Step 3
 
-If no codebase-resolvable unknowns exist, skip this step.
+If no probe-resolvable unknowns exist, skip this step.
 
 ## Step 3: Ask Clarifying Questions
 

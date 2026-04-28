@@ -44,6 +44,7 @@ When the task is ambiguous, err toward non-trivial — proceed unless you are co
 | Condition | Route to |
 |---|---|
 | No plan in conversation | `plan` agent |
+| Plan agent returned a `NEEDS_CLARIFICATION:` signal | re-clarification handoff (see below) |
 | Plan approved, implementation not started | implement phase (see below) |
 | All steps implemented and verified | `review` agent → `cadence:deliver` |
 
@@ -60,6 +61,17 @@ Do NOT invoke for:
 - Cases where the user has already done the analysis
 
 Borderline case (ambiguous intent): call `AskUserQuestion` with the question "This looks like a good case for structured analysis — want me to run it?" and options `["Yes, run it", "No, skip"]`, then wait.
+
+#### Plan re-clarification handoff
+
+When the `plan` agent's final message starts with `NEEDS_CLARIFICATION:`, the user's rejection opened a gap the original clarification didn't cover — facts, scope, constraints, or success criteria. Plan returns control rather than spawning `clarify` itself, so the new summary lands in the main-thread conversation where the next routing decision can read it.
+
+Procedure:
+1. Call `ExitPlanMode` with a brief placeholder plan to unblock the `Agent` tool — plan mode remains active after a rejection.
+2. Spawn the `clarify` agent. Pass the plan agent's `NEEDS_CLARIFICATION:` message (gap line + verbatim user feedback) as additional context so clarify focuses on the gap rather than re-running the full clarification flow.
+3. After `clarify` returns the updated summary, spawn the `plan` agent again — it revises the plan against the new clarification.
+
+If the re-spawned `plan` agent emits `NEEDS_CLARIFICATION:` again, repeat the procedure.
 
 ## Implement Phase
 
