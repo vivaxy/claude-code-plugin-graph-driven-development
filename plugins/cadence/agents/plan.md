@@ -1,13 +1,13 @@
 ---
 name: plan
-description: Use this agent to plan a clarified feature — analyzes existing docs and codebase, defines implementation approach, writes a plan file to .claude/plans/, and gets user approval. Does not apply any changes. Examples:
+description: Use this agent to plan a clarified feature — analyzes existing docs and codebase, defines implementation approach, writes a plan file to ~/.claude/plans/, and gets user approval. Does not apply any changes. Examples:
 
 <example>
 Context: Clarification summary is established. Session type is feature-dev. No plan exists yet.
 user: [cadence routes to plan agent after clarify completes]
 assistant: "Cadence is active — spawning `plan` agent."
 <commentary>
-Plan agent enters plan mode, reads docs/, defines approach, writes plan to .claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
+Plan agent enters plan mode, reads docs/, defines approach, writes plan to ~/.claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
 </commentary>
 </example>
 
@@ -16,7 +16,7 @@ Context: User requests a new feature and clarification is already in the convers
 user: "Let's plan the caching layer"
 assistant: "Cadence is active — spawning `plan` agent."
 <commentary>
-Plan agent reads existing docs/ files, analyzes what needs to change, writes plan to .claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
+Plan agent reads existing docs/ files, analyzes what needs to change, writes plan to ~/.claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
 </commentary>
 </example>
 
@@ -72,7 +72,19 @@ Skip this step only if the change is purely textual (e.g. config value, copy cha
 
 ## Step 4: Write Plan File and Call ExitPlanMode
 
-Write the plan to `.claude/plans/<kebab-slug>.md` using the `Write` tool, then call `ExitPlanMode`. The plan must follow this structure:
+Write the plan to `~/.claude/plans/<kebab-slug>.md` using the `Write` tool. Pass `Write` a literal absolute path (the tool does not expand `~` or `$HOME`) — on macOS this is `/Users/<name>/.claude/plans/<kebab-slug>.md`, on Linux `/home/<name>/.claude/plans/<kebab-slug>.md`. Then call `ExitPlanMode`.
+
+Pass the full plan markdown to `ExitPlanMode` as the `plan` argument, with one link line prepended pointing to the plan file:
+
+```
+[Plan file](file:///Users/<name>/.claude/plans/<kebab-slug>.md)
+
+[insert the full plan markdown body here, from `# <kebab-slug>` through the final `## Summary` bullets]
+```
+
+Always render every section (Context, Key Decisions, Docs to Change, Source Code to Change, Tests to Change, What Does Not Change, Implementation Steps, Verification, Summary) so the user approves the plan itself.
+
+The plan must follow this structure:
 
 ```markdown
 # <plan-name-slug>
@@ -125,7 +137,7 @@ How to verify the implementation end-to-end.
 - <bullet summarizing the outcome>
 ```
 
-If the user rejects the plan, incorporate their feedback and call `ExitPlanMode` again.
+If the user rejects the plan, incorporate their feedback, overwrite `~/.claude/plans/<kebab-slug>.md`, and call `ExitPlanMode` again following the same format.
 
 ## Guidelines
 
