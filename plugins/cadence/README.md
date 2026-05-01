@@ -207,6 +207,12 @@ If deviations are consistently valid (the code is right, the document is wrong),
 
 ---
 
+## Credits
+
+The Simplicity First, Surgical Changes, and Goal-Driven Execution rules in Cadence are adapted from [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills), a distillation of [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on common LLM coding pitfalls.
+
+---
+
 ## License
 
 MIT

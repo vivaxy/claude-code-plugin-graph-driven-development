@@ -69,7 +69,7 @@ For each changed file, read its full content with the Read tool for context, the
 
 ## Step 4: Architecture and Design Review
 
-Review the diff as a whole (not per-file) across four architectural dimensions:
+Review the diff as a whole (not per-file) across six architectural dimensions:
 
 **SOLID Principles and Architectural Patterns**
 - Single Responsibility: classes/modules have one reason to change
@@ -91,6 +91,20 @@ Review the diff as a whole (not per-file) across four architectural dimensions:
 - No hard-coded limits or assumptions that break under load
 - Extension points exist where variation is expected
 - No premature optimization, but no obvious bottlenecks introduced
+
+**Simplicity First**
+- Flag features added beyond what the staged-change intent requires
+- Flag abstractions, base classes, or wrapper layers introduced for a single call site
+- Flag configuration knobs, flags, or parameters added without a stated need to vary the value
+- Flag error handling for conditions the surrounding code cannot produce
+- Flag implementations that are noticeably longer than a straightforward equivalent
+
+**Surgical Changes**
+- Flag formatting-only changes in lines unrelated to the staged-change intent
+- Flag refactors of code that is not central to the staged change
+- Flag style edits to neighboring code that diverge from the change's stated purpose
+- Flag deletions of pre-existing dead code that the staged change did not itself orphan
+- Verify every changed hunk traces to a stated reason for the change
 
 ## Step 5: Assign Severity
 

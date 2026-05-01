@@ -101,3 +101,4 @@ Cadence auto-invokes the `analyze-problem` agent when it detects a complex probl
 - **Clarify first**: Before any planning or coding, confirm a clarification summary has been established in the current conversation
 - **Auto-initialize**: If `docs/` is missing or incomplete, proactively create the missing files — never block or ask the user to run a setup command
 - **Always read** the relevant diagram files before starting any implementation task
+- **Centralize references**: add any new reference (e.g., a link to an external source) to `plugins/cadence/README.md`; keep `plugins/cadence/agents/` and `plugins/cadence/skills/` reference-free.

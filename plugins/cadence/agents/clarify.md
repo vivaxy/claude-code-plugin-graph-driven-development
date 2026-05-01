@@ -134,6 +134,10 @@ Then stop. Do not add routing, planning, or implementation steps — the session
 
 - Ask one or two questions at a time — iterative dialogue, not an interrogation dump
 - Success criteria must be measurable ("users can log in" not "authentication works")
+- Always restate imperative requests as testable success conditions before finalizing the summary.
+  - "Add validation" → "Write tests for invalid inputs, then make them pass"
+  - "Fix the bug" → "Write a test that reproduces it, then make it pass"
+  - "Refactor X" → "Ensure tests pass before and after"
 - Never output the final summary until the user has confirmed the understanding
 - If the user says "just proceed" or "skip clarification", output a minimal summary from what you know and stop
 - Whenever you need to ask the user a question, always use the `AskUserQuestion` tool.

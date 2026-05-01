@@ -144,3 +144,14 @@ Stop after emitting the message — the routing layer handles plan-mode cleanup,
 - Diagrams must use valid Mermaid syntax; use `<br>` for line breaks in node labels
 - When a Key Decision in this plan drives a structural change to a diagram, copy that decision into the relevant diagram file's `## Key Decisions` section with attribution: `(from plan: <kebab-slug>)`
 - The `## Summary` section must always be the last section in the plan file
+- Always propose the minimum change that satisfies the clarified success criteria
+  - Limit "Source Code to Change" entries to files needed by the success criteria
+  - Reserve abstractions for cases with two or more present (not hypothetical) call sites
+  - Add configuration only when the clarified scope names a variable to vary
+  - Add error handling only for failure modes that can actually occur in the clarified flow
+  - When two designs satisfy the success criteria, prefer the one with fewer files, fewer lines, and fewer concepts
+- Always ensure every entry in "Source Code to Change" traces to a clarified success criterion
+  - List adjacent files left untouched in "What Does Not Change" with the reason
+  - Match the existing style and structure of each file being changed
+  - Mention pre-existing dead code or smells in "What Does Not Change" rather than including their cleanup in the plan
+  - Limit cleanup to imports, variables, and helpers that this plan's changes themselves would render unused
