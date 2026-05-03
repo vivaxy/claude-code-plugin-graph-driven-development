@@ -1,8 +1,8 @@
 # cadence Skill Execution Flow
 
 > **Type**: Sequence
-> **Last Updated**: 2026-04-19
-> **Covers**: End-to-end flow from user describing a feature to delivery
+> **Last Updated**: 2026-05-03
+> **Covers**: End-to-end flow from user describing a feature to delivery, driven by per-session folder file handoffs
 
 ## Diagram
 
@@ -12,63 +12,58 @@ sequenceDiagram
   participant Routing as using-cadence
   participant Clarify as clarify agent
   participant Plan as plan agent
-  participant Impl as general-purpose agent
-  participant Review as main-review
+  participant Impl as implement agent
+  participant Review as review agent
   participant Deliver as deliver
+  participant Folder as Session Folder
 
   User->>Routing: Describes a feature task
-  Routing->>Routing: Is this a feature-dev task?
-
-  alt Not a feature task (bug fix / docs)
-    Routing-->>User: Proceed normally
-  else Feature task
-    Routing->>Routing: Clarification summary in conversation?
-    alt No clarification
-      Routing->>Clarify: Invoke
-      Clarify->>User: AskUserQuestion — clarifying questions (1-2 at a time)
-      User-->>Clarify: Answers
-      Clarify->>User: AskUserQuestion — confirm understanding
-      User-->>Clarify: Confirms or corrects
-      Clarify->>User: AskUserQuestion — confirm session type<br>(options: feature-dev / bugfix / doc-writing)
-      User-->>Clarify: Confirms
-      Clarify-->>Routing: Clarification summary
-    end
-
-    Routing->>Routing: Plan in conversation?
-    alt No plan
-      Routing->>Plan: Invoke
-      Plan->>Plan: Read docs/ and codebase
-      Plan->>Plan: Design C4 diagrams, write plan file
-      Plan-->>User: ExitPlanMode — request approval
-      User-->>Plan: Approves or rejects with feedback
-      Plan-->>Routing: Plan approved
-    end
-
-    Routing->>Impl: Apply doc changes, then implement steps
-    Impl->>Impl: Execute implementation steps sequentially
-    Impl-->>Routing: Implementation complete
-
-    Routing->>Review: Invoke
-    Review->>Review: Run test suite, check success criteria
-    alt FEATURE_BLOCKED
-      Review-->>Routing: Blocked — fix required
-      Routing->>Impl: Fix blocking issues
-      Impl-->>Routing: Fixed
-      Routing->>Review: Re-invoke
-    end
-    Review-->>Routing: FEATURE_ACCEPTED
-
-    Routing->>Deliver: Invoke
-    Deliver-->>User: Retrospective + final summary
+  Routing->>Folder: Look for existing session folder
+  alt No session folder
+    Routing->>Clarify: Invoke
+    Clarify->>User: AskUserQuestion — clarifying questions
+    User-->>Clarify: Answers
+    Clarify->>Folder: Create <project>/.claude/sessions/YYYY-MM-DD-<slug>/<br>Write clarify.md (status: complete)
+    Clarify-->>Routing: (path, summary)
   end
+
+  Routing->>Folder: Read frontmatter to find next phase
+  alt No plan.md
+    Routing->>Plan: Invoke (path to clarify.md)
+    Plan->>Folder: Read clarify.md
+    Plan->>Plan: Design diagrams, draft plan
+    Plan-->>User: ExitPlanMode — request approval
+    User-->>Plan: Approves
+    Plan->>Folder: Write plan.md (status: complete)
+    Plan-->>Routing: (path, summary)
+  end
+
+  Routing->>Folder: Read plan.md, find next implement-step-N.md to write
+  loop For each step
+    Routing->>Impl: Invoke (path to plan.md, step N)
+    Impl->>Folder: Read plan.md and prior implement-step-*.md
+    Impl->>Folder: Write implement-step-N.md (status: complete)
+    Impl-->>Routing: (path, summary)
+  end
+
+  Routing->>Review: Invoke (path to session folder)
+  Review->>Folder: Read plan.md + implement-step-*.md
+  Review->>Folder: Write review.md (status: complete)
+  Review-->>Routing: (path, verdict)
+
+  Routing->>Deliver: Invoke (path to session folder)
+  Deliver->>Folder: Read all prior md files
+  Deliver->>Folder: Write deliver.md (status: complete)
+  Deliver-->>User: Retrospective + final summary
 ```
 
 ## Key Decisions
 
-- Clarification and plan both live in conversation context — Cadence is session-scoped, not persisted across sessions
+- Each phase reads prior md files from the session folder and writes its own md file; subagent returns are one-line `(path, summary)` handoffs (from plan: cadence-session-folders)
+- Resume is detection: a fresh session reads the folder, identifies the latest written phase by frontmatter `status`, and continues from the next step (from plan: cadence-session-folders)
 - `plan` agent uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate — no code is written until the user approves
-- `main-review` runs the full test suite as part of end-to-end acceptance
-- Deviations discovered during implementation are recorded in conversation, not silently applied to diagrams
+- `review` runs the full test suite as part of end-to-end acceptance
+- Implement is invoked once per step; resume identifies the last completed step from the highest-N `implement-step-*.md` with `status: complete` (from plan: cadence-session-folders)
 
 ## Notes
 

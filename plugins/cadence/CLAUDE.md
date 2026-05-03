@@ -87,18 +87,41 @@ cadence:main:clarify
       → cadence:deliver
 ```
 
-1. **`cadence:main:clarify`**: Clarify the problem with the user, produce a clarification summary in conversation
-2. **`cadence:main:plan`**: Analyze docs, define implementation approach, update diagrams, get approval
-3. **`review` agent**: End-to-end feature acceptance — test suite, success criteria, docs/plan/code alignment
-4. **`cadence:deliver`**: Output retrospective to conversation, deliver final summary
+1. **`cadence:main:clarify`**: Clarify the problem with the user, create the session folder, write `clarify.md`
+2. **`cadence:main:plan`**: Read `clarify.md`, design implementation approach, update diagrams, write `plan.md`, get approval
+3. **`implement` agent (one per step)**: Read `plan.md`, execute one step, write `implement-step-N.md`
+4. **`review` agent**: Read prior phase files, run end-to-end acceptance, write `review.md`
+5. **`cadence:deliver`**: Read all phase files, write `deliver.md`, output retrospective + final summary
+
+## Session Folders
+
+Every Cadence run produces a per-session folder of phase artifacts inside the user's project:
+
+- **Path**: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/` (one folder per session under `.claude/sessions/`)
+- **Files**: `clarify.md`, optional `analyze.md`, `plan.md`, `implement-step-N.md` (one per step), `review.md`, `deliver.md`
+- **Frontmatter**: every file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). `status` values: `in_progress`, `complete`, `blocked`. The routing layer reads frontmatter to decide the next phase.
+- **Inter-agent contract**: each agent reads prior phase files and writes its own. Subagents return one-line `Wrote <file>.md to <absolute-path>. <one-sentence summary>` handoffs; full output lives in the file.
+- **Resume**: a fresh Claude session detects an existing session folder, identifies the latest written phase by frontmatter, and continues from the next step.
+
+### Recommended `.gitignore`
+
+Session folders are personal scratch space by default. Add this line to your project `.gitignore`:
+
+```
+.claude/sessions/
+```
+
+To opt in to committing session folders for a team-shared durable record, omit that line and commit the folders alongside code.
 
 ## Analyze Skills
 
-Cadence auto-invokes the `analyze-problem` agent when it detects a complex problem. You can also trigger it explicitly by describing your problem.
+Cadence auto-invokes the `analyze-problem` agent when it detects a complex problem. The agent reads `clarify.md` and writes `analyze.md` to the session folder. You can also trigger it explicitly by describing your problem.
 
 ## Agent Behavior Rules
 
-- **Clarify first**: Before any planning or coding, confirm a clarification summary has been established in the current conversation
-- **Auto-initialize**: If `docs/` is missing or incomplete, proactively create the missing files — never block or ask the user to run a setup command
+- **Clarify first**: Always run `clarify` before any planning or coding so the session folder and `clarify.md` exist
+- **Pass the session folder path**: Always include the session folder absolute path when invoking any Cadence agent or skill
+- **Read prior phase files**: Always read the prior phase md file(s) from the session folder rather than relying on conversation context
+- **Auto-initialize `docs/`**: If `docs/` is missing or incomplete, proactively create the missing files
 - **Always read** the relevant diagram files before starting any implementation task
 - **Centralize references**: add any new reference (e.g., a link to an external source) to `plugins/cadence/README.md`; keep `plugins/cadence/agents/` and `plugins/cadence/skills/` reference-free.

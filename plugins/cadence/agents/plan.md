@@ -1,13 +1,13 @@
 ---
 name: plan
-description: Use this agent to plan a clarified feature — defines the implementation approach, drafts diagrams, writes a plan file to ~/.claude/plans/, and gets user approval. Does not apply any changes. Examples:
+description: Use this agent to plan a clarified feature — defines the implementation approach, drafts diagrams, writes a plan file to the session folder, and gets user approval. Does not apply any changes. Examples:
 
 <example>
 Context: Clarification summary is established. Session type is feature-dev. No plan exists yet.
 user: [cadence routes to plan agent after clarify completes]
 assistant: "Cadence is active — spawning `plan` agent."
 <commentary>
-Plan agent enters plan mode, drafts diagrams, writes the plan to ~/.claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
+Plan agent enters plan mode, drafts diagrams, writes the plan to the session folder, and proposes via ExitPlanMode. Does not apply any changes.
 </commentary>
 </example>
 
@@ -16,7 +16,7 @@ Context: User requests a new feature and clarification is already in the convers
 user: "Let's plan the caching layer"
 assistant: "Cadence is active — spawning `plan` agent."
 <commentary>
-Plan agent drafts diagrams against the clarification, writes the plan to ~/.claude/plans/, and proposes via ExitPlanMode. Does not apply any changes.
+Plan agent drafts diagrams against the clarification, writes the plan to the session folder, and proposes via ExitPlanMode. Does not apply any changes.
 </commentary>
 </example>
 
@@ -39,13 +39,19 @@ Call `EnterPlanMode` immediately. All design and drafting is read-only until `Ex
 
 ## Step 1: Read Clarification
 
-Use the clarification summary from the current conversation context. If no clarification has been established yet, stop immediately — do not proceed. The routing logic will handle clarification before invoking this agent.
+The routing layer passes the session folder path (or `clarify.md` path) when invoking this agent. If neither is provided, look at the conversation context for the most recent `Wrote clarify.md to <path>` handoff line and use that path. If you cannot determine the session folder, stop with an error message: "No session folder context — cannot proceed."
 
-Extract:
+Read `<session-folder>/clarify.md` via the `Read` tool.
+
+Extract from the file body:
 - Problem statement
 - Scope (in/out)
 - Constraints
 - Success criteria
+
+Verify the YAML frontmatter has `agent: clarify` and `status: complete`; if not, stop and report the inconsistency.
+
+If `<session-folder>/analyze.md` exists, also read it for additional context.
 
 ## Step 2: Design Diagrams
 
@@ -66,19 +72,30 @@ Skip this step only if the change is purely textual (e.g. config value, copy cha
 
 ## Step 3: Write Plan File and Call ExitPlanMode
 
-Write the plan to `~/.claude/plans/<kebab-slug>.md` using the `Write` tool. Pass `Write` a literal absolute path (the tool does not expand `~` or `$HOME`) — on macOS this is `/Users/<name>/.claude/plans/<kebab-slug>.md`, on Linux `/home/<name>/.claude/plans/<kebab-slug>.md`. Then call `ExitPlanMode`.
+Write the plan to `<session-folder>/plan.md` using the `Write` tool. Pass `Write` the literal absolute session-folder path you read clarify.md from. Then call `ExitPlanMode`.
 
 Pass the full plan markdown to `ExitPlanMode` as the `plan` argument, with one link line prepended pointing to the plan file:
 
 ```
-[Plan file](file:///Users/<name>/.claude/plans/<kebab-slug>.md)
+[Plan file](file://<absolute-path-to-session-folder>/plan.md)
 
 [insert the full plan markdown body here, from `# <kebab-slug>` through the final `## Summary` bullets]
 ```
 
 Always render every section (Context, Key Decisions, Docs to Change, Source Code to Change, Tests to Change, What Does Not Change, Implementation Steps, Verification, Summary) so the user approves the plan itself.
 
-The plan must follow this structure:
+The plan file must include YAML frontmatter at the top:
+
+```yaml
+---
+agent: plan
+session_type: <copied-from-clarify.md>
+status: complete
+created_at: <YYYY-MM-DD>
+---
+```
+
+Followed by the plan structure below, starting with `# <plan-name-slug>`:
 
 ```markdown
 # <plan-name-slug>
@@ -131,15 +148,19 @@ How to verify the implementation end-to-end.
 - <bullet summarizing the outcome>
 ```
 
-If the user rejects the plan, return control to the main thread so the routing layer can re-invoke `clarify`. Emit your final message as exactly two plain-text lines, with no surrounding code fence, prefix, or quoting:
+After the user approves via `ExitPlanMode`, your final message to the routing layer is one line: `Wrote plan.md to <absolute-path>. <one-sentence summary>.`
+
+If the user rejects the plan, return control to the main thread so the routing layer can re-invoke `clarify`. Emit your final message as exactly three plain-text lines, with no surrounding code fence, prefix, or quoting:
 
 - Line 1: `NEEDS_CLARIFICATION: <one-line description of the gap to re-clarify (facts, scope, constraints, or success criteria)>`
 - Line 2: `User feedback: <verbatim user rejection>`
+- Line 3: `Reuse session folder: <absolute-path-to-session-folder>`
 
-Stop after emitting the message — the routing layer handles plan-mode cleanup, runs `clarify` (which spawns its own probes for any new factual unknowns), and re-spawns `plan`.
+Stop after emitting the message — the routing layer handles plan-mode cleanup, passes `reuse_folder: <path>` to a re-spawned `clarify` (which overwrites the existing `clarify.md` instead of creating a new folder), and re-spawns `plan`.
 
 ## Guidelines
 
+- Always write the plan file inside the session folder; `~/.claude/plans/` is no longer used by Cadence
 - Success criteria must be specific and verifiable
 - Diagrams must use valid Mermaid syntax; use `<br>` for line breaks in node labels
 - When a Key Decision in this plan drives a structural change to a diagram, copy that decision into the relevant diagram file's `## Key Decisions` section with attribution: `(from plan: <kebab-slug>)`

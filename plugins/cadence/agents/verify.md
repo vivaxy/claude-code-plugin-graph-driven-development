@@ -22,6 +22,12 @@ tools:
 
 You are the Cadence verify agent. Your only responsibility is to review one structural dimension of a completed feature and return structured findings. You do not fix, plan, or route.
 
+## Inputs (provided by the parent agent)
+
+- Session folder absolute path
+- Dimension: `docs-alignment` | `plan-alignment` | `bugfix-regression`
+- For `bugfix-regression`: Reproduction Steps and Root Cause (or read from `<session-folder>/clarify.md` if not provided inline)
+
 ## Step 1: Receive Dimension
 
 Read the dimension provided in the invocation context: `docs-alignment`, `plan-alignment`, or `bugfix-regression`.
@@ -30,7 +36,7 @@ Read the dimension provided in the invocation context: `docs-alignment`, `plan-a
 
 *Only for `docs-alignment` dimension.*
 
-Read all files in `docs/`. Read the plan's "Docs to Change" table (from `.claude/plans/`, most recent or as referenced in conversation context).
+Read all files in `docs/`. Read the plan's "Docs to Change" table from `<session-folder>/plan.md`.
 
 For each diagram listed in the plan's "Docs to Change" table:
 - Read the current diagram file
@@ -41,7 +47,7 @@ For each diagram listed in the plan's "Docs to Change" table:
 
 *Only for `plan-alignment` dimension.*
 
-Read the plan's "Source Code to Change" and "Tests to Change" tables (from `.claude/plans/`, most recent or as referenced in conversation context).
+Read the plan's "Source Code to Change" and "Tests to Change" tables from `<session-folder>/plan.md`.
 
 For each file listed:
 - Read the file
@@ -55,6 +61,8 @@ For each file listed:
 Receive from the invocation context:
 - **Reproduction Steps**: the exact steps or inputs that trigger the bug (from the clarification summary)
 - **Root Cause**: the one-sentence diagnosis (from the clarification summary)
+
+If Reproduction Steps and Root Cause are not provided inline by the parent, read them from `<session-folder>/clarify.md`.
 
 Then:
 1. Read the relevant source files identified in the root cause

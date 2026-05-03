@@ -7,6 +7,30 @@ description: Guide for when to apply Cadence — read at session start to unders
 If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
+## Session Folder
+
+Every Cadence run lives in a per-session folder under the project:
+
+- Path: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/`
+- Files: `clarify.md`, optional `analyze.md`, `plan.md`, `implement-step-N.md` (one per step), `review.md`, `deliver.md`.
+- Each file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). `status` values: `in_progress`, `complete`, `blocked`.
+- The clarify agent owns folder creation. Other agents only write into an existing folder.
+- Subagents return one-line handoffs of the form: `Wrote <file>.md to <absolute-path>. <one-sentence summary>`. The full output lives in the file.
+- The routing layer tracks the active session folder for the duration of the conversation. When invoking any agent or skill, pass the session folder absolute path in the prompt.
+
+## Session-Folder Detection (Resume)
+
+At the very start of any Cadence-relevant request, before invoking `clarify`:
+
+1. Determine the project root via `git rev-parse --show-toplevel` (fall back to `pwd`).
+2. List existing session folders matching `<project>/.claude/sessions/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*/` via Bash glob.
+3. If one or more exist, read the frontmatter of the most recently modified folder's files to determine which phase it is in. Use `AskUserQuestion` to ask the user: "An in-progress Cadence session was found at `<path>` (last phase: `<X>`). Continue this session, or start a new one?" with options `["Continue existing", "Start new"]`.
+   - On "Continue existing": treat the chosen folder as the active session folder; route by file presence + `status` instead of invoking `clarify`.
+   - On "Start new": fall through to the normal flow — `clarify` will create a fresh folder.
+4. If no folders exist, fall through to the normal flow.
+
+Routing-by-state means: read the frontmatter of each file in the session folder. The next step is the first phase whose file is missing or has `status: blocked`. The routing table below maps that state to the next agent.
+
 # Using Cadence
 
 ## Procedure (all session types)
@@ -41,12 +65,18 @@ When the task is ambiguous, err toward non-trivial — proceed unless you are co
 
 ### 3. Route by state
 
-| Condition | Route to |
+The active session folder defines current state. Read the frontmatter of each file:
+
+| File state in session folder | Route to |
 |---|---|
-| No plan in conversation | `plan` agent |
+| No `clarify.md`, or `clarify.md` `status: in_progress` | `clarify` agent |
+| `clarify.md` `status: complete`, no `plan.md` (and analyze gate does not apply) | `plan` agent |
+| `clarify.md` `status: complete`, no `analyze.md`, analyze gate applies | `analyze-problem` agent (then `plan` agent after) |
 | Plan agent returned a `NEEDS_CLARIFICATION:` signal | re-clarification handoff (see below) |
-| Plan approved, implementation not started | implement phase (see below) |
-| All steps implemented and verified | `review` agent → `cadence:deliver` |
+| `plan.md` `status: complete`, fewer `implement-step-N.md` files than steps in plan | implement phase (see below) |
+| All `implement-step-N.md` `status: complete`, no `review.md` | `review` agent |
+| `review.md` `status: complete`, verdict accepted | `cadence:deliver` |
+| `review.md` verdict `FEATURE_BLOCKED` | surface the blocker to the user; do not auto-route |
 
 #### Analyze gate
 
@@ -68,7 +98,7 @@ When the `plan` agent's final message starts with `NEEDS_CLARIFICATION:`, the us
 
 Procedure:
 1. Call `ExitPlanMode` with a brief placeholder plan to unblock the `Agent` tool — plan mode remains active after a rejection.
-2. Spawn the `clarify` agent. Pass the plan agent's `NEEDS_CLARIFICATION:` message (gap line + verbatim user feedback) as additional context so clarify focuses on the gap rather than re-running the full clarification flow.
+2. Spawn the `clarify` agent and pass `reuse_folder: <session-folder-path>` (read from the third line of plan's `NEEDS_CLARIFICATION` message: `Reuse session folder: <path>`). Also pass the gap line and verbatim user feedback as additional context so clarify focuses on the gap. Clarify will overwrite the existing `clarify.md` instead of creating a new folder.
 3. After `clarify` returns the updated summary, spawn the `plan` agent again — it revises the plan against the new clarification.
 
 If the re-spawned `plan` agent emits `NEEDS_CLARIFICATION:` again, repeat the procedure.
@@ -78,17 +108,25 @@ If the re-spawned `plan` agent emits `NEEDS_CLARIFICATION:` again, repeat the pr
 After the plan agent completes and the user approves the plan:
 
 1. **Apply doc changes**: Create or update each file listed in the plan's `## Docs to Change` table.
-2. **Create todos**: Read the approved plan's `## Implementation Steps` list. Call `TaskCreate` for each step — one task per step, in order.
+2. **Create todos**: Read the approved `<session-folder>/plan.md`'s `## Implementation Steps` list. Call `TaskCreate` for each step — one task per step, in order.
 3. **Execute each step sequentially**:
    - Mark the task `in_progress` with `TaskUpdate`.
-   - Spawn a `cadence:implement` subagent via the `Agent` tool. Give it the step description, the list of files to change (from the plan's "Source Code to Change" table), and full context from the plan (problem statement, constraints, key decisions).
-   - After the subagent completes, verify the result: use `Read` on each file the step was supposed to change and confirm the expected change is present.
-   - If verification passes: mark the task `completed` with `TaskUpdate` and proceed to the next step.
-   - If verification fails: surface the failure to the user ("Step N failed verification: <what was expected vs. what was found>"). Do not proceed until resolved.
+   - Spawn a `cadence:implement` subagent via the `Agent` tool. Pass it:
+     - Session folder absolute path
+     - Step number `N`
+     - Path to `<session-folder>/plan.md`
+     - The step description and files to change (from plan.md's "Source Code to Change" table)
+   - After the subagent returns its `Wrote implement-step-N.md to <path>. <summary>` handoff:
+     - Read `<session-folder>/implement-step-N.md` and confirm `status: complete` in the frontmatter.
+     - Read each file listed in `files_touched` and confirm the expected change is present.
+     - If verification passes: mark the task `completed` with `TaskUpdate` and proceed to the next step.
+     - If `status: blocked` or verification fails: surface the failure to the user ("Step N blocked: <reason from the file's Notes section>"). Do not proceed until resolved.
 4. **After all steps are verified — this step is MANDATORY, never skip it:**
    - Announce: "All steps complete — spawning `review` agent."
-   - Spawn the `cadence:review` subagent via the `Agent` tool.
-   - After the review agent returns: invoke `cadence:deliver` via the `Skill` tool.
+   - Spawn the `cadence:review` subagent via the `Agent` tool. Pass it the session folder absolute path.
+   - After review returns its `Wrote review.md to <path>. Verdict: <V>` handoff:
+     - On `FEATURE_ACCEPTED` or `FEATURE_ACCEPTED_WITH_WARNINGS`: invoke `cadence:deliver` via the `Skill` tool, passing the session folder absolute path.
+     - On `FEATURE_BLOCKED`: surface the blocker; do not invoke `cadence:deliver`.
    - Do NOT summarize the work yourself or write a completion message before review runs.
 
 ## How to Route
@@ -99,6 +137,8 @@ After the plan agent completes and the user approves the plan:
    - Spawning an agent: "Cadence is active — spawning `<agent>` agent."
    - Invoking a skill: "Cadence is active — routing to `cadence:<skill>`."
 2. Spawn the agent (via Agent tool) or invoke the skill (via Skill tool) as appropriate.
+
+When spawning any agent or skill, always pass the session folder absolute path in the prompt. Without it, the agent cannot read prior phase files.
 
 ## User Questions
 

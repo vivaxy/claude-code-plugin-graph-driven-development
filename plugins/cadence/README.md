@@ -49,6 +49,35 @@ cp -r plugins/cadence/skills/ .claude/skills/cadence/
 
 ---
 
+## How sessions are stored
+
+Every Cadence run creates a per-session folder inside the user's project that holds one md file per phase:
+
+```
+<project>/.claude/sessions/YYYY-MM-DD-<slug>/
+├── clarify.md            # written by clarify agent
+├── analyze.md            # optional — only for diagnostic sessions
+├── plan.md               # written by plan agent
+├── implement-step-1.md   # one file per step
+├── implement-step-2.md
+├── review.md             # written by review agent
+└── deliver.md            # written by deliver skill
+```
+
+Each file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). The routing layer reads frontmatter to decide the next phase, and downstream agents read prior md files instead of relying on conversation context.
+
+**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, identifies the latest written phase by frontmatter, and continues from the next step.
+
+**Recommended `.gitignore`**: session folders are personal scratch space by default. Add this line to your project `.gitignore`:
+
+```
+.claude/sessions/
+```
+
+Omit it (and commit the folders) to keep a durable team-shared record of every session.
+
+---
+
 ## Quick Start
 
 ### 1. Plan a New Feature
