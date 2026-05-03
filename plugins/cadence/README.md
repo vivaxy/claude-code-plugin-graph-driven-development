@@ -61,7 +61,7 @@ Every Cadence run creates a per-session folder inside the user's project that ho
 ├── implement-step-1.md   # one file per step
 ├── implement-step-2.md
 ├── review.md             # written by review agent
-└── deliver.md            # written by deliver skill
+└── deliver.md            # written by deliver agent
 ```
 
 Each file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). The routing layer reads frontmatter to decide the next phase, and downstream agents read prior md files instead of relying on conversation context.

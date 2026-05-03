@@ -75,7 +75,7 @@ The active session folder defines current state. Read the frontmatter of each fi
 | Plan agent returned a `NEEDS_CLARIFICATION:` signal | re-clarification handoff (see below) |
 | `plan.md` `status: complete`, fewer `implement-step-N.md` files than steps in plan | implement phase (see below) |
 | All `implement-step-N.md` `status: complete`, no `review.md` | `review` agent |
-| `review.md` `status: complete`, verdict accepted | `cadence:deliver` |
+| `review.md` `status: complete`, verdict accepted | `deliver` agent |
 | `review.md` verdict `FEATURE_BLOCKED` | surface the blocker to the user; do not auto-route |
 
 #### Analyze gate
@@ -125,8 +125,8 @@ After the plan agent completes and the user approves the plan:
    - Announce: "All steps complete — spawning `review` agent."
    - Spawn the `cadence:review` subagent via the `Agent` tool. Pass it the session folder absolute path.
    - After review returns its `Wrote review.md to <path>. Verdict: <V>` handoff:
-     - On `FEATURE_ACCEPTED` or `FEATURE_ACCEPTED_WITH_WARNINGS`: invoke `cadence:deliver` via the `Skill` tool, passing the session folder absolute path.
-     - On `FEATURE_BLOCKED`: surface the blocker; do not invoke `cadence:deliver`.
+     - On `FEATURE_ACCEPTED` or `FEATURE_ACCEPTED_WITH_WARNINGS`: spawn the `cadence:deliver` agent via the `Agent` tool, passing the session folder absolute path. After deliver returns its `Wrote deliver.md to <path>. <summary>` handoff, read `<session-folder>/deliver.md` and surface its `## Final Summary` section to the user as the terminal output.
+     - On `FEATURE_BLOCKED`: surface the blocker; do not spawn the deliver agent.
    - Do NOT summarize the work yourself or write a completion message before review runs.
 
 ## How to Route

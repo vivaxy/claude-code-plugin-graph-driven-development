@@ -18,7 +18,7 @@ C4Component
     Component(plan, "plan agent", "Planning agent", "Reads clarify.md (and analyze.md if present), writes plan.md, gets approval")
     Component(implement, "implement agent", "Step executor", "Reads plan.md, executes one step, writes implement-step-N.md")
     Component(review, "review agent", "Review agent", "Reads plan.md and implement-step-*.md, writes review.md")
-    Component(deliver, "deliver", "Delivery skill", "Reads all prior md files, writes deliver.md and final summary")
+    Component(deliver, "deliver agent", "Delivery agent", "Reads all prior md files, writes deliver.md and final summary")
   }
 
   ContainerDb(docs, "docs/", "Markdown + Mermaid", "Authoritative C4 design documents")

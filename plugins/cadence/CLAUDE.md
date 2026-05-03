@@ -84,14 +84,14 @@ Mermaid diagram types by file:
 cadence:main:clarify
   → cadence:main:plan
     → review agent
-      → cadence:deliver
+      → deliver agent
 ```
 
 1. **`cadence:main:clarify`**: Clarify the problem with the user, create the session folder, write `clarify.md`
 2. **`cadence:main:plan`**: Read `clarify.md`, design implementation approach, update diagrams, write `plan.md`, get approval
 3. **`implement` agent (one per step)**: Read `plan.md`, execute one step, write `implement-step-N.md`
 4. **`review` agent**: Read prior phase files, run end-to-end acceptance, write `review.md`
-5. **`cadence:deliver`**: Read all phase files, write `deliver.md`, output retrospective + final summary
+5. **`deliver` agent**: Read all phase files, write `deliver.md`; the routing layer surfaces its final summary
 
 ## Session Folders
 

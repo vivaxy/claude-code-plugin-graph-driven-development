@@ -145,7 +145,7 @@ After writing, return ONLY this single line:
 
 `Wrote review.md to <absolute-path>. Verdict: FEATURE_ACCEPTED | FEATURE_ACCEPTED_WITH_WARNINGS | FEATURE_BLOCKED.`
 
-The "Run `cadence:deliver` to close out" instruction is no longer printed by the agent — the routing layer reads the verdict from the returned line and invokes `cadence:deliver` if accepted.
+The "Run `cadence:deliver` to close out" instruction is no longer printed by the agent — the routing layer reads the verdict from the returned line and spawns the `cadence:deliver` agent if accepted.
 
 ## Guidelines
 

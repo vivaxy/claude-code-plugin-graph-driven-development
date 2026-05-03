@@ -14,7 +14,7 @@ sequenceDiagram
   participant Plan as plan agent
   participant Impl as implement agent
   participant Review as review agent
-  participant Deliver as deliver
+  participant Deliver as deliver agent
   participant Folder as Session Folder
 
   User->>Routing: Describes a feature task
@@ -54,7 +54,9 @@ sequenceDiagram
   Routing->>Deliver: Invoke (path to session folder)
   Deliver->>Folder: Read all prior md files
   Deliver->>Folder: Write deliver.md (status: complete)
-  Deliver-->>User: Retrospective + final summary
+  Deliver-->>Routing: (path, summary)
+  Routing->>Folder: Read deliver.md
+  Routing-->>User: Surface Final Summary section
 ```
 
 ## Key Decisions
