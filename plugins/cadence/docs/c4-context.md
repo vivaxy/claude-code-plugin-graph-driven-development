@@ -1,7 +1,7 @@
 # cadence Plugin — System Context
 
 > **Type**: C4 Context
-> **Last Updated**: 2026-05-03
+> **Last Updated**: 2026-05-04
 > **Covers**: System boundary and external actors for the Cadence Claude Code plugin
 
 ## Diagram
@@ -17,12 +17,12 @@ C4Context
   }
 
   System_Ext(projectDocs, "docs/", "Authoritative design documents and C4 diagram files for the user's project")
-  System_Ext(sessionFolder, "Session Folder", "Per-session phase artifacts under <br>&lt;project&gt;/.claude/sessions/YYYY-MM-DD-&lt;slug&gt;/")
+  System_Ext(sessionFolder, "Session Folder", "Per-session checklist session.md plus incidental side artifacts under <br>&lt;project&gt;/.claude/sessions/YYYY-MM-DD-&lt;slug&gt;/")
   System_Ext(projectSrc, "Project Source Code", "The user's application source files")
 
   Rel(developer, cadence, "Describes feature task to")
   Rel(cadence, projectDocs, "Reads and writes")
-  Rel(cadence, sessionFolder, "Reads prior phase, writes current phase")
+  Rel(cadence, sessionFolder, "Reads session.md, ticks owned-section checklists")
   Rel(cadence, projectSrc, "Reads and writes")
   Rel(projectDocs, projectSrc, "Constrains")
 ```
@@ -32,7 +32,7 @@ C4Context
 - The plugin has no runtime server — it is a set of instruction files interpreted by Claude Code
 - `docs/` is the authoritative source of truth; code must conform to documents and diagrams, not the reverse
 - The plugin operates on the user's project directory, not on its own source
-- Per-session phase artifacts live in a session folder inside the user's project at `<project>/.claude/sessions/YYYY-MM-DD-<slug>/` (from plan: cadence-session-folders)
+- Per-session state lives in a single `session.md` checklist inside the user's project at `<project>/.claude/sessions/YYYY-MM-DD-<slug>/`; incidental side artifacts may sit alongside it (from plan: cadence-template-driven-checklists)
 
 ## Notes
 

@@ -51,22 +51,32 @@ cp -r plugins/cadence/skills/ .claude/skills/cadence/
 
 ## How sessions are stored
 
-Every Cadence run creates a per-session folder inside the user's project that holds one md file per phase:
+Every Cadence run creates a per-session folder inside the user's project containing a single `session.md` file:
 
 ```
 <project>/.claude/sessions/YYYY-MM-DD-<slug>/
-├── clarify.md            # written by clarify agent
-├── analyze.md            # optional — only for diagnostic sessions
-├── plan.md               # written by plan agent
-├── implement-step-1.md   # one file per step
-├── implement-step-2.md
-├── review.md             # written by review agent
-└── deliver.md            # written by deliver agent
+└── session.md            # the entire session lives here
 ```
 
-Each file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). The routing layer reads frontmatter to decide the next phase, and downstream agents read prior md files instead of relying on conversation context.
+`session.md` is the only state. It is divided into `## <Section>` headings, each containing a checklist of `- [ ]` items. The routing skill reads `session.md` top-to-bottom, finds the first section with any unchecked item, and spawns the agent that owns that section. Each agent ticks its items as `- [x]` after completing the work for that item.
 
-**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, identifies the latest written phase by frontmatter, and continues from the next step.
+### Session types
+
+There are five session types, each with a template under `plugins/cadence/templates/` that defines its sections:
+
+| Session type | Template | Sections |
+|---|---|---|
+| `trivial` | `templates/trivial.md` | `## Clarification`, `## Answer` |
+| `feature-dev` | `templates/feature-dev.md` | `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
+| `bugfix` | `templates/bugfix.md` | `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
+| `doc-writing` | `templates/doc-writing.md` | `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
+| `analysis` | `templates/analysis.md` | `## Clarification`, `## Analysis`, `## Delivery` |
+
+Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then copies the matching template into `session.md`. From there, routing reads top-to-bottom and spawns owners section by section.
+
+The plan body lives in `## Plan` of `session.md` — the plan is part of the session file itself.
+
+**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, finds the first section in `session.md` with any `- [ ]` item, and continues from there.
 
 **Recommended `.gitignore`**: session folders are personal scratch space by default. Add this line to your project `.gitignore`:
 
@@ -80,46 +90,67 @@ Omit it (and commit the folders) to keep a durable team-shared record of every s
 
 ## Quick Start
 
-### 1. Plan a New Feature
-
-Before writing any code:
+There is nothing to invoke explicitly. Just make a request:
 
 ```
-cadence:plan Add user authentication with JWT tokens
+Add user authentication with JWT tokens
 ```
 
-Claude analyzes the current documents and diagrams (or creates them if missing), presents the proposed changes in the conversation, and waits for your confirmation before writing anything to `docs/`. After applying the changes, Claude automatically runs a diagram review as a subagent — fixing critical issues and re-reviewing until the documents are approved.
+The `using-cadence` skill activates at session start and routes the request:
 
-### 2. Implement
+1. **Clarify** — the `clarify` agent writes a minimal `session.md` capturing your intent and any open questions.
+2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the five session types (`trivial`, `feature-dev`, `bugfix`, `doc-writing`, `analysis`), then copies the matching template into `session.md`.
+3. **Walk the checklist** — routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and spawns that section's owner. Each agent ticks its items as `- [x]` after completing the work.
+4. **Deliver** — the final `## Delivery` section produces the summary and hands back to you.
 
-```
-cadence:code Implement JWT authentication middleware
-```
-
-Claude reads the documents and diagrams, extracts implementation constraints, then writes code that follows the defined boundaries and flows. Any necessary deviations are recorded. After implementation, Claude automatically runs a code review as a subagent — fixing critical issues and re-reviewing until the code is approved.
+For a `feature-dev` session, the flow walks through `## Clarification → ## Plan → ## Implementation → ## Review → ## Delivery`. For a `bugfix`, an extra `## Analysis` step runs before `## Plan`. For `analysis`, the flow stops after `## Analysis → ## Delivery`. For `trivial`, the main thread answers directly under `## Answer`.
 
 ---
 
 ## The Cadence
 
 ```
-┌────────────────────────────────────┐
-│  cadence:plan              │
-│  Propose → confirm → apply         │
-│  Subagent review → fix → re-review │
-│  └────── until APPROVED ──────┘    │
-└──────────────┬─────────────────────┘
-               │
-               ▼
-┌────────────────────────────────────┐
-│  cadence:code              │
-│  Read docs & diagrams → implement  │
-│  Subagent review → fix → re-review │
-│  └────── until APPROVED ──────┘    │
-└────────────────────────────────────┘
+                  user request
+                       │
+                       ▼
+            ┌──────────────────────┐
+            │     using-cadence    │ ← session.md routing
+            │       (skill)        │
+            └──────────────────────┘
+                       │
+              no session.md found
+                       │
+                       ▼
+                ┌─────────────┐
+                │   clarify   │
+                └─────────────┘
+                       │
+              writes session.md
+                       │
+                       ▼
+            ┌──────────────────────┐
+            │  AskUserQuestion:    │
+            │ confirm session type │
+            └──────────────────────┘
+                       │
+        cp templates/<type>.md → session.md
+                       │
+                       ▼
+            ┌──────────────────────┐
+            │  Read session.md →   │
+            │  first section with  │
+            │  any [ ] item →      │
+            │  spawn owner         │
+            └──────────────────────┘
+                       │
+                       ▼
+   clarify ─→ analyze ─→ plan ─→ implement ─→ review ─→ deliver
+                                                            │
+                                                            ▼
+                                                    ## Final Summary
 ```
 
-Documents and diagrams live in `docs/`. They change first, code follows.
+`session.md` is the state. Each agent owns one section, ticks its `- [ ]` items as `- [x]`, and routing always reads top-to-bottom to pick the next owner. Documents and diagrams live in `docs/`. They change first, code follows.
 
 ---
 
@@ -164,33 +195,26 @@ flowchart TD
 
 ---
 
-## Skill Reference
+## Skill and Agent Reference
 
-### `cadence:plan <requirement>`
+### Skill: `cadence:using-cadence`
 
-Propose document and diagram updates for a new requirement and apply them after confirmation.
+The single entry point for Cadence. Activates at session start and on every Cadence-relevant turn. Detects the active session folder, asks whether to resume or start fresh, walks `session.md` top-to-bottom, and spawns the agent that owns the first section with any `- [ ]` item.
 
-- Reads current documents and diagrams (auto-creates `docs/` if missing)
-- Analyzes impact of the requirement
-- Presents the proposed changes in the conversation
-- Writes the approved changes to `docs/` after user confirmation
-- Automatically runs a subagent diagram review loop — fixing critical issues and re-reviewing until reaching `APPROVED` or `APPROVED_WITH_WARNINGS`
-- Then invokes `cadence:code` to implement the feature
+### Agents
 
-**When to use**: Before starting any new feature or change.
+Each agent owns one section of `session.md` and is spawned by `using-cadence`:
 
----
+| Agent | Owns | Responsibility |
+|---|---|---|
+| `clarify` | `## Clarification` | Capture intent, list open questions, write the initial `session.md`, recommend a session type |
+| `analyze-problem` | `## Analysis` | Investigate the problem (bugfix/analysis sessions) and record findings |
+| `plan` | `## Plan` | Propose document and diagram updates; manage plan mode internally; runs a subagent diagram review loop until `APPROVED` or `APPROVED_WITH_WARNINGS` |
+| `implement` | `## Implementation` | Read `## Plan` and the relevant diagrams, then write code that follows the defined boundaries and flow order |
+| `review` | `## Review` | Run a code review (doc/diagram alignment plus code quality), fix critical issues, and re-review until `APPROVED` or `APPROVED_WITH_WARNINGS` |
+| `deliver` | `## Delivery` | Run a retrospective, consolidate learnings, and write the final summary |
 
-### `cadence:code <task description>`
-
-Implement code guided by Cadence documents and diagrams.
-
-- Reads documents and diagrams and extracts implementation constraints
-- Writes code that follows defined module boundaries and flow order
-- Records any necessary deviations in the conversation
-- Automatically runs a subagent code review loop (doc/diagram alignment + code quality) — fixing critical issues and re-reviewing until reaching `APPROVED` or `APPROVED_WITH_WARNINGS`
-
-**When to use**: When documents and diagrams are approved and you're ready to implement.
+You can rely on the routing skill to spawn these agents at the right time. Manual invocation is rarely needed.
 
 ---
 
@@ -199,40 +223,40 @@ Implement code guided by Cadence documents and diagrams.
 ### Keep Documents and Diagrams at the Right Level of Abstraction
 
 Too detailed → maintenance burden that slows you down  
-Too abstract → no actual constraint on implementation
+Too abstract → too little constraint on implementation
 
-**Good**: Show module boundaries, decision points, external system interactions, key requirements  
-**Avoid**: Function signatures, variable types, implementation details
+**Always show**: module boundaries, decision points, external system interactions, key requirements  
+**Always omit**: function signatures, variable types, implementation details
 
 ### One Source of Truth
 
-Documents and diagrams in `docs/` (not `drafts/`) are authoritative. When code and docs disagree:
+Documents and diagrams in `docs/` are authoritative. When code and docs disagree:
 
-1. If the code is right → update the document/diagram via `cadence:plan`
+1. If the code is right → run a new Cadence session to update the document/diagram
 2. If the document/diagram is right → fix the code
 
-Never silently accept drift.
+Always treat drift as a signal that one side needs to be updated in the same session.
 
 ### Documents and Diagrams Are Living Documents
 
-Update them when you learn something new. A document that accurately reflects a simpler system is better than one that aspires to a complex system that doesn't exist.
+Update them when you learn something new. A document that accurately reflects a simpler system is better than one that aspires to a complex system that lives only on paper.
 
 ### Use Cadence for New Features, Not Archaeology
 
-Don't run `cadence:plan` on a legacy codebase expecting perfect diagrams. Use it to start a document set that's roughly accurate, then refine as you work on each area.
+Apply Cadence to forward-looking work on a legacy codebase. Begin with a roughly accurate document set, then refine each area the next time you touch it.
 
 ---
 
 ## Troubleshooting
 
 **"docs/ is missing or incomplete"**  
-Just describe your requirement — `cadence:plan` will auto-create the initial documents and diagrams.
+Just describe your requirement — the `plan` agent will auto-create the initial documents and diagrams.
 
 **The generated diagrams are inaccurate**  
-This is expected for complex codebases. Correct them manually — they are Markdown files with Mermaid blocks, easy to edit. Accuracy improves over time as you run `cadence:plan` for each change.
+This is expected for complex codebases. Correct them manually — they are Markdown files with Mermaid blocks, easy to edit. Accuracy improves over time as each new Cadence session refines the relevant area.
 
 **Code review finds too many deviations**  
-If deviations are consistently valid (the code is right, the document is wrong), the documents need to be updated via `cadence:plan`. If deviations are consistently invalid (the code ignored the document), enforce the Cadence more strictly.
+If deviations are consistently valid (the code is right, the document is wrong), update the documents in the next Cadence session. If deviations are consistently invalid (the code drifted from the document), enforce Cadence more strictly by always running through `## Plan` before `## Implementation`.
 
 ---
 

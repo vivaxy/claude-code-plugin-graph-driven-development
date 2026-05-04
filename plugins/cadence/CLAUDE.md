@@ -80,28 +80,40 @@ Mermaid diagram types by file:
 
 ## Cadence Development Workflow
 
-```
-cadence:main:clarify
-  → cadence:main:plan
-    → review agent
-      → deliver agent
-```
+The workflow is driven by a single `session.md` per session. Its `## <Section>` headings hold checklists of `- [ ]` items, and the routing skill spawns the agent that owns the first section with any unchecked item.
 
-1. **`cadence:main:clarify`**: Clarify the problem with the user, create the session folder, write `clarify.md`
-2. **`cadence:main:plan`**: Read `clarify.md`, design implementation approach, update diagrams, write `plan.md`, get approval
-3. **`implement` agent (one per step)**: Read `plan.md`, execute one step, write `implement-step-N.md`
-4. **`review` agent**: Read prior phase files, run end-to-end acceptance, write `review.md`
-5. **`deliver` agent**: Read all phase files, write `deliver.md`; the routing layer surfaces its final summary
+| Section heading | Owner |
+|---|---|
+| `## Clarification` | `clarify` agent |
+| `## Analysis` | `analyze-problem` agent (bugfix, analysis sessions) |
+| `## Plan` | `plan` agent (feature-dev, bugfix, doc-writing) |
+| `## Implementation` | `implement` agent (feature-dev, bugfix, doc-writing) |
+| `## Review` | `review` agent (feature-dev, bugfix, doc-writing) |
+| `## Delivery` | `deliver` agent (feature-dev, bugfix, doc-writing, analysis) |
+| `## Answer` | main thread (trivial only) |
 
-## Session Folders
+Routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and invokes that section's owner. Each agent ticks its items as `- [x]` after completing the work.
 
-Every Cadence run produces a per-session folder of phase artifacts inside the user's project:
+## Session Types
 
-- **Path**: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/` (one folder per session under `.claude/sessions/`)
-- **Files**: `clarify.md`, optional `analyze.md`, `plan.md`, `implement-step-N.md` (one per step), `review.md`, `deliver.md`
-- **Frontmatter**: every file carries YAML frontmatter (`agent`, `session_type`, `status`, `created_at`). `status` values: `in_progress`, `complete`, `blocked`. The routing layer reads frontmatter to decide the next phase.
-- **Inter-agent contract**: each agent reads prior phase files and writes its own. Subagents return one-line `Wrote <file>.md to <absolute-path>. <one-sentence summary>` handoffs; full output lives in the file.
-- **Resume**: a fresh Claude session detects an existing session folder, identifies the latest written phase by frontmatter, and continues from the next step.
+There are five session types. Each has a template under `plugins/cadence/templates/` that defines its sections:
+
+- **`trivial`** — small/localized change or factual question. Sections: `## Clarification`, `## Answer`.
+- **`feature-dev`** — new behavior. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
+- **`bugfix`** — broken behavior. Sections: `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
+- **`doc-writing`** — documentation work. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
+- **`analysis`** — diagnostic/exploratory. Sections: `## Clarification`, `## Analysis`, `## Delivery`.
+
+After `clarify` runs, the routing skill calls `AskUserQuestion` to confirm the session type, then copies the matching template into `session.md`.
+
+## Session Folder
+
+Every Cadence run produces a per-session folder inside the user's project:
+
+- **Path**: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/`
+- **Contents**: a single `session.md` per session, plus any incidental side artifacts (e.g. analysis figures, plan diagrams)
+- **`session.md` is the only state**: routing reads it top-to-bottom and spawns the owner of the first section with any `- [ ]` item
+- **Plan body lives in `## Plan` of `session.md`** — the plan is part of the session file itself
 
 ### Recommended `.gitignore`
 
@@ -115,13 +127,14 @@ To opt in to committing session folders for a team-shared durable record, omit t
 
 ## Analyze Skills
 
-Cadence auto-invokes the `analyze-problem` agent when it detects a complex problem. The agent reads `clarify.md` and writes `analyze.md` to the session folder. You can also trigger it explicitly by describing your problem.
+When session type is `bugfix` or `analysis`, the routing skill spawns the `analyze-problem` agent to fill `## Analysis` of `session.md`. The agent reads `## Clarification` for context.
 
 ## Agent Behavior Rules
 
-- **Clarify first**: Always run `clarify` before any planning or coding so the session folder and `clarify.md` exist
-- **Pass the session folder path**: Always include the session folder absolute path when invoking any Cadence agent or skill
-- **Read prior phase files**: Always read the prior phase md file(s) from the session folder rather than relying on conversation context
-- **Auto-initialize `docs/`**: If `docs/` is missing or incomplete, proactively create the missing files
+- **Always run `clarify` first**: every session starts with the clarify agent writing a minimal `session.md`
+- **Always pass the session folder absolute path**: every Cadence agent invocation includes the absolute path to `<session-folder>`
+- **Always read the relevant section of `session.md`** for context instead of relying on conversation context
+- **Always tick checklist items as `- [x]`** in the agent's owned section after completing the work for that item
+- **Always proactively create missing `docs/` files** if the project's `docs/` directory is incomplete
 - **Always read** the relevant diagram files before starting any implementation task
-- **Centralize references**: add any new reference (e.g., a link to an external source) to `plugins/cadence/README.md`; keep `plugins/cadence/agents/` and `plugins/cadence/skills/` reference-free.
+- **Always centralize references** in `plugins/cadence/README.md` — keep `plugins/cadence/agents/` and `plugins/cadence/skills/` reference-free
