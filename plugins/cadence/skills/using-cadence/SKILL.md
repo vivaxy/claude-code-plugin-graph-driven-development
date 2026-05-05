@@ -105,7 +105,25 @@ When the routing algorithm decides to spawn an agent or hand to the main thread:
    - Spawning an agent: "Cadence is active — spawning `<agent>` agent."
    - Main thread takes over: "Cadence is active — answering directly under `## Answer`."
 2. Spawn the agent via the `Agent` tool. Always pass the session folder absolute path in the prompt — every agent reads `session.md` from that folder.
-3. After the agent returns its one-line handoff, re-run the routing algorithm to decide what spawns next.
+3. Inspect the agent's terminal output:
+   - When the first line begins with `NEEDS_CLARIFICATION:`, treat the output as a plan-rejection handoff and apply the "Plan Rejection Recovery" procedure below before re-routing.
+   - Otherwise, re-run the routing algorithm to decide what spawns next.
+
+## Plan Rejection Recovery
+
+The `plan` agent emits a 3-line terminal message when the user rejects the plan via `ExitPlanMode` for inadequate clarification:
+
+- Line 1: `NEEDS_CLARIFICATION: <one-line description of the gap>`
+- Line 2: `User feedback: <verbatim user rejection>`
+- Line 3: `Reuse session folder: <absolute-path-to-session-folder>`
+
+When the router observes this exact format from a spawned agent, always run these substeps before re-entering the routing algorithm:
+
+1. **Clear plan mode if active.** Call `ExitPlanMode` on the main thread to unblock the `Agent` tool. The plan agent already exited plan mode internally before emitting the handoff; this step is a no-op when plan mode is already inactive.
+2. **Extract the reuse path** from line 3 by stripping the literal `Reuse session folder: ` prefix. Treat the remainder as the absolute path to the existing session folder.
+3. **Announce the recovery** with one line: "Cadence is active — re-spawning `clarify` agent to address the rejected clarification."
+4. **Re-spawn the `clarify` agent** via the `Agent` tool. Always include `reuse_folder: <path>` in the prompt alongside the line-1 gap description and line-2 user feedback. The `clarify` agent uses `reuse_folder` to overwrite the existing `## Clarification` section in place rather than creating a new session folder.
+5. **Re-route after `clarify` returns.** Go back to step 3 of the Routing Algorithm — read the freshly populated `session.md` and spawn the owner of the first unchecked section. The plan agent's pre-handoff edits already reset `## Clarification` to `- [ ]` and skeletoned `## Plan`, so routing naturally lands on `## Clarification` first, then `## Plan`.
 
 ## User Questions
 
