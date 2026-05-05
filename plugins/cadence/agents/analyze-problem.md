@@ -154,45 +154,45 @@ Use the `Edit` tool to replace the body of the `## Analysis` section in `<sessio
 The body to inline under `## Analysis`:
 
 ````markdown
-# Problem Analysis: <short title>
+### Problem Analysis: <short title>
 
-## 1. Restated Problem
+### 1. Restated Problem
 <one precise sentence>
 
-## 2. Facts
+### 2. Facts
 
-### Verified Facts
+#### Verified Facts
 - F1: <fact> — <source>
 - ...
 
-### Challenged Assumptions
+#### Challenged Assumptions
 - A1: <assumption> — <what would confirm/refute>
 - ...
 
-### Hard Constraints
+#### Hard Constraints
 - C1: <constraint>
 - ...
 
-### Evidence Gaps
+#### Evidence Gaps
 - G1: <gap> — <why it matters>
 - ...
 
-## 3. Decomposition
+### 3. Decomposition
 <sub-problems with fact references>
 
-## 4. Root Causes
+### 4. Root Causes
 <causal chains with fact citations>
 
-## 5. Visual Model
+### 5. Visual Model
 ```mermaid
 ...
 ```
 <legend>
 
-## 6. Synthesis
+### 6. Synthesis
 <interactions, emergent properties, core tension>
 
-## 7. Key Questions
+### 7. Key Questions
 <Q1 through QN, ordered by priority>
 ````
 
