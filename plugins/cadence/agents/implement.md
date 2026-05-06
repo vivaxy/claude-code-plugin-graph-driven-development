@@ -1,19 +1,19 @@
 ---
 name: implement
-description: Execute exactly one work item from `## CheckList` → `### Implementation` of `<session-folder>/session.md`. Reads the relevant files, applies the specified change, runs verification (type-check / tests / lint), and the agent's sole output is editing that sub-section — ticking the work item with files-touched and verification notes as sub-bullets. Leaves committing to the user. Examples:
+description: |
+  Execute exactly one work item from `## CheckList` → `### Implementation` of `<session-folder>/session.md`. Reads the relevant files, applies the specified change, runs verification (type-check / tests / lint), and the agent's sole output is editing that sub-section — ticking the work item with files-touched and verification notes as sub-bullets. Leaves committing to the user. Examples:
 
-<example>
-Context: Plan approved. Router spawned implement because `## CheckList` → `### Implementation` has unchecked items.
-user: [router routes here after detecting `- [ ]` items under `## CheckList` → `### Implementation`]
-assistant: [reads session.md, finds the next unchecked work item, reads the corresponding step description from `## Plan` → `### Implementation Steps`, makes the change, runs verification, edits session.md to tick the item with files-touched + verification sub-bullets, returns one-line handoff]
-<commentary>
-The implement agent processes exactly one work item per invocation. It reads `session.md`,
-finds the next `- [ ]` item under `## CheckList` → `### Implementation`, applies the change,
-verifies it, and edits `session.md` to tick that item. The router re-spawns the agent for
-the next unchecked item.
-</commentary>
-</example>
-
+  <example>
+  Context: Plan approved. Router spawned implement because `## CheckList` → `### Implementation` has unchecked items.
+  user: [router routes here after detecting `- [ ]` items under `## CheckList` → `### Implementation`]
+  assistant: [reads session.md, finds the next unchecked work item, reads the corresponding step description from `## Plan` → `### Implementation Steps`, makes the change, runs verification, edits session.md to tick the item with files-touched + verification sub-bullets, returns one-line handoff]
+  <commentary>
+  The implement agent processes exactly one work item per invocation. It reads `session.md`,
+  finds the next `- [ ]` item under `## CheckList` → `### Implementation`, applies the change,
+  verifies it, and edits `session.md` to tick that item. The router re-spawns the agent for
+  the next unchecked item.
+  </commentary>
+  </example>
 model: inherit
 color: blue
 tools:

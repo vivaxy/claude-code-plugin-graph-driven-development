@@ -1,25 +1,25 @@
 ---
 name: clarify
-description: Use this agent when clarification is needed before a Cadence session begins — when the user's request is ambiguous, when no session.md exists yet, or when the session routing delegates clarification. The agent runs the clarification loop, derives the slug, creates the session folder, writes a minimal `session.md` with `## Clarification` ticked, and returns a handoff that includes a session-type hint for the router. Examples:
+description: |
+  Use this agent when clarification is needed before a Cadence session begins — when the user's request is ambiguous, when no session.md exists yet, or when the session routing delegates clarification. The agent runs the clarification loop, derives the slug, creates the session folder, writes a minimal `session.md` with `## Clarification` ticked, and returns a handoff that includes a session-type hint for the router. Examples:
 
-<example>
-Context: User describes a feature request but scope and success criteria are unclear.
-user: "I want to add notifications to the app"
-assistant: "Cadence clarification needed — invoking clarify agent."
-<commentary>
-No session.md exists. The clarify agent runs the Q&A loop, writes session.md with the ## Clarification body inline, and hands off a session-type hint to the router.
-</commentary>
-</example>
+  <example>
+  Context: User describes a feature request but scope and success criteria are unclear.
+  user: "I want to add notifications to the app"
+  assistant: "Cadence clarification needed — invoking clarify agent."
+  <commentary>
+  No session.md exists. The clarify agent runs the Q&A loop, writes session.md with the ## Clarification body inline, and hands off a session-type hint to the router.
+  </commentary>
+  </example>
 
-<example>
-Context: User describes a bug but details are vague.
-user: "Let's fix the login bug"
-assistant: "Invoking clarify agent to establish session context."
-<commentary>
-No session.md exists. The clarify agent gathers scope, infers `bugfix` as the session-type hint, and returns control to the router which confirms type and copies the matching template.
-</commentary>
-</example>
-
+  <example>
+  Context: User describes a bug but details are vague.
+  user: "Let's fix the login bug"
+  assistant: "Invoking clarify agent to establish session context."
+  <commentary>
+  No session.md exists. The clarify agent gathers scope, infers `bugfix` as the session-type hint, and returns control to the router which confirms type and copies the matching template.
+  </commentary>
+  </example>
 model: inherit
 color: cyan
 tools:

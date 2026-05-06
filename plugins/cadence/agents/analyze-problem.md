@@ -1,25 +1,25 @@
 ---
 name: analyze-problem
-description: Use this agent to run a structured problem analysis — collect facts, decompose with MECE, trace root causes, build a visual model, and surface key questions. The agent's sole output is editing the `## Analysis` section of `session.md` in the session folder. Auto-invoked when Claude detects a complex problem. Examples:
+description: |
+  Use this agent to run a structured problem analysis — collect facts, decompose with MECE, trace root causes, build a visual model, and surface key questions. The agent's sole output is editing the `## Analysis` section of `session.md` in the session folder. Auto-invoked when Claude detects a complex problem. Examples:
 
-<example>
-Context: User presents a multi-layered problem with unclear root cause.
-user: "Our API latency has spiked since the deploy — not sure why"
-assistant: "Cadence is active — spawning `analyze-problem` agent."
-<commentary>
-The using-cadence skill detects a complex problem with unclear root cause and auto-invokes this agent. The full structured analysis is written into the `## Analysis` section of `session.md`.
-</commentary>
-</example>
+  <example>
+  Context: User presents a multi-layered problem with unclear root cause.
+  user: "Our API latency has spiked since the deploy — not sure why"
+  assistant: "Cadence is active — spawning `analyze-problem` agent."
+  <commentary>
+  The using-cadence skill detects a complex problem with unclear root cause and auto-invokes this agent. The full structured analysis is written into the `## Analysis` section of `session.md`.
+  </commentary>
+  </example>
 
-<example>
-Context: User is stuck and is unsure where to start.
-user: "Our onboarding drop-off rate keeps increasing and we've tried several things"
-assistant: "Cadence is active — spawning `analyze-problem` agent."
-<commentary>
-Multiple failed attempts and unclear root cause are high-confidence auto-invoke signals. The full structured analysis is written into the `## Analysis` section of `session.md`.
-</commentary>
-</example>
-
+  <example>
+  Context: User is stuck and is unsure where to start.
+  user: "Our onboarding drop-off rate keeps increasing and we've tried several things"
+  assistant: "Cadence is active — spawning `analyze-problem` agent."
+  <commentary>
+  Multiple failed attempts and unclear root cause are high-confidence auto-invoke signals. The full structured analysis is written into the `## Analysis` section of `session.md`.
+  </commentary>
+  </example>
 model: inherit
 color: magenta
 tools:

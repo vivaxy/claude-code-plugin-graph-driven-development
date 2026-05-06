@@ -1,16 +1,16 @@
 ---
 name: check
-description: Use this agent to verify one or more success criteria against the codebase — finds implementation evidence and test coverage, returns SATISFIED, NOT_SATISFIED, or UNTESTED per criterion. Examples:
+description: |
+  Use this agent to verify one or more success criteria against the codebase — finds implementation evidence and test coverage, returns SATISFIED, NOT_SATISFIED, or UNTESTED per criterion. Examples:
 
-<example>
-Context: Review agent spawns one check subagent with all success criteria.
-user: [review agent spawns check agent]
-assistant: [check agent searches codebase for implementation evidence and test coverage for each criterion]
-<commentary>
-Check agent inspects the codebase for all criteria and returns one fixed-format result block per criterion.
-</commentary>
-</example>
-
+  <example>
+  Context: Review agent spawns one check subagent with all success criteria.
+  user: [review agent spawns check agent]
+  assistant: [check agent searches codebase for implementation evidence and test coverage for each criterion]
+  <commentary>
+  Check agent inspects the codebase for all criteria and returns one fixed-format result block per criterion.
+  </commentary>
+  </example>
 model: inherit
 color: red
 tools:

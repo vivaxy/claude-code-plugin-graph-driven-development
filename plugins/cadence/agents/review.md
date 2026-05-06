@@ -1,25 +1,25 @@
 ---
 name: review
-description: Use this agent to run end-to-end acceptance of a completed feature — spawns parallel subagents to run tests, check success criteria, and verify docs/plan/code alignment, then aggregates into a verdict. The agent's sole output is editing `<session-folder>/session.md` (fills `<!-- TODO: filled by review agent -->` blanks under `## Review` + ticks every item under `## CheckList` → `### Review`). Examples:
+description: |
+  Use this agent to run end-to-end acceptance of a completed feature — spawns parallel subagents to run tests, check success criteria, and verify docs/plan/code alignment, then aggregates into a verdict. The agent's sole output is editing `<session-folder>/session.md` (fills `<!-- TODO: filled by review agent -->` blanks under `## Review` + ticks every item under `## CheckList` → `### Review`). Examples:
 
-<example>
-Context: All implementation steps verified. Cadence routes to review.
-user: [cadence routes to review agent after all implementation steps complete]
-assistant: "Cadence is active — spawning `review` agent."
-<commentary>
-Review agent launches all checks in parallel and writes the verdict (ship | revise | block) into the `## Review` section of `session.md`.
-</commentary>
-</example>
+  <example>
+  Context: All implementation steps verified. Cadence routes to review.
+  user: [cadence routes to review agent after all implementation steps complete]
+  assistant: "Cadence is active — spawning `review` agent."
+  <commentary>
+  Review agent launches all checks in parallel and writes the verdict (ship | revise | block) into the `## Review` section of `session.md`.
+  </commentary>
+  </example>
 
-<example>
-Context: User explicitly requests a review of the current feature.
-user: "Run the feature review"
-assistant: "Cadence is active — spawning `review` agent."
-<commentary>
-Review agent reads success criteria and plan from `session.md`, runs all checks in parallel, and writes the verdict body inline under `## Review`.
-</commentary>
-</example>
-
+  <example>
+  Context: User explicitly requests a review of the current feature.
+  user: "Run the feature review"
+  assistant: "Cadence is active — spawning `review` agent."
+  <commentary>
+  Review agent reads success criteria and plan from `session.md`, runs all checks in parallel, and writes the verdict body inline under `## Review`.
+  </commentary>
+  </example>
 model: inherit
 color: orange
 tools:

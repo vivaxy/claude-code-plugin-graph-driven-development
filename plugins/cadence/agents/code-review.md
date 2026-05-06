@@ -1,25 +1,25 @@
 ---
 name: code-review
-description: Use this agent to review staged git changes (or HEAD diff) for style, bugs, and security — produces APPROVED, APPROVED_WITH_NOTES, or NEEDS_WORK verdict. Examples:
+description: |
+  Use this agent to review staged git changes (or HEAD diff) for style, bugs, and security — produces APPROVED, APPROVED_WITH_NOTES, or NEEDS_WORK verdict. Examples:
 
-<example>
-Context: Review agent spawns code-review subagent in parallel with other checks.
-user: [review agent spawns code-review agent]
-assistant: [code-review agent reads the diff, reviews each file, and returns a structured verdict]
-<commentary>
-The code-review agent is invoked by the review agent as one of its parallel checks. It returns APPROVED, APPROVED_WITH_NOTES, or NEEDS_WORK with a findings table.
-</commentary>
-</example>
+  <example>
+  Context: Review agent spawns code-review subagent in parallel with other checks.
+  user: [review agent spawns code-review agent]
+  assistant: [code-review agent reads the diff, reviews each file, and returns a structured verdict]
+  <commentary>
+  The code-review agent is invoked by the review agent as one of its parallel checks. It returns APPROVED, APPROVED_WITH_NOTES, or NEEDS_WORK with a findings table.
+  </commentary>
+  </example>
 
-<example>
-Context: User wants a standalone code review of staged changes.
-user: "Review my staged changes"
-assistant: "Cadence is active — spawning `code-review` agent."
-<commentary>
-The code-review agent gathers the diff, reviews each changed file across style/bugs/security dimensions, and outputs a structured report.
-</commentary>
-</example>
-
+  <example>
+  Context: User wants a standalone code review of staged changes.
+  user: "Review my staged changes"
+  assistant: "Cadence is active — spawning `code-review` agent."
+  <commentary>
+  The code-review agent gathers the diff, reviews each changed file across style/bugs/security dimensions, and outputs a structured report.
+  </commentary>
+  </example>
 model: inherit
 color: pink
 tools:

@@ -1,16 +1,16 @@
 ---
 name: verify
-description: Use this agent to review one structural dimension of a completed feature — docs alignment, plan alignment, or bugfix regression. Returns PASS, PASS_WITH_WARNINGS, or FAIL with findings. Examples:
+description: |
+  Use this agent to review one structural dimension of a completed feature — docs alignment, plan alignment, or bugfix regression. Returns PASS, PASS_WITH_WARNINGS, or FAIL with findings.
 
-<example>
-Context: Review agent spawns verify subagents in parallel, one per dimension.
-user: [review agent spawns verify agents]
-assistant: [verify agent checks the assigned dimension and returns structured findings]
-<commentary>
-Each verify agent receives a dimension (docs-alignment, plan-alignment, or bugfix-regression) and returns a structured findings block.
-</commentary>
-</example>
-
+  <example>
+  Context: Review agent spawns verify subagents in parallel, one per dimension.
+  user: [review agent spawns verify agents]
+  assistant: [verify agent checks the assigned dimension and returns structured findings]
+  <commentary>
+  Each verify agent receives a dimension (docs-alignment, plan-alignment, or bugfix-regression) and returns a structured findings block.
+  </commentary>
+  </example>
 model: inherit
 color: yellow
 tools:

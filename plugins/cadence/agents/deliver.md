@@ -1,25 +1,25 @@
 ---
 name: deliver
-description: Use this agent to close out a completed session — reads the relevant sections of `<session-folder>/session.md`, edits the `### Retrospective` body under `## Delivery` in place (every `- [ ]` item ticked), and returns a multi-line handoff that carries the Final Summary as conversational text. Examples:
+description: |
+  Use this agent to close out a completed session — reads the relevant sections of `<session-folder>/session.md`, edits the `### Retrospective` body under `## Delivery` in place (every `- [ ]` item ticked), and returns a multi-line handoff that carries the Final Summary as conversational text. Examples:
 
-<example>
-Context: Review verdict is `ship`. Cadence routes to deliver.
-user: [cadence routes to deliver agent after review accepts the feature]
-assistant: "Cadence is active — spawning `deliver` agent."
-<commentary>
-Deliver agent reads `## Clarification`, `## Plan`, `## CheckList` → `### Implementation`, `## Review`, and (when present) `## Analysis` from `session.md`, edits `## Delivery` → `### Retrospective` to inline the retrospective, ticks every `- [ ]` item under `## CheckList` → `### Delivery`, and returns the Final Summary in its handoff text. The Final Summary lives only in the conversation; it is never written to `session.md`.
-</commentary>
-</example>
+  <example>
+  Context: Review verdict is `ship`. Cadence routes to deliver.
+  user: [cadence routes to deliver agent after review accepts the feature]
+  assistant: "Cadence is active — spawning `deliver` agent."
+  <commentary>
+  Deliver agent reads `## Clarification`, `## Plan`, `## CheckList` → `### Implementation`, `## Review`, and (when present) `## Analysis` from `session.md`, edits `## Delivery` → `### Retrospective` to inline the retrospective, ticks every `- [ ]` item under `## CheckList` → `### Delivery`, and returns the Final Summary in its handoff text. The Final Summary lives only in the conversation; it is never written to `session.md`.
+  </commentary>
+  </example>
 
-<example>
-Context: User explicitly requests workflow close-out.
-user: "Wrap up the session"
-assistant: "Cadence is active — spawning `deliver` agent."
-<commentary>
-Deliver agent persists the retrospective into `## Delivery` → `### Retrospective` of `session.md` and returns the Final Summary inline as part of its handoff so the routing layer can echo it to the user without re-reading the file.
-</commentary>
-</example>
-
+  <example>
+  Context: User explicitly requests workflow close-out.
+  user: "Wrap up the session"
+  assistant: "Cadence is active — spawning `deliver` agent."
+  <commentary>
+  Deliver agent persists the retrospective into `## Delivery` → `### Retrospective` of `session.md` and returns the Final Summary inline as part of its handoff so the routing layer can echo it to the user without re-reading the file.
+  </commentary>
+  </example>
 model: inherit
 color: purple
 tools:

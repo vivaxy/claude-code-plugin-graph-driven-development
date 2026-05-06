@@ -1,16 +1,16 @@
 ---
 name: probe
-description: Use this agent to investigate a single unknown — searches the codebase, finds popular implementations online, and checks official documentation. Spawn one instance per uncertain detail, in parallel. Examples:
+description: |
+  Use this agent to investigate a single unknown — searches the codebase, finds popular implementations online, and checks official documentation. Spawn one instance per uncertain detail, in parallel. Examples:
 
-<example>
-Context: Clarify agent needs to know if an auth module exists before asking the user about auth integration.
-user: [probe invocation with question "Does an auth module already exist?"]
-assistant: [searches codebase, returns finding with file paths]
-<commentary>
-One probe agent per unknown. Runs in parallel with other probe agents for other unknowns.
-</commentary>
-</example>
-
+  <example>
+  Context: Clarify agent needs to know if an auth module exists before asking the user about auth integration.
+  user: [probe invocation with question "Does an auth module already exist?"]
+  assistant: [searches codebase, returns finding with file paths]
+  <commentary>
+  One probe agent per unknown. Runs in parallel with other probe agents for other unknowns.
+  </commentary>
+  </example>
 model: inherit
 color: yellow
 tools:

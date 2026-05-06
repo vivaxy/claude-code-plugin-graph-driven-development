@@ -1,25 +1,25 @@
 ---
 name: plan
-description: Use this agent to plan a clarified feature. The agent's sole output is editing `<session-folder>/session.md` — it fills in the `## Plan` body sub-headings (Context, Key Decisions, Docs/Source/Tests to Change, What Does Not Change, Implementation Steps, Verification, Summary), copies the implementation steps into `## CheckList` → `### Implementation` as `- [ ]` work items for the implement agent, ticks every item under `## CheckList` → `### Plan`, and gets user approval via `EnterPlanMode` / `ExitPlanMode`. The body passed to `ExitPlanMode` is the exact same body persisted to `## Plan`. The agent applies no source-code or doc changes itself. Examples:
+description: |
+  Use this agent to plan a clarified feature. The agent's sole output is editing `<session-folder>/session.md` — it fills in the `## Plan` body sub-headings (Context, Key Decisions, Docs/Source/Tests to Change, What Does Not Change, Implementation Steps, Verification, Summary), copies the implementation steps into `## CheckList` → `### Implementation` as `- [ ]` work items for the implement agent, ticks every item under `## CheckList` → `### Plan`, and gets user approval via `EnterPlanMode` / `ExitPlanMode`. The body passed to `ExitPlanMode` is the exact same body persisted to `## Plan`. The agent applies no source-code or doc changes itself. Examples:
 
-<example>
-Context: Clarification is complete and `## CheckList` → `### Clarification` items are all ticked. Session type is feature-dev. The `## Plan` section still contains the template skeleton with `<!-- TODO: filled by plan agent -->` placeholders.
-user: [cadence routes to plan agent after clarify completes]
-assistant: "Cadence is active — spawning `plan` agent."
-<commentary>
-Plan agent enters plan mode, reads `session.md`, drafts the full plan body, gets user approval via `ExitPlanMode`, then `Edit`s `session.md` to fill `## Plan` blanks, populate `## CheckList` → `### Implementation` work items, and tick `## CheckList` → `### Plan` items.
-</commentary>
-</example>
+  <example>
+  Context: Clarification is complete and `## CheckList` → `### Clarification` items are all ticked. Session type is feature-dev. The `## Plan` section still contains the template skeleton with `<!-- TODO: filled by plan agent -->` placeholders.
+  user: [cadence routes to plan agent after clarify completes]
+  assistant: "Cadence is active — spawning `plan` agent."
+  <commentary>
+  Plan agent enters plan mode, reads `session.md`, drafts the full plan body, gets user approval via `ExitPlanMode`, then `Edit`s `session.md` to fill `## Plan` blanks, populate `## CheckList` → `### Implementation` work items, and tick `## CheckList` → `### Plan` items.
+  </commentary>
+  </example>
 
-<example>
-Context: User requests a new feature and clarification is already in `session.md`.
-user: "Let's plan the caching layer"
-assistant: "Cadence is active — spawning `plan` agent."
-<commentary>
-Plan agent reads `## Clarification` from `session.md`, drafts the plan body, proposes via `ExitPlanMode`, and on approval edits `## Plan` body and `## CheckList` → `### Implementation` / `### Plan` in the same `session.md` file. No separate plan file is created.
-</commentary>
-</example>
-
+  <example>
+  Context: User requests a new feature and clarification is already in `session.md`.
+  user: "Let's plan the caching layer"
+  assistant: "Cadence is active — spawning `plan` agent."
+  <commentary>
+  Plan agent reads `## Clarification` from `session.md`, drafts the plan body, proposes via `ExitPlanMode`, and on approval edits `## Plan` body and `## CheckList` → `### Implementation` / `### Plan` in the same `session.md` file. No separate plan file is created.
+  </commentary>
+  </example>
 model: inherit
 color: green
 tools:
