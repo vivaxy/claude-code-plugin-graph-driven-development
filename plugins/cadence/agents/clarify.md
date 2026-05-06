@@ -48,7 +48,6 @@ Assess what is already clear and what is ambiguous:
 - **Scope**: What is in scope? What is explicitly out of scope?
 - **Constraints**: Technical, time, or resource constraints?
 - **Success criteria**: How will we know this is done?
-- **Non-goals**: What should this NOT do?
 
 ## Step 2: Probe Technical Unknowns
 
@@ -190,12 +189,9 @@ Use the `Write` tool to write `<session-folder>/session.md` with this exact stru
 
 ### Success Criteria
 - ...
-
-### Non-Goals
-- ...
 ```
 
-For `bugfix` hints, append these sub-sections after `### Non-Goals`:
+For `bugfix` hints, append these sub-sections after `### Success Criteria`:
 
 ```markdown
 ### Reproduction Steps
@@ -204,8 +200,6 @@ For `bugfix` hints, append these sub-sections after `### Non-Goals`:
 ### Root Cause
 <one-sentence diagnosis>
 ```
-
-For bugfix hints, append the Reproduction Steps and Root Cause sub-sections after `### Non-Goals` as shown above. The third checklist item ("Write the clarification body...") covers writing all sub-sections, including bugfix-specific ones.
 
 `<hint>` must be one of `trivial`, `feature-dev`, `bugfix`, `analysis`. `<YYYY-MM-DD>` is the same date used in the folder path. `<Session Title>` is a short human-readable title derived from the Problem statement.
 

@@ -8,7 +8,7 @@ Issues surfaced by the audit on 2026-05-05. Severity: **Critical** (broken/contr
 - [x] **C2. Fix heading levels in `agents/analyze-problem.md:157-197` output template.** The body uses `# Problem Analysis` (level 1) and `## 1. Restated Problem` … `## 7. Key Questions` (level 2). When inserted under the existing `## Analysis` (level 2), the level-2 sub-headings become siblings — terminating the section. Lower them to `### 1. Restated Problem` etc. so they nest correctly.
 - [x] **C3. Reconcile retrospective sub-headings between `agents/deliver.md` and templates.** `deliver.md:51-57, 76-105` writes `What Went Well` / `What Went Wrong` / `Learnings`, but `templates/feature-dev.md:127`, `templates/bugfix.md:149`, `templates/doc-writing.md:127` require `What Was Built` / `Files Changed` / `Deviations` / `Learnings` / `Open Items`. Pick one structure and align both sides.
 - [x] **C4. Add an analysis-session Final Summary path to `agents/deliver.md`.** `templates/analysis.md:55-56` requires `Investigated` / `Top Findings` / `Recommended Next Investigation` / `Open Items` ending with `Analysis complete.`, but `deliver.md:60-68` only knows the feature-dev format (`Built` / `Tests` / … ending `Workflow complete.`). Branch on session type or read the template's expected structure.
-- [ ] in analyze, is "Out of Scope" and "Non-Goals" the same content?
+- [x] in analyze, is "Out of Scope" and "Non-Goals" the same content?
 
 ## Major
 
