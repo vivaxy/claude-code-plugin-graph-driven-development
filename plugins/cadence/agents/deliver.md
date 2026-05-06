@@ -49,9 +49,18 @@ If `## Review` records a `block` verdict, write a "Delivery Blocked" body into `
 
 `Wrote ## Delivery to <absolute-path-to-session.md>. Delivery blocked — review verdict was block.`
 
+Detect the session shape from the headings present in `session.md`:
+
+- **Build session** (feature-dev / bugfix / doc-writing) — `## Implementation` is present. Use the build-session retrospective and final summary structure below.
+- **Analysis session** — `## Analysis` is present and `## Implementation` is absent. Use the analysis-session retrospective and final summary structure below.
+
+The two paths differ in both the retrospective sub-headings and the final summary sub-headings. Pick the path matching the detected shape and use it consistently across Step 2, Step 3, and Step 4.
+
 ## Step 2: Compose Retrospective Body
 
-Compose the retrospective body for the `### Retrospective` sub-heading under `## Delivery`. This content goes into `session.md` only. Structure:
+Compose the retrospective body for the `### Retrospective` sub-heading under `## Delivery`. This content goes into `session.md` only.
+
+**Build session structure:**
 
 - **What Was Built** — 2–3 sentences summarizing the delivered change
 - **Files Changed** — key files modified or created, with one-line purpose each
@@ -60,6 +69,14 @@ Compose the retrospective body for the `### Retrospective` sub-heading under `##
 - **What Went Wrong** — concrete friction or missteps; write "None." when there were none
 - **Learnings** — takeaways and process improvements for next time, as a bullet list
 - **Open Items** — follow-up tasks, known limitations, future improvements, as a bullet list; write "None." when there were none
+
+**Analysis session structure:**
+
+- **What Was Investigated** — 2–3 sentences summarizing the investigation
+- **Files Read** — key files inspected during analysis, with one-line purpose each
+- **Deviations** — where the analysis surfaced something unexpected; write "None." when there were none
+- **Learnings** — what went well, what was harder than expected, process improvements for next time, as a bullet list
+- **Open Items** — follow-up investigations, unanswered key questions, future work, as a bullet list; write "None." when there were none
 
 After drafting the seven sections, before writing the body to `session.md`:
 
@@ -78,7 +95,9 @@ The persistence prompts run in Step 2 so all destination writes complete before 
 
 ## Step 3: Compose Final Summary Body
 
-Compose the final summary body for the `### Final Summary` sub-heading under `## Delivery`. This content goes into `session.md` only. Structure:
+Compose the final summary body for the `### Final Summary` sub-heading under `## Delivery`. This content goes into `session.md` only.
+
+**Build session structure:**
 
 - **Built** — one-line description of what shipped
 - **Tests** — all passing (or test count from `## Review`)
@@ -88,11 +107,20 @@ Compose the final summary body for the `### Final Summary` sub-heading under `##
 
 End the final summary body with the line: `Workflow complete.`
 
+**Analysis session structure:**
+
+- **Investigated** — one-line description of what was analyzed
+- **Top Findings** — bullet list of root causes and key questions surfaced by the analysis
+- **Recommended Next Investigation** — one-line pointer to the highest-priority key question
+- **Open Items** — `None.` or list
+
+End the final summary body with the line: `Analysis complete.`
+
 ## Step 4: Edit `## Delivery` in `session.md` and Return
 
-Use the `Edit` tool to update `<session-folder>/session.md`. Replace the body of the `## Delivery` section with the structure below, keeping the `### Procedural Checklist` sub-heading at the end and ticking every checklist item there from `- [ ]` to `- [x]`.
+Use the `Edit` tool to update `<session-folder>/session.md`. Replace the body of the `## Delivery` section with the structure matching the detected session shape (build vs. analysis), keeping the `### Procedural Checklist` sub-heading at the end and ticking every checklist item there from `- [ ]` to `- [x]`.
 
-Inline body to write under `## Delivery` (above `### Procedural Checklist`):
+**Build session — inline body to write under `## Delivery` (above `### Procedural Checklist`):**
 
 ```markdown
 ### Retrospective
@@ -138,17 +166,55 @@ Inline body to write under `## Delivery` (above `### Procedural Checklist`):
 Workflow complete.
 ```
 
+**Analysis session — inline body to write under `## Delivery` (above `### Procedural Checklist`):**
+
+```markdown
+### Retrospective
+
+#### What Was Investigated
+<2–3 sentences>
+
+#### Files Read
+<key files inspected during analysis>
+
+#### Deviations
+<bullet list, or "None.">
+
+#### Learnings
+<bullet list>
+
+#### Open Items
+<None. | bullet list>
+
+### Final Summary
+
+#### Investigated
+<one-line description>
+
+#### Top Findings
+<bullet list of root causes and key questions>
+
+#### Recommended Next Investigation
+<one-line pointer to highest-priority key question>
+
+#### Open Items
+<None. | bullet list>
+
+Analysis complete.
+```
+
 Use `date -u +%Y-%m-%d` for any date references in the body.
 
 After editing, return ONLY this single line:
 
-`Wrote ## Delivery to <absolute-path-to-session.md>. Session complete. <one-sentence summary of the delivery>.`
+`Wrote ## Delivery to <absolute-path-to-session.md>. Session complete. <one-sentence summary of the delivery (or analysis handoff for analysis sessions)>.`
 
 The router reads the `### Final Summary` block under `## Delivery` and surfaces it to the user.
 
 ## Guidelines
 
 - Always read the relevant sections of `session.md` rather than relying on conversation context
+- Always detect the session shape (build vs. analysis) from the headings present in `session.md` and use the matching retrospective + final summary structure end-to-end (close the build path with `Workflow complete.`; close the analysis path with `Analysis complete.`)
 - Always keep the retrospective and final summary in `session.md` only and return only the one-line handoff
 - Always use `date -u +%Y-%m-%d` for any date references in the body
 - Always tick every item in `### Procedural Checklist` after the body is written
