@@ -9,13 +9,23 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 # Using Cadence
 
-Cadence drives every non-trivial task through a single per-session checklist file:
+Cadence drives every task — including trivial ones — through a single per-session checklist file:
 
 - Path: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/session.md`
 - One file per session. Each `## <Section>` heading is owned by exactly one agent (or by the main thread). Sections contain `- [ ]` checklist items the owning agent ticks to `- [x]` as it works.
 - Side artifacts (analysis figures, plan diagrams the agents emit) may live alongside `session.md` in the same folder; only `session.md` is consulted by routing.
 
 Routing reduces to: read `session.md`, find the first section with any unchecked item, spawn that section's owner.
+
+## Activation Announcement
+
+Always post a single visible line to the user the first time routing fires in a turn, before doing any tool work:
+
+```
+Cadence is active — routing this turn.
+```
+
+This makes activation observable. It is required even when the next step is a trivial `## Answer` handled by the main thread. Emit it once per turn, before step 1 of the routing algorithm.
 
 ## Heading → Owner Mapping
 
@@ -132,7 +142,7 @@ The router uses `AskUserQuestion` whenever it needs input from the user — at m
 ## Instruction Priority
 
 1. The user's explicit instructions (CLAUDE.md, direct requests) — highest.
-2. Cadence routing — for all non-trivial tasks.
+2. Cadence routing — applies to every task by default.
 3. Default behavior — for everything else.
 
 If the user says "just implement it, skip the workflow", honor that.
