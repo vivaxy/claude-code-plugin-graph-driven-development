@@ -148,7 +148,7 @@ For a `feature-dev` session, the flow walks through `### Clarification → ### P
    clarify ─→ analyze ─→ plan ─→ implement ─→ review ─→ deliver
                                                             │
                                                             ▼
-                                            Final Summary (conversation only)
+                                            ### Final Summary (conversation only)
 ```
 
 `session.md` is the state. Each agent owns one section, ticks its `- [ ]` items as `- [x]`, and routing always reads top-to-bottom to pick the next owner. Documents and diagrams live in `docs/`. They change first, code follows.
