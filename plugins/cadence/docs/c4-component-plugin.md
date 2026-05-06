@@ -19,6 +19,10 @@ C4Component
     Component(implement, "implement agent", "Step executor", "Owns ## CheckList → ### Implementation — applies code changes per work item and ticks each item with files-touched/verification sub-bullets")
     Component(review, "review agent", "Review agent", "Owns ## CheckList → ### Review and ## Review body — runs parallel checks, fills body blanks, ticks checklist")
     Component(deliver, "deliver agent", "Delivery agent", "Owns ## CheckList → ### Delivery and ## Delivery body — fills retrospective + final summary blanks, ticks checklist")
+    Component(probe, "probe agent", "Investigation subagent", "Spawned by clarify (one per unknown, in parallel) — searches codebase, popular implementations, and official docs to answer one factual question")
+    Component(check, "check agent", "Criteria verifier subagent", "Spawned by review — verifies each success criterion against the codebase, returns SATISFIED / NOT_SATISFIED / UNTESTED")
+    Component(verify, "verify agent", "Structural reviewer subagent", "Spawned by review (one per dimension, in parallel) — reviews docs-alignment, plan-alignment, or bugfix-regression, returns PASS / PASS_WITH_WARNINGS / FAIL")
+    Component(codeReview, "code-review agent", "Diff reviewer subagent", "Spawned by review — reviews staged diff for style, bugs, and security, returns APPROVED / APPROVED_WITH_NOTES / NEEDS_WORK")
   }
 
   ContainerDb(templates, "templates/", "Markdown templates", "One file per session type (trivial, feature-dev, bugfix, analysis)")
@@ -42,6 +46,14 @@ C4Component
   Rel(implement, sessionFolder, "Ticks ### Implementation work items with files-touched/verification sub-bullets")
   Rel(review, sessionFolder, "Fills ## Review body, ticks ### Review items")
   Rel(deliver, sessionFolder, "Fills ## Delivery body, ticks ### Delivery items")
+  Rel(clarify, probe, "Spawns one per unknown, in parallel")
+  Rel(review, check, "Spawns to verify success criteria")
+  Rel(review, verify, "Spawns one per structural dimension, in parallel")
+  Rel(review, codeReview, "Spawns to review staged diff")
+  Rel(probe, projectSrc, "Reads")
+  Rel(check, projectSrc, "Reads")
+  Rel(verify, projectSrc, "Reads")
+  Rel(codeReview, projectSrc, "Reads diff")
 ```
 
 ## Key Decisions
