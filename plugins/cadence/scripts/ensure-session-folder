@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Ensure a Cadence session folder exists and that the sibling
+# `.claude/.gitignore` ignores the `sessions/` directory by default.
+#
+# Usage:
+#   ensure-session-folder <absolute-session-folder-path>
+#
+# The session folder is expected to live at:
+#   <project>/.claude/sessions/<YYYY-MM-DD>-<slug>/
+#
+# This script:
+#   1. Creates the session folder via `mkdir -p` (idempotent).
+#   2. Ensures `<project>/.claude/.gitignore` exists and contains the
+#      line `sessions/`. The append is idempotent — re-runs do not
+#      duplicate the line, and any existing entries are preserved.
+#
+# Both steps are safe to re-run for the same path (e.g. when the
+# router reuses an existing session folder).
+
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+  echo "usage: ensure-session-folder <absolute-session-folder-path>" >&2
+  exit 64
+fi
+
+SESSION_FOLDER="$1"
+
+if [ -z "${SESSION_FOLDER}" ]; then
+  echo "ensure-session-folder: session folder path is empty" >&2
+  exit 64
+fi
+
+case "${SESSION_FOLDER}" in
+  /*) ;;
+  *)
+    echo "ensure-session-folder: session folder path must be absolute: ${SESSION_FOLDER}" >&2
+    exit 64
+    ;;
+esac
+
+mkdir -p "${SESSION_FOLDER}"
+
+SESSIONS_DIR="$(dirname "${SESSION_FOLDER}")"
+CLAUDE_DIR="$(dirname "${SESSIONS_DIR}")"
+GITIGNORE="${CLAUDE_DIR}/.gitignore"
+
+touch "${GITIGNORE}"
+if ! grep -qxF "sessions/" "${GITIGNORE}"; then
+  # Ensure file ends with a newline before appending.
+  if [ -s "${GITIGNORE}" ] && [ "$(tail -c1 "${GITIGNORE}"; echo x)" != $'\nx' ]; then
+    printf '\n' >> "${GITIGNORE}"
+  fi
+  printf 'sessions/\n' >> "${GITIGNORE}"
+fi

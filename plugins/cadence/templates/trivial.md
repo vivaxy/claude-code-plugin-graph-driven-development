@@ -20,7 +20,7 @@
 - [ ] Resolve the session folder path (project root via `git rev-parse --show-toplevel` or `pwd`; date via `date -u +%Y-%m-%d`; slug derived from the problem statement: lowercase, ASCII-only, runs of non-alphanumerics collapsed to single dashes, leading/trailing dashes stripped, truncated to 50 characters with any trailing dash re-stripped)
 - [ ] Handle folder collisions by calling `AskUserQuestion` once with options ["Continue existing session", "Start fresh"] and on "Start fresh" append `-2`, then `-3`, etc. until a free path is found
 - [ ] When a `reuse_folder` hint is provided by the router (re-clarification), reuse that exact path, skip slug derivation and collision detection, and overwrite the existing session.md `## Clarification` section in place
-- [ ] Create the session folder with `mkdir -p <path>` (idempotent — safe when reusing)
+- [ ] Run `${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/scripts/ensure-session-folder <path>` to create the session folder and ensure `<project-root>/.claude/.gitignore` contains `sessions/` (idempotent — safe when reusing)
 - [ ] Write the clarification body into `## Clarification` of `session.md` (Problem, In Scope, Out of Scope, Constraints, Success Criteria, Non-Goals; for bugfix sessions also Reproduction Steps and Root Cause) and tick every item in this section
 - [ ] Return exactly one terminal line of the form: `Wrote session.md to <absolute-path-to-session.md>. Session-type hint: <hint>.`
 

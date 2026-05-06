@@ -115,15 +115,11 @@ Every Cadence run produces a per-session folder inside the user's project:
 - **`session.md` is the only state**: routing reads it top-to-bottom and spawns the owner of the first section with any `- [ ]` item
 - **Plan body lives in `## Plan` of `session.md`** — the plan is part of the session file itself
 
-### Recommended `.gitignore`
+### Auto-managed `.gitignore`
 
-Session folders are personal scratch space by default. Add this line to your project `.gitignore`:
+Session folders are personal scratch space by default. The first time the `clarify` agent creates `.claude/sessions/`, it also creates a sibling `.claude/.gitignore` with the line `sessions/` so per-session content stays untracked by default. The append is idempotent — re-runs do not duplicate the line, and existing entries are preserved.
 
-```
-.claude/sessions/
-```
-
-To opt in to committing session folders for a team-shared durable record, omit that line and commit the folders alongside code.
+To opt in to committing session folders for a team-shared durable record, remove the `sessions/` line from `.claude/.gitignore` (or delete the file) and commit the folders alongside code.
 
 ## Analyze Skills
 

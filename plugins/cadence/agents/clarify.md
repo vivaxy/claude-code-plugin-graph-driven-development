@@ -151,7 +151,13 @@ Otherwise, derive the path:
   - On `"Start fresh"`: append `-2` to the slug-suffix and re-check; if `-2` exists, try `-3`, then `-4`, and so on until you find a free path. Use the first free path.
 - If it does not exist, use the default path.
 
-Once the path is finalized, create it with `mkdir -p <path>` via Bash (idempotent — safe even when reusing).
+Once the path is finalized, run the `ensure-session-folder` script via Bash. It is idempotent (safe when reusing) and handles both folder creation and the sibling `.claude/.gitignore`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/scripts/ensure-session-folder" "<session-folder>"
+```
+
+The script creates `<session-folder>` via `mkdir -p` and ensures `<project-root>/.claude/.gitignore` contains the line `sessions/` so per-session scratch space stays untracked by default. Re-runs do not duplicate the entry; existing `.gitignore` content is preserved. Users who want to commit session folders can remove the `sessions/` line (or delete the file) afterwards.
 
 ### 6b. Write session.md
 
@@ -181,7 +187,7 @@ Use the `Write` tool to write `<session-folder>/session.md` with this exact stru
 - [x] Resolve the session folder path (project root via `git rev-parse --show-toplevel` or `pwd`; date via `date -u +%Y-%m-%d`; slug derived from the problem statement: lowercase, ASCII-only, runs of non-alphanumerics collapsed to single dashes, leading/trailing dashes stripped, truncated to 50 characters with any trailing dash re-stripped)
 - [x] Handle folder collisions by calling `AskUserQuestion` once with options ["Continue existing session", "Start fresh"] and on "Start fresh" append `-2`, then `-3`, etc. until a free path is found
 - [x] When a `reuse_folder` hint is provided by the router (re-clarification), reuse that exact path, skip slug derivation and collision detection, and overwrite the existing session.md `## Clarification` section in place
-- [x] Create the session folder with `mkdir -p <path>` (idempotent — safe when reusing)
+- [x] Run `${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/scripts/ensure-session-folder <path>` to create the session folder and ensure `<project-root>/.claude/.gitignore` contains `sessions/` (idempotent — safe when reusing)
 - [x] Write the clarification body into `## Clarification` of `session.md` (Problem, In Scope, Out of Scope, Constraints, Success Criteria, Non-Goals; for bugfix sessions also Reproduction Steps and Root Cause) and tick every item in this section
 - [x] Return exactly one terminal line of the form: `Wrote session.md to <absolute-path-to-session.md>. Session-type hint: <hint>.`
 
