@@ -243,6 +243,17 @@ Each agent owns one `### <Sub-section>` under `## CheckList` (and where applicab
 
 You can rely on the routing skill to spawn these agents at the right time. Manual invocation is rarely needed.
 
+### Utility Subagents
+
+These four agents are spawned internally by the phase agents above — they are not invoked directly by routing. They exist as separate agent files so the phase agents can fan them out in parallel and aggregate their structured results.
+
+| Subagent | Spawned by | Responsibility |
+|---|---|---|
+| `probe` | `clarify` (one per unknown, in parallel) | Investigate a single factual question by searching the codebase, popular online implementations, and official documentation; returns a finding |
+| `check` | `review` | Verify success criteria against the codebase; returns `SATISFIED`, `NOT_SATISFIED`, or `UNTESTED` per criterion |
+| `verify` | `review` (one per dimension, in parallel) | Review one structural dimension (docs alignment, plan alignment, or bugfix regression); returns `PASS`, `PASS_WITH_WARNINGS`, or `FAIL` |
+| `code-review` | `review` | Review staged diff for style, bugs, and security; returns `APPROVED`, `APPROVED_WITH_NOTES`, or `NEEDS_WORK` |
+
 ---
 
 ## Best Practices
