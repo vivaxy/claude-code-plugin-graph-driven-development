@@ -58,26 +58,26 @@ Every Cadence run creates a per-session folder inside the user's project contain
 └── session.md            # the entire session lives here
 ```
 
-`session.md` is the only state. It is divided into `## <Section>` headings, each containing a checklist of `- [ ]` items. The routing skill reads `session.md` top-to-bottom, finds the first section with any unchecked item, and spawns the agent that owns that section. Each agent ticks its items as `- [x]` after completing the work for that item.
+`session.md` is the only state. A single `## CheckList` section groups every workflow item under `### <Sub-section>` headings (one per agent), each containing a list of `- [ ]` items. Body sections (`## Clarification`, `## Plan`, `## Analysis`, `## Review`, `## Delivery`, `## Answer`) hold the structured content the agents fill in via `<!-- TODO: ... -->` placeholders. The routing skill walks `## CheckList` top-to-bottom, finds the first sub-section with any unchecked item, and spawns its owner. Each agent ticks its items as `- [x]` and replaces the matching `<!-- TODO: ... -->` placeholders in the body section it owns.
 
 ### Session types
 
-There are four session types, each with a template under `plugins/cadence/templates/` that defines its sections:
+There are four session types, each with a template under `plugins/cadence/templates/` that defines its `## CheckList` sub-sections and body sections:
 
-| Session type | Template | Sections |
-|---|---|---|
-| `trivial` | `templates/trivial.md` | `## Clarification`, `## Answer` |
-| `feature-dev` | `templates/feature-dev.md` | `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
-| `bugfix` | `templates/bugfix.md` | `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
-| `analysis` | `templates/analysis.md` | `## Clarification`, `## Analysis`, `## Delivery` |
+| Session type | Template | CheckList sub-sections | Body sections |
+|---|---|---|---|
+| `trivial` | `templates/trivial.md` | `### Clarification`, `### Answer` | `## Clarification` |
+| `feature-dev` | `templates/feature-dev.md` | `### Clarification`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Plan`, `## Review`, `## Delivery` |
+| `bugfix` | `templates/bugfix.md` | `### Clarification`, `### Analysis`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery` |
+| `analysis` | `templates/analysis.md` | `### Clarification`, `### Analysis`, `### Delivery` | `## Clarification`, `## Analysis`, `## Delivery` |
 
 `feature-dev` covers both new behavior and documentation work — the implement agent handles both source code (with type-check/test verification) and docs (with structural verification).
 
-Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then copies the matching template into `session.md`. From there, routing reads top-to-bottom and spawns owners section by section.
+Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then copies the matching template into `session.md`. From there, routing walks `## CheckList` top-to-bottom and spawns owners sub-section by sub-section.
 
 The plan body lives in `## Plan` of `session.md` — the plan is part of the session file itself.
 
-**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, finds the first section in `session.md` with any `- [ ]` item, and continues from there.
+**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, finds the first `### <Sub-section>` under `## CheckList` with any `- [ ]` item, and continues from there.
 
 **Recommended `.gitignore`**: session folders are personal scratch space by default. Add this line to your project `.gitignore`:
 
@@ -101,10 +101,10 @@ The `using-cadence` skill activates at session start and routes the request:
 
 1. **Clarify** — the `clarify` agent writes a minimal `session.md` capturing your intent and any open questions.
 2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the four session types (`trivial`, `feature-dev`, `bugfix`, `analysis`), then copies the matching template into `session.md`.
-3. **Walk the checklist** — routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and spawns that section's owner. Each agent ticks its items as `- [x]` after completing the work.
-4. **Deliver** — the final `## Delivery` section produces the summary and hands back to you.
+3. **Walk the checklist** — routing reads `## CheckList` in `session.md` top-to-bottom, finds the first `### <Sub-section>` with any `- [ ]` item, and spawns that sub-section's owner. Each agent ticks its items as `- [x]` and fills the matching body-section blanks after completing the work.
+4. **Deliver** — the final `### Delivery` items get ticked and `## Delivery` body produces the summary handed back to you.
 
-For a `feature-dev` session, the flow walks through `## Clarification → ## Plan → ## Implementation → ## Review → ## Delivery`. For a `bugfix`, an extra `## Analysis` step runs before `## Plan`. For `analysis`, the flow stops after `## Analysis → ## Delivery`. For `trivial`, the main thread answers directly under `## Answer`.
+For a `feature-dev` session, the flow walks through `### Clarification → ### Plan → ### Implementation → ### Review → ### Delivery` under `## CheckList`. For a `bugfix`, an extra `### Analysis` step runs before `### Plan`. For `analysis`, the flow stops after `### Analysis → ### Delivery`. For `trivial`, the main thread answers directly to the user and ticks `### Answer` to terminate.
 
 ---
 
@@ -200,20 +200,20 @@ flowchart TD
 
 ### Skill: `cadence:using-cadence`
 
-The single entry point for Cadence. Activates at session start and on every Cadence-relevant turn. Detects the active session folder, asks whether to resume or start fresh, walks `session.md` top-to-bottom, and spawns the agent that owns the first section with any `- [ ]` item.
+The single entry point for Cadence. Activates at session start and on every Cadence-relevant turn. Detects the active session folder, asks whether to resume or start fresh, walks `## CheckList` in `session.md` top-to-bottom, and spawns the agent that owns the first `### <Sub-section>` with any `- [ ]` item.
 
 ### Agents
 
-Each agent owns one section of `session.md` and is spawned by `using-cadence`:
+Each agent owns one `### <Sub-section>` under `## CheckList` (and where applicable, the matching body section) and is spawned by `using-cadence`:
 
-| Agent | Owns | Responsibility |
-|---|---|---|
-| `clarify` | `## Clarification` | Capture intent, list open questions, write the initial `session.md`, recommend a session type |
-| `analyze-problem` | `## Analysis` | Investigate the problem (bugfix/analysis sessions) and record findings |
-| `plan` | `## Plan` | Propose document and diagram updates; manage plan mode internally; runs a subagent diagram review loop until `APPROVED` or `APPROVED_WITH_WARNINGS` |
-| `implement` | `## Implementation` | Read `## Plan` and the relevant diagrams, then write code that follows the defined boundaries and flow order |
-| `review` | `## Review` | Run a code review (doc/diagram alignment plus code quality), fix critical issues, and re-review until `APPROVED` or `APPROVED_WITH_WARNINGS` |
-| `deliver` | `## Delivery` | Run a retrospective, consolidate learnings, and write the final summary |
+| Agent | Ticks under `## CheckList` | Fills body section | Responsibility |
+|---|---|---|---|
+| `clarify` | `### Clarification` | `## Clarification` | Capture intent, list open questions, write the initial `session.md`, recommend a session type |
+| `analyze-problem` | `### Analysis` | `## Analysis` | Investigate the problem (bugfix/analysis sessions) and record findings |
+| `plan` | `### Plan` | `## Plan` | Propose document and diagram updates; manage plan mode internally; runs a subagent diagram review loop until `APPROVED` or `APPROVED_WITH_NOTES` |
+| `implement` | `### Implementation` | (work-item sub-bullets, in `### Implementation` itself) | Read `## Plan` and the relevant diagrams, then write code that follows the defined boundaries and flow order |
+| `review` | `### Review` | `## Review` | Run a code review (doc/diagram alignment plus code quality), fix critical issues, and re-review until `APPROVED` or `APPROVED_WITH_NOTES` |
+| `deliver` | `### Delivery` | `## Delivery` | Run a retrospective, consolidate learnings, and write the final summary |
 
 You can rely on the routing skill to spawn these agents at the right time. Manual invocation is rarely needed.
 
@@ -257,7 +257,7 @@ Just describe your requirement — the `plan` agent will auto-create the initial
 This is expected for complex codebases. Correct them manually — they are Markdown files with Mermaid blocks, easy to edit. Accuracy improves over time as each new Cadence session refines the relevant area.
 
 **Code review finds too many deviations**  
-If deviations are consistently valid (the code is right, the document is wrong), update the documents in the next Cadence session. If deviations are consistently invalid (the code drifted from the document), enforce Cadence more strictly by always running through `## Plan` before `## Implementation`.
+If deviations are consistently valid (the code is right, the document is wrong), update the documents in the next Cadence session. If deviations are consistently invalid (the code drifted from the document), enforce Cadence more strictly by always running through `### Plan` before `### Implementation`.
 
 ---
 

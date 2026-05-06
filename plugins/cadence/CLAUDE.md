@@ -80,28 +80,28 @@ Mermaid diagram types by file:
 
 ## Cadence Development Workflow
 
-The workflow is driven by a single `session.md` per session. Its `## <Section>` headings hold checklists of `- [ ]` items, and the routing skill spawns the agent that owns the first section with any unchecked item.
+The workflow is driven by a single `session.md` per session. A single `## CheckList` section groups every workflow item under `### <Sub-section>` headings; the routing skill spawns the agent that owns the first sub-section with any unchecked item. Body sections (`## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery`, `## Answer`) hold the structured content the agents fill in.
 
-| Section heading | Owner |
+| `## CheckList` sub-section | Owner |
 |---|---|
-| `## Clarification` | `clarify` agent |
-| `## Analysis` | `analyze-problem` agent (bugfix, analysis sessions) |
-| `## Plan` | `plan` agent (feature-dev, bugfix) |
-| `## Implementation` | `implement` agent (feature-dev, bugfix) |
-| `## Review` | `review` agent (feature-dev, bugfix) |
-| `## Delivery` | `deliver` agent (feature-dev, bugfix, analysis) |
-| `## Answer` | main thread (trivial only) |
+| `### Clarification` | `clarify` agent |
+| `### Analysis` | `analyze-problem` agent (bugfix, analysis sessions) |
+| `### Plan` | `plan` agent (feature-dev, bugfix) |
+| `### Implementation` | `implement` agent (feature-dev, bugfix) |
+| `### Review` | `review` agent (feature-dev, bugfix) |
+| `### Delivery` | `deliver` agent (feature-dev, bugfix, analysis) |
+| `### Answer` | main thread (trivial only) |
 
-Routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and invokes that section's owner. Each agent ticks its items as `- [x]` after completing the work.
+Routing reads `## CheckList` in `session.md` top-to-bottom, finds the first `### <Sub-section>` with any `- [ ]` item, and invokes that sub-section's owner. Each agent ticks its items as `- [x]` after completing the work, and (where applicable) fills the `<!-- TODO: filled by ... agent -->` blanks under its matching `## <Section>` body.
 
 ## Session Types
 
-There are four session types. Each has a template under `plugins/cadence/templates/` that defines its sections:
+There are four session types. Each has a template under `plugins/cadence/templates/` that defines its `## CheckList` sub-sections and body sections:
 
-- **`trivial`** — small/localized change or factual question. Sections: `## Clarification`, `## Answer`.
-- **`feature-dev`** — new behavior or documentation work. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
-- **`bugfix`** — broken behavior. Sections: `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
-- **`analysis`** — diagnostic/exploratory. Sections: `## Clarification`, `## Analysis`, `## Delivery`.
+- **`trivial`** — small/localized change or factual question. CheckList sub-sections: `### Clarification`, `### Answer`. Body sections: `## Clarification`.
+- **`feature-dev`** — new behavior or documentation work. CheckList sub-sections: `### Clarification`, `### Plan`, `### Implementation`, `### Review`, `### Delivery`. Body sections: `## Clarification`, `## Plan`, `## Review`, `## Delivery`.
+- **`bugfix`** — broken behavior. CheckList sub-sections: `### Clarification`, `### Analysis`, `### Plan`, `### Implementation`, `### Review`, `### Delivery`. Body sections: `## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery`.
+- **`analysis`** — diagnostic/exploratory. CheckList sub-sections: `### Clarification`, `### Analysis`, `### Delivery`. Body sections: `## Clarification`, `## Analysis`, `## Delivery`.
 
 After `clarify` runs, the routing skill calls `AskUserQuestion` to confirm the session type, then copies the matching template into `session.md`.
 
@@ -111,7 +111,7 @@ Every Cadence run produces a per-session folder inside the user's project:
 
 - **Path**: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/`
 - **Contents**: a single `session.md` per session, plus any incidental side artifacts (e.g. analysis figures, plan diagrams)
-- **`session.md` is the only state**: routing reads it top-to-bottom and spawns the owner of the first section with any `- [ ]` item
+- **`session.md` is the only state**: routing walks `## CheckList` top-to-bottom and spawns the owner of the first `### <Sub-section>` with any `- [ ]` item
 - **Plan body lives in `## Plan` of `session.md`** — the plan is part of the session file itself
 
 ### Auto-managed `.gitignore`
@@ -129,7 +129,7 @@ When session type is `bugfix` or `analysis`, the routing skill spawns the `analy
 - **Always run `clarify` first**: every session starts with the clarify agent writing a minimal `session.md`
 - **Always pass the session folder absolute path**: every Cadence agent invocation includes the absolute path to `<session-folder>`
 - **Always read the relevant section of `session.md`** for context instead of relying on conversation context
-- **Always tick checklist items as `- [x]`** in the agent's owned section after completing the work for that item
+- **Always tick checklist items as `- [x]`** under `## CheckList` → `### <Agent>` after completing the work for that item, and fill the matching `<!-- TODO: filled by ... agent -->` blanks under the corresponding `## <Section>` body
 - **Always proactively create missing `docs/` files** if the project's `docs/` directory is incomplete
 - **Always read** the relevant diagram files before starting any implementation task
 - **Always centralize references** in `plugins/cadence/README.md` — keep `plugins/cadence/agents/` and `plugins/cadence/skills/` reference-free

@@ -32,7 +32,9 @@ tools:
   - AskUserQuestion
 ---
 
-You are the Cadence analyze-problem agent. Your sole output is editing the `## Analysis` section of `<session-folder>/session.md`: you inline the structured analysis body under that heading and tick every `- [ ]` item directly under `## Analysis`. You produce no other artifact.
+You are the Cadence analyze-problem agent. Your sole output is editing `<session-folder>/session.md`: replace every `<!-- TODO: filled by analyze-problem agent -->` placeholder under `## Analysis` with the drafted content, then tick every `- [ ]` item under `## CheckList` → `### Analysis`. You produce no other artifact.
+
+The body skeleton (sub-headings and TODO blanks) is already present in the template — your job is to fill in the blanks under each existing `###`/`####` sub-heading, not to invent new structure.
 
 ## Inputs (provided by the parent agent in the prompt)
 
@@ -147,54 +149,22 @@ Derive 3–7 key questions from the model. Each question must be rooted in a roo
 
 Order questions by priority (High first). Keep the conclusion focused on what to investigate; reserve action recommendations for downstream phases.
 
-## Step 8: Edit `## Analysis` in `session.md` and Return
+## Step 8: Fill Blanks Under `## Analysis` and Return
 
-Use the `Edit` tool to update `<session-folder>/session.md`. Tick every `- [ ]` item directly under `## Analysis` to `- [x]`, then append the structured analysis body below after the ticked items. Preserve the `## Analysis` heading itself and any sibling sections (`## Clarification`, `## Plan`, etc.) exactly as they appear.
+Use the `Edit` tool on `<session-folder>/session.md`. Under `## Analysis`, the template already contains every sub-heading the body needs:
 
-The body to inline under `## Analysis`:
+- `### Problem Analysis`
+- `### Restated Problem`
+- `### Facts` with `#### Verified Facts`, `#### Challenged Assumptions`, `#### Hard Constraints`, `#### Evidence Gaps`
+- `### Decomposition`
+- `### Root Causes`
+- `### Visual Model`
+- `### Synthesis`
+- `### Key Questions`
 
-````markdown
-### Problem Analysis: <short title>
+For each sub-heading, replace the `<!-- TODO: filled by analyze-problem agent — ... -->` placeholder line with the drafted content from Steps 1–7. Keep the `###` / `####` sub-heading lines themselves and the surrounding blank lines intact. Use Mermaid for the diagram under `### Visual Model` (use `<br>` for line breaks in node labels).
 
-### 1. Restated Problem
-<one precise sentence>
-
-### 2. Facts
-
-#### Verified Facts
-- F1: <fact> — <source>
-- ...
-
-#### Challenged Assumptions
-- A1: <assumption> — <what would confirm/refute>
-- ...
-
-#### Hard Constraints
-- C1: <constraint>
-- ...
-
-#### Evidence Gaps
-- G1: <gap> — <why it matters>
-- ...
-
-### 3. Decomposition
-<sub-problems with fact references>
-
-### 4. Root Causes
-<causal chains with fact citations>
-
-### 5. Visual Model
-```mermaid
-...
-```
-<legend>
-
-### 6. Synthesis
-<interactions, emergent properties, core tension>
-
-### 7. Key Questions
-<Q1 through QN, ordered by priority>
-````
+After every TODO placeholder under `## Analysis` is replaced, tick every `- [ ]` item under `## CheckList` → `### Analysis` to `- [x]`. Preserve every sibling section (`## Clarification`, `## Plan`, `## Review`, `## Delivery`) and every other `### <Sub-section>` under `## CheckList` exactly as they appear.
 
 After the edit succeeds, return ONLY this single line:
 
@@ -205,7 +175,7 @@ Then stop. Keep the full analysis confined to `session.md`; the conversation rec
 </process>
 
 <output-format>
-The full structured analysis lives inline under `## Analysis` in `<session-folder>/session.md`. The agent's terminal response is the one-line handoff defined in Step 8.
+The full structured analysis lives inline under `## Analysis` in `<session-folder>/session.md`, with every `<!-- TODO: filled by analyze-problem agent -->` placeholder replaced and every `## CheckList` → `### Analysis` item ticked. The agent's terminal response is the one-line handoff defined in Step 8.
 </output-format>
 
 <guidelines>

@@ -1,14 +1,14 @@
 ---
 name: implement
-description: Execute exactly one work item from the `## Implementation` section of `<session-folder>/session.md`. Reads the relevant files, applies the specified change, runs verification (type-check / tests / lint), and the agent's sole output is editing `## Implementation` of `session.md` — ticking the work item with files-touched and verification notes as sub-bullets. Leaves committing to the user. Examples:
+description: Execute exactly one work item from `## CheckList` → `### Implementation` of `<session-folder>/session.md`. Reads the relevant files, applies the specified change, runs verification (type-check / tests / lint), and the agent's sole output is editing that sub-section — ticking the work item with files-touched and verification notes as sub-bullets. Leaves committing to the user. Examples:
 
 <example>
-Context: Plan approved. Router spawned implement because `## Implementation` has unchecked items.
-user: [router routes here after detecting `- [ ]` items under `## Implementation`]
+Context: Plan approved. Router spawned implement because `## CheckList` → `### Implementation` has unchecked items.
+user: [router routes here after detecting `- [ ]` items under `## CheckList` → `### Implementation`]
 assistant: [reads session.md, finds the next unchecked work item, reads the corresponding step description from `## Plan` → `### Implementation Steps`, makes the change, runs verification, edits session.md to tick the item with files-touched + verification sub-bullets, returns one-line handoff]
 <commentary>
 The implement agent processes exactly one work item per invocation. It reads `session.md`,
-finds the next `- [ ]` item under `## Implementation` → `### Work Items`, applies the change,
+finds the next `- [ ]` item under `## CheckList` → `### Implementation`, applies the change,
 verifies it, and edits `session.md` to tick that item. The router re-spawns the agent for
 the next unchecked item.
 </commentary>
@@ -25,7 +25,7 @@ tools:
   - Grep
 ---
 
-You are the Cadence implement agent. Your sole output is editing the `## Implementation` section of `<session-folder>/session.md`. You process exactly one work item per invocation — the next unchecked `- [ ]` item under `### Work Items` — then return a one-line handoff. The router re-spawns you for the next unchecked item.
+You are the Cadence implement agent. Your sole output is editing `## CheckList` → `### Implementation` of `<session-folder>/session.md`. You process exactly one work item per invocation — the next unchecked `- [ ]` item under that sub-section — then return a one-line handoff. The router re-spawns you for the next unchecked item.
 
 ## Inputs (provided by the parent agent in the prompt)
 
@@ -36,13 +36,13 @@ The plan body (problem statement, constraints, key decisions, source-code-to-cha
 
 ## Procedure
 
-1. **Read `session.md`** — Use `Read` on `<session-folder>/session.md`. Locate the `## Implementation` section. Under `### Work Items`, find the first `- [ ]` item — this is your single target for this invocation.
+1. **Read `session.md`** — Use `Read` on `<session-folder>/session.md`. Locate `## CheckList` → `### Implementation`. Find the first `- [ ]` item under that sub-section — this is your single target for this invocation.
 2. **Read the step description from `## Plan`** — Inside `## Plan` → `### Implementation Steps`, locate the entry matching your target work item (same step number / description). Read it for full context: which files to change, what to change, and any cross-references.
-3. **Read before writing** — Use `Read` on every source file you will touch before making any edit. Also Read any prior ticked work items in `## Implementation` whose sub-bullets may inform your step.
+3. **Read before writing** — Use `Read` on every source file you will touch before making any edit. Also Read any prior ticked work items under `### Implementation` whose sub-bullets may inform your step.
 4. **Minimal change** — Apply only the change specified for this single step. Keep the diff focused; leave unrelated code untouched.
 5. **Verify** — Run the project's type-check or test command (e.g. `npx tsc --noEmit`, `npm test`, `npm run lint`) and confirm it passes. For markdown-only repos with no build step, verify structurally (file parses, sections intact, frontmatter valid). If verification fails, fix the issue and re-run before reporting.
 6. **Edit `session.md`** — Use `Edit` on `<session-folder>/session.md` to:
-   - Tick the target work item: change `- [ ] Step N: <description>` to `- [x] Step N: <description>`
+   - Tick the target work item under `## CheckList` → `### Implementation`: change `- [ ] Step N: <description>` to `- [x] Step N: <description>`
    - Add two sub-bullets directly under the ticked item (indent 2 spaces):
      - `  - Files touched: <absolute-path-1>, <absolute-path-2>, ...`
      - `  - Verification: <command run + result, e.g. "npx tsc --noEmit — pass">`

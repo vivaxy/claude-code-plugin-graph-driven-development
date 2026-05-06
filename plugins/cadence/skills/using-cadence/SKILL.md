@@ -12,24 +12,24 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 Cadence drives every task through one per-session checklist file:
 
 - Path: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/session.md`
-- One file per session. Each `## <Section>` heading is owned by exactly one agent (or the main thread). Sections contain `- [ ]` items the owner ticks to `- [x]` as work completes.
+- One file per session. The single `## CheckList` section groups every workflow item under `### <Sub-section>` headings; each sub-section is owned by exactly one agent (or the main thread) and contains `- [ ]` items the owner ticks to `- [x]` as work completes. Body sections (`## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery`, `## Answer`) hold the structured content the agents fill in.
 - Side artifacts may live alongside `session.md`; only `session.md` is consulted by routing.
 
-Routing reduces to: read `session.md`, find the first section with any unchecked item, spawn that section's owner.
+Routing reduces to: read `session.md`, walk `## CheckList` top-to-bottom, find the first `### <Sub-section>` with any unchecked item, spawn that sub-section's owner.
 
-## Heading → Owner Mapping
+## Sub-section → Owner Mapping
 
-Single source of truth for routing.
+Single source of truth for routing. The mapped sub-section lives under `## CheckList`.
 
-| Section heading | Owner |
+| `## CheckList` sub-section | Owner |
 |---|---|
-| `## Clarification` | `clarify` agent |
-| `## Analysis` | `analyze-problem` agent |
-| `## Plan` | `plan` agent |
-| `## Implementation` | `implement` agent |
-| `## Review` | `review` agent |
-| `## Delivery` | `deliver` agent |
-| `## Answer` | main thread |
+| `### Clarification` | `clarify` agent |
+| `### Analysis` | `analyze-problem` agent |
+| `### Plan` | `plan` agent |
+| `### Implementation` | `implement` agent |
+| `### Review` | `review` agent |
+| `### Delivery` | `deliver` agent |
+| `### Answer` | main thread |
 
 ## When Routing Runs
 
@@ -47,8 +47,8 @@ Cadence is active — routing this turn.
 
 1. **Find session folder.** Project root via `git rev-parse --show-toplevel` (fallback `pwd`). Search `<project>/.claude/sessions/` for `YYYY-MM-DD-*/`. Newest by name (lexicographic max — folder names are date-prefixed and sortable) = active.
 2. **Confirm resume vs. new** when a folder exists. `AskUserQuestion`: "An in-progress Cadence session was found at `<path>`. Continue or start new?" with options `["Continue existing", "Start new"]`. On "Start new", fall through to step 4.
-3. **Walk `session.md` top-to-bottom.** Find the first `## <Section>` whose body contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `## Answer`, the main thread answers and ticks items. If every section is ticked, surface `### Final Summary` (or `## Answer` body) to the user.
-4. **Spawn `clarify`** when no `session.md` exists. It creates the session folder, writes a minimal `session.md` with a ticked `## Clarification`, and returns a session-type hint.
+3. **Walk `## CheckList` in `session.md` top-to-bottom.** Find the first `### <Sub-section>` whose item list contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `### Answer`, the main thread answers and ticks items. If every sub-section is ticked, surface `### Final Summary` under `## Delivery` (or `## Answer` body) to the user.
+4. **Spawn `clarify`** when no `session.md` exists. It creates the session folder, writes a minimal `session.md` with a ticked `### Clarification` under `## CheckList` plus a filled `## Clarification` body, and returns a session-type hint.
 5. **Confirm session type and copy template** (after step 4 only). See "Post-Clarify Template Copy".
 6. **Re-route** to step 3.
 
@@ -57,13 +57,13 @@ Cadence is active — routing this turn.
 After `clarify` returns for a brand-new session:
 
 1. **Confirm session type** via `AskUserQuestion` (pre-select the agent's hint):
-   - `trivial` — small change or factual question; ends after `## Answer`
+   - `trivial` — small change or factual question; ends after `### Answer` is fully ticked
    - `feature-dev` — new behavior or doc work; full plan/implement/review/deliver
    - `bugfix` — broken behavior; analysis runs before plan
-   - `analysis` — diagnostic; ends after `## Delivery`
-2. **Capture** the ticked `## Clarification` block clarify just wrote.
+   - `analysis` — diagnostic; ends after `### Delivery` is fully ticked
+2. **Capture** the filled `## Clarification` body that clarify just wrote. (The `### Clarification` ticks are deterministic — clarify always ticks every item before returning — so they do not need to be captured.)
 3. **Copy template via `cp`**: `cp "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/<type>.md" "<session-folder>/session.md"`. Use `cp`, not `Write` (Write guard rails reject filenames containing "analysis").
-4. **Re-apply** the captured `## Clarification` block via `Edit`, replacing the template's blank section.
+4. **Re-apply** via one `Edit` pass: tick every `- [ ]` item under `## CheckList` → `### Clarification` to `- [x]`, and replace the template's `## Clarification` body blanks with the captured filled body.
 5. **Re-route** to step 3.
 
 ## Plan Mode
