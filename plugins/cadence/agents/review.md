@@ -115,7 +115,7 @@ After editing, return ONLY this single line:
 
 `Wrote ## Review to <absolute-path-to-session.md>. Verdict: <ship | revise | block>. <one-line summary>.`
 
-The router reads the verdict from this handoff line and decides whether to spawn the `cadence:deliver` agent.
+The router reads the verdict from this handoff line and decides whether to spawn the `deliver` agent.
 
 ## Guidelines
 
