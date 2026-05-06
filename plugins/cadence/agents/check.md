@@ -12,7 +12,7 @@ Check agent inspects the codebase for all criteria and returns one fixed-format 
 </example>
 
 model: inherit
-color: purple
+color: red
 tools:
   - Read
   - Glob

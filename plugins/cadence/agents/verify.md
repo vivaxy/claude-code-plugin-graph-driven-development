@@ -12,7 +12,7 @@ Each verify agent receives a dimension (docs-alignment, plan-alignment, or bugfi
 </example>
 
 model: inherit
-color: blue
+color: yellow
 tools:
   - Read
   - Glob

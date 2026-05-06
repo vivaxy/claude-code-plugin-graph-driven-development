@@ -21,7 +21,7 @@ The code-review agent gathers the diff, reviews each changed file across style/b
 </example>
 
 model: inherit
-color: red
+color: pink
 tools:
   - Bash
   - Read

@@ -21,7 +21,7 @@ Multiple failed attempts and unclear root cause are high-confidence auto-invoke 
 </example>
 
 model: inherit
-color: cyan
+color: magenta
 tools:
   - Read
   - Glob
