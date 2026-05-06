@@ -86,22 +86,21 @@ The workflow is driven by a single `session.md` per session. Its `## <Section>` 
 |---|---|
 | `## Clarification` | `clarify` agent |
 | `## Analysis` | `analyze-problem` agent (bugfix, analysis sessions) |
-| `## Plan` | `plan` agent (feature-dev, bugfix, doc-writing) |
-| `## Implementation` | `implement` agent (feature-dev, bugfix, doc-writing) |
-| `## Review` | `review` agent (feature-dev, bugfix, doc-writing) |
-| `## Delivery` | `deliver` agent (feature-dev, bugfix, doc-writing, analysis) |
+| `## Plan` | `plan` agent (feature-dev, bugfix) |
+| `## Implementation` | `implement` agent (feature-dev, bugfix) |
+| `## Review` | `review` agent (feature-dev, bugfix) |
+| `## Delivery` | `deliver` agent (feature-dev, bugfix, analysis) |
 | `## Answer` | main thread (trivial only) |
 
 Routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and invokes that section's owner. Each agent ticks its items as `- [x]` after completing the work.
 
 ## Session Types
 
-There are five session types. Each has a template under `plugins/cadence/templates/` that defines its sections:
+There are four session types. Each has a template under `plugins/cadence/templates/` that defines its sections:
 
 - **`trivial`** — small/localized change or factual question. Sections: `## Clarification`, `## Answer`.
-- **`feature-dev`** — new behavior. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
+- **`feature-dev`** — new behavior or documentation work. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
 - **`bugfix`** — broken behavior. Sections: `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
-- **`doc-writing`** — documentation work. Sections: `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery`.
 - **`analysis`** — diagnostic/exploratory. Sections: `## Clarification`, `## Analysis`, `## Delivery`.
 
 After `clarify` runs, the routing skill calls `AskUserQuestion` to confirm the session type, then copies the matching template into `session.md`.

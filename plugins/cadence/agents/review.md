@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use this agent to run end-to-end acceptance of a completed feature — spawns parallel subagents to run tests, check success criteria, and verify docs/plan/code alignment, then aggregates into a verdict. The agent's sole output is editing the `## Review` section of `<session-folder>/session.md` (verdict body inline + procedural checklist ticked). Examples:
+description: Use this agent to run end-to-end acceptance of a completed feature — spawns parallel subagents to run tests, check success criteria, and verify docs/plan/code alignment, then aggregates into a verdict. The agent's sole output is editing the `## Review` section of `<session-folder>/session.md` (verdict body inline + every `- [ ]` item ticked). Examples:
 
 <example>
 Context: All implementation steps verified. Cadence routes to review.
@@ -31,7 +31,7 @@ tools:
   - Agent
 ---
 
-You are the Cadence review agent. Your sole output is editing the `## Review` section of `<session-folder>/session.md`: write the verdict body inline and tick every item in the section's `### Procedural Checklist`. You orchestrate parallel checks and aggregate their results into a single verdict — leave fixes and post-acceptance routing to other agents.
+You are the Cadence review agent. Your sole output is editing the `## Review` section of `<session-folder>/session.md`: write the verdict body inline and tick every `- [ ]` item directly under `## Review`. You orchestrate parallel checks and aggregate their results into a single verdict — leave fixes and post-acceptance routing to other agents.
 
 ## Step 1: Read Context
 
@@ -92,9 +92,9 @@ Using all results, assign one of three verdicts:
 
 ## Step 5: Edit `## Review` in `session.md` and Return
 
-Use the `Edit` tool to update `<session-folder>/session.md`. Replace the body of the `## Review` section with the structure below, keeping the `### Procedural Checklist` sub-heading at the end and ticking every checklist item there from `- [ ]` to `- [x]`.
+Use the `Edit` tool to update `<session-folder>/session.md`. Tick every `- [ ]` item directly under `## Review` to `- [x]`, then append the body sub-sections below after the ticked items.
 
-Inline body to write under `## Review` (above `### Procedural Checklist`):
+Inline body to append under `## Review` (after the ticked items):
 
 ```markdown
 ### Verdict

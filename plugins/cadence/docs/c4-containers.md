@@ -15,7 +15,7 @@ C4Container
   System_Boundary(cadence, "cadence Plugin") {
     Container(hooks, "Hooks", "Bash scripts", "SessionStart hook — injects routing skill into every new session")
     Container(skills, "Skills & Agents", "Markdown instruction files", "using-cadence routing, clarify, analyze, plan, implement, review, deliver")
-    ContainerDb(templates, "templates/", "Markdown templates", "One file per session type (trivial, feature-dev, bugfix, doc-writing, analysis)")
+    ContainerDb(templates, "templates/", "Markdown templates", "One file per session type (trivial, feature-dev, bugfix, analysis)")
     ContainerDb(docs, "docs/", "Markdown + Mermaid", "Authoritative C4 design documents and sequence diagrams")
     ContainerDb(sessionFolder, "Session Folder", "Markdown checklist", "Single session.md per session at &lt;project&gt;/.claude/sessions/YYYY-MM-DD-&lt;slug&gt;/, plus incidental side artifacts")
   }

@@ -62,15 +62,16 @@ Every Cadence run creates a per-session folder inside the user's project contain
 
 ### Session types
 
-There are five session types, each with a template under `plugins/cadence/templates/` that defines its sections:
+There are four session types, each with a template under `plugins/cadence/templates/` that defines its sections:
 
 | Session type | Template | Sections |
 |---|---|---|
 | `trivial` | `templates/trivial.md` | `## Clarification`, `## Answer` |
 | `feature-dev` | `templates/feature-dev.md` | `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
 | `bugfix` | `templates/bugfix.md` | `## Clarification`, `## Analysis`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
-| `doc-writing` | `templates/doc-writing.md` | `## Clarification`, `## Plan`, `## Implementation`, `## Review`, `## Delivery` |
 | `analysis` | `templates/analysis.md` | `## Clarification`, `## Analysis`, `## Delivery` |
+
+`feature-dev` covers both new behavior and documentation work — the implement agent handles both source code (with type-check/test verification) and docs (with structural verification).
 
 Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then copies the matching template into `session.md`. From there, routing reads top-to-bottom and spawns owners section by section.
 
@@ -99,7 +100,7 @@ Add user authentication with JWT tokens
 The `using-cadence` skill activates at session start and routes the request:
 
 1. **Clarify** — the `clarify` agent writes a minimal `session.md` capturing your intent and any open questions.
-2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the five session types (`trivial`, `feature-dev`, `bugfix`, `doc-writing`, `analysis`), then copies the matching template into `session.md`.
+2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the four session types (`trivial`, `feature-dev`, `bugfix`, `analysis`), then copies the matching template into `session.md`.
 3. **Walk the checklist** — routing reads `session.md` top-to-bottom, finds the first section with any `- [ ]` item, and spawns that section's owner. Each agent ticks its items as `- [x]` after completing the work.
 4. **Deliver** — the final `## Delivery` section produces the summary and hands back to you.
 

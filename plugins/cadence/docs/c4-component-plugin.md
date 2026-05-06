@@ -21,7 +21,7 @@ C4Component
     Component(deliver, "deliver agent", "Delivery agent", "Owns ## Delivery — writes retrospective + final summary, ticks delivery checklist")
   }
 
-  ContainerDb(templates, "templates/", "Markdown templates", "One file per session type (trivial, feature-dev, bugfix, doc-writing, analysis)")
+  ContainerDb(templates, "templates/", "Markdown templates", "One file per session type (trivial, feature-dev, bugfix, analysis)")
   ContainerDb(docs, "docs/", "Markdown + Mermaid", "Authoritative C4 design documents")
   ContainerDb(sessionFolder, "Session Folder", "Markdown checklist", "Single session.md per session, plus incidental side artifacts")
   System_Ext(projectSrc, "Project Source Code", "The user's application source files")

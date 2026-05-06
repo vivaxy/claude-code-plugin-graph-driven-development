@@ -1,38 +1,20 @@
 #!/usr/bin/env bash
 # SessionStart hook for cadence plugin
+#
+# Emits a one-line activation marker. Full routing rules live in the
+# cadence:using-cadence skill body — the model loads them when the
+# UserPromptSubmit hook nudges it to invoke the skill on the first turn.
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+context="<IMPORTANT>Cadence is active. Invoke the \`cadence:using-cadence\` skill on the first turn to load routing rules.</IMPORTANT>"
 
-# Read using-cadence skill content
-using_workflow_content=$(cat "${PLUGIN_ROOT}/skills/using-cadence/SKILL.md" 2>&1 || echo "Error reading using-cadence skill")
-
-# Escape string for JSON embedding
-escape_for_json() {
-    local s="$1"
-    s="${s//\\/\\\\}"
-    s="${s//\"/\\\"}"
-    s="${s//$'\n'/\\n}"
-    s="${s//$'\r'/\\r}"
-    s="${s//$'\t'/\\t}"
-    printf '%s' "$s"
-}
-
-using_workflow_escaped=$(escape_for_json "$using_workflow_content")
-session_context="<IMPORTANT>\nCadence is active.\n\n${using_workflow_escaped}\n</IMPORTANT>"
-
-# Output context injection as JSON.
-# Cursor hooks expect additional_context (snake_case).
-# Claude Code hooks expect hookSpecificOutput.additionalContext (nested).
-# Copilot CLI and others expect additionalContext (top-level).
 if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
-  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+  printf '{"additional_context": "%s"}\n' "$context"
 elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
-  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+  printf '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "%s"}}\n' "$context"
 else
-  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+  printf '{"additionalContext": "%s"}\n' "$context"
 fi
 
 exit 0

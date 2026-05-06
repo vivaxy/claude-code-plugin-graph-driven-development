@@ -109,15 +109,16 @@ Incorporate any corrections and re-confirm if needed.
 
 ## Step 5: Infer Session-Type Hint
 
-Reason about which of the five session types best fits the clarified request. The router will confirm this with the user after you return — your job is to surface the most likely option as a hint so the router can pre-select it.
+Reason about which of the four session types best fits the clarified request. The router will confirm this with the user after you return — your job is to surface the most likely option as a hint so the router can pre-select it.
 
 | Hint | Inference Cues |
 |---|---|
 | `trivial` | Typo fix, single-line rename, factual question, doc-link tweak, one-shot lookup, anything that completes in a single direct answer with no plan/implement/review needed |
 | `feature-dev` | Adds new behavior, new API endpoint, new component, refactor of module structure, anything that introduces or extends product capability |
 | `bugfix` | Something is broken, defect, regression, error, "it used to work", behavior diverges from documented or expected outcome with a known repro |
-| `doc-writing` | Writing or updating documentation, README, guides, specs, changelogs, design docs, comments-as-docs |
 | `analysis` | Diagnostic / exploratory / "why" questions with no clear root cause yet, performance investigations, architectural assessments, "compare X vs Y" research, anything where the deliverable is understanding rather than code |
+
+Documentation work (README, guides, specs, changelogs, design docs) maps to `feature-dev`.
 
 Pick the single best fit. The router owns the final confirmation — always pass exactly one hint.
 
@@ -171,25 +172,9 @@ Use the `Write` tool to write `<session-folder>/session.md` with this exact stru
 
 ## Clarification
 
-- [x] Read the user's initial request and identify what is already clear (scope, constraints, success criteria, non-goals)
-- [x] Identify factual unknowns that probe can resolve through codebase search, prior art, official docs, or experiment, and spawn one `probe` subagent per unknown in parallel (single message, multiple Agent calls) when any exist
-- [x] Use returned probe findings to resolve assumptions silently and to ask better-targeted clarifying questions
-- [x] Ask clarifying questions one at a time via `AskUserQuestion` (one call per question), waiting for each answer before asking the next
-- [x] Keep questioning iterative — ask one or two questions at a time and stop once a problem statement covering scope, constraints, and success criteria can be written confidently
-- [x] Restate every imperative request as a measurable, testable success condition (e.g. "users can log in" rather than "authentication works")
-- [x] For bugfix-shaped requests, also ask for exact reproduction steps, expected vs. actual behavior, and environment or version details
-- [x] Confirm understanding by summarizing what is being built, key constraints, success criteria, and what is out of scope, then call `AskUserQuestion` asking "Does this capture it correctly, or is there anything to adjust?" and incorporate any corrections
-- [x] For bugfix-shaped requests, run diagnosis with LSP (`goToDefinition`, `findReferences`) on probe-identified code paths and state the root cause in one sentence as part of the summary; note when reproduction is unconfirmed
-- [x] Infer a tentative session type from the clarified content (trivial / feature-dev / bugfix / doc-writing / analysis) and include it in the terminal handoff so the router can pre-select an option
-- [x] Treat auto mode as a directive to minimize routine interruptions while still asking one `AskUserQuestion` for any load-bearing design choice that determines API surface (new function argument, required field, public interface shape)
-- [x] When the user explicitly says "just proceed" or "skip clarification", produce a minimal summary from what is known and stop
-- [x] Wait for the user to confirm understanding before finalizing the summary
-- [x] Resolve the session folder path (project root via `git rev-parse --show-toplevel` or `pwd`; date via `date -u +%Y-%m-%d`; slug derived from the problem statement: lowercase, ASCII-only, runs of non-alphanumerics collapsed to single dashes, leading/trailing dashes stripped, truncated to 50 characters with any trailing dash re-stripped)
-- [x] Handle folder collisions by calling `AskUserQuestion` once with options ["Continue existing session", "Start fresh"] and on "Start fresh" append `-2`, then `-3`, etc. until a free path is found
-- [x] When a `reuse_folder` hint is provided by the router (re-clarification), reuse that exact path, skip slug derivation and collision detection, and overwrite the existing session.md `## Clarification` section in place
-- [x] Run `${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/scripts/ensure-session-folder <path>` to create the session folder and ensure `<project-root>/.claude/.gitignore` contains `sessions/` (idempotent — safe when reusing)
-- [x] Write the clarification body into `## Clarification` of `session.md` (Problem, In Scope, Out of Scope, Constraints, Success Criteria, Non-Goals; for bugfix sessions also Reproduction Steps and Root Cause) and tick every item in this section
-- [x] Return exactly one terminal line of the form: `Wrote session.md to <absolute-path-to-session.md>. Session-type hint: <hint>.`
+- [x] Probe technical unknowns and ask clarifying questions until scope, constraints, and success criteria are clear
+- [x] Confirm understanding with the user
+- [x] Write the clarification body and session-type hint into `session.md` and return the terminal handoff line
 
 ### Problem
 <one-line problem statement>
@@ -220,9 +205,9 @@ For `bugfix` hints, append these sub-sections after `### Non-Goals`:
 <one-sentence diagnosis>
 ```
 
-The canonical `## Clarification` checklist above already covers this — its "Write the clarification body" item names Reproduction Steps and Root Cause for bugfix sessions, so leave the 19-item list as-is.
+For bugfix hints, append the Reproduction Steps and Root Cause sub-sections after `### Non-Goals` as shown above. The third checklist item ("Write the clarification body...") covers writing all sub-sections, including bugfix-specific ones.
 
-`<hint>` must be one of `trivial`, `feature-dev`, `bugfix`, `doc-writing`, `analysis`. `<YYYY-MM-DD>` is the same date used in the folder path. `<Session Title>` is a short human-readable title derived from the Problem statement.
+`<hint>` must be one of `trivial`, `feature-dev`, `bugfix`, `analysis`. `<YYYY-MM-DD>` is the same date used in the folder path. `<Session Title>` is a short human-readable title derived from the Problem statement.
 
 The router will copy the matching template body (the additional sections such as `## Plan`, `## Implementation`, etc.) into `session.md` after confirming the type with the user, preserving the ticked `## Clarification` block above.
 

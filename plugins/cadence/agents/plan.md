@@ -55,7 +55,7 @@ Verify every item in `## Clarification` is ticked (`- [x]`). When any item remai
 
 When a `## Analysis` section exists in `session.md`, also read it for additional context.
 
-Also read the `## Plan` section to confirm the template skeleton with `<TODO: filled by plan agent>` placeholders is present, and the `### Procedural Checklist` items at the end of `## Plan`. Read the current `## Implementation` section to identify any pre-existing items (the implement agent's procedural rules) that you must preserve.
+Also read the `## Plan` section to confirm the template skeleton with `<TODO: filled by plan agent>` placeholders is present, and the `### Procedural Checklist` items at the end of `## Plan`. Read the current `## Implementation` section — it contains only a `### Work Items` heading with a placeholder; you populate it in Step 3.
 
 ## Step 2: Design Diagrams
 
@@ -135,23 +135,13 @@ After the user approves via `ExitPlanMode`, use `Edit` (or `Write` for a full-fi
 
 1. **Replace the body of `## Plan`**: replace everything between the `## Plan` heading and the section's `### Procedural Checklist` sub-heading with the drafted plan body above. Preserve the `## Plan` heading itself, the `### Procedural Checklist` sub-heading, and every checklist item under it.
 2. **Tick the `### Procedural Checklist` items under `## Plan`**: rewrite each `- [ ]` item to `- [x]`.
-3. **Populate `## Implementation` with work items**: structure the section as
+3. **Populate `## Implementation` with work items**: under the existing `## Implementation` and `### Work Items` headings (already in the template), replace the placeholder line with one `- [ ]` item per implementation step:
    ```
-   ## Implementation
-
-   ### Work Items
-
    - [ ] Step 1: <description copied verbatim from ### Implementation Steps>
    - [ ] Step 2: <description copied verbatim from ### Implementation Steps>
    ...
-
-   ### Procedural Checklist
-
-   - [ ] <implement agent's procedural rule 1>
-   - [ ] <implement agent's procedural rule 2>
-   ...
    ```
-   When `## Implementation` already contains a `### Procedural Checklist` sub-heading from the template, keep its items in place and add the `### Work Items` sub-heading above it. When the template's implementation items live as a flat list under `## Implementation` (no `### Procedural Checklist` heading yet), move that flat list under a new `### Procedural Checklist` sub-heading and add the `### Work Items` sub-heading above it. Always copy the description text from `### Implementation Steps` verbatim so the implement agent reads exactly the same wording.
+   Keep both headings in place; replace only the placeholder line. Always copy the description text from `### Implementation Steps` verbatim so the implement agent reads exactly the same wording.
 
 Preserve every other section of `session.md` (`## Clarification`, `## Analysis` when present, `## Review`, `## Delivery`, `## Answer`) exactly as written.
 
@@ -172,7 +162,7 @@ When the user rejects the plan via `ExitPlanMode` because clarification was inad
 1. Use `Edit` on `<session-folder>/session.md` to:
    - Reset every item under `## Clarification` from `- [x]` back to `- [ ]`
    - Replace the body of `## Plan` with the template skeleton (each sub-heading followed by `<TODO: filled by plan agent>`) so the next plan invocation starts clean. Preserve the `### Procedural Checklist` items under `## Plan` (reset each `- [x]` back to `- [ ]` so the re-spawned plan agent re-ticks them).
-   - When `## Implementation` already had `### Work Items` populated by a prior pass, clear the `### Work Items` block back to empty (keep the `### Work Items` heading or remove it; the next plan invocation re-creates it).
+   - When `## Implementation` already had `### Work Items` populated by a prior pass, clear the populated items back to the template's placeholder line. Always keep the `### Work Items` heading.
 
 2. Emit exactly three plain-text lines as the terminal message, with no surrounding code fence, prefix, or quoting:
 

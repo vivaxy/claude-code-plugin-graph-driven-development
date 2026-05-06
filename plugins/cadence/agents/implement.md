@@ -46,7 +46,6 @@ The plan body (problem statement, constraints, key decisions, source-code-to-cha
    - Add two sub-bullets directly under the ticked item (indent 2 spaces):
      - `  - Files touched: <absolute-path-1>, <absolute-path-2>, ...`
      - `  - Verification: <command run + result, e.g. "npx tsc --noEmit — pass">`
-   - On the **first invocation** (when items under `### Procedural Checklist` are still `- [ ]`), tick every item under `### Procedural Checklist` as well. These items confirm you followed your procedural rules; once ticked they remain ticked across subsequent invocations.
 7. **Return** — Final response is one line:
 
    `Wrote tick for Step <N>: <description> to <absolute-path-to-session.md>. <one-line summary of what changed>.`
