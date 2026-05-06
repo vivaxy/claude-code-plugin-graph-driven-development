@@ -1,7 +1,7 @@
 # cadence Skill Execution Flow
 
 > **Type**: Sequence
-> **Last Updated**: 2026-05-04
+> **Last Updated**: 2026-05-06
 > **Covers**: End-to-end flow from user describing a feature to delivery, driven by checklists in a single `session.md` per session
 
 ## Diagram
@@ -18,7 +18,7 @@ sequenceDiagram
   participant Folder as Session Folder
 
   User->>Routing: Describes a feature task
-  Routing->>Folder: Look for existing session.md
+  Routing->>Routing: Read session folder path from conversation context (if any)
   alt No session.md
     Routing->>Clarify: Spawn (no template yet)
     Clarify->>User: AskUserQuestion — clarifying questions

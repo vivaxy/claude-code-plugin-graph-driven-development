@@ -77,7 +77,7 @@ Every session begins with the `clarify` agent writing a minimal `session.md`. Af
 
 The plan body lives in `## Plan` of `session.md` — the plan is part of the session file itself.
 
-**Resume**: if a Claude session is interrupted mid-run, opening a fresh session in the same project detects the existing session folder, finds the first `### <Sub-section>` under `## CheckList` with any `- [ ]` item, and continues from there.
+**Resume**: routing always reads the active session folder path from the live conversation context — a parent-agent prompt, an earlier turn, or a path the user supplies. When a session folder path is present in context, routing treats it as the active session and walks its `## CheckList`. When no session folder path is present in context, routing treats the request as a brand-new session and spawns `clarify` to start one.
 
 **Recommended `.gitignore`**: session folders are personal scratch space by default. Add this line to your project `.gitignore`:
 
@@ -226,7 +226,7 @@ Additional context, constraints, or cross-references to other diagrams.
 
 ### Skill: `cadence:using-cadence`
 
-The single entry point for Cadence. Activates at session start and on every Cadence-relevant turn. Detects the active session folder, asks whether to resume or start fresh, walks `## CheckList` in `session.md` top-to-bottom, and spawns the agent that owns the first `### <Sub-section>` with any `- [ ]` item.
+The single entry point for Cadence. Activates at session start and on every Cadence-relevant turn. Always reads the active session folder path from the live conversation context — a parent-agent prompt, an earlier turn, or a path the user supplies. When a session folder path is present in context, routing takes it as the active session; when none is present, routing treats the request as a brand-new session and spawns `clarify` to start one. From there it walks `## CheckList` in `session.md` top-to-bottom and spawns the agent that owns the first `### <Sub-section>` with any `- [ ]` item.
 
 ### Agents
 
