@@ -157,19 +157,31 @@ For a `feature-dev` session, the flow walks through `### Clarification → ### P
 
 ## docs/ Directory Layout
 
+The `docs/` directory follows the [C4 model](https://c4model.com/). Each diagram is a Markdown file with a Mermaid block plus explanatory text.
+
 ```
 docs/
-├── overview.md           # System context / big-picture boundary
-├── flow-*.md             # Business process, request, data flow diagrams
-└── arch-*.md             # Module dependency / component architecture diagrams
+├── c4-context.md                # Level 1 — System boundary, users, external systems
+├── c4-containers.md             # Level 2 — Deployable/runnable units inside the system
+├── c4-component-{name}.md       # Level 3 — Internal modules of a complex container
+└── c4-seq-{flow-name}.md        # Behavioral — Sequence diagrams for key flows
 ```
 
-Each diagram `.md` file contains Mermaid diagram(s) plus explanatory text:
+| File | C4 Level | Mermaid type | When required |
+|---|---|---|---|
+| `c4-context.md` | Level 1 — Context | `C4Context` | Always |
+| `c4-containers.md` | Level 2 — Container | `C4Container` | When the system has 2+ deployable/runnable units |
+| `c4-component-{name}.md` | Level 3 — Component | `C4Component` | Per container complex enough that developers get lost |
+| `c4-seq-{flow-name}.md` | Behavioral | `sequenceDiagram` | Per key user-facing flow |
+
+`docs/` is considered **complete** when `c4-context.md`, `c4-containers.md`, and at least one `c4-seq-*.md` exist. If incomplete, the agent proactively creates the missing files.
+
+Each diagram `.md` file follows this structure:
 
 ```markdown
 # Request Flow
 
-> **Type**: Flow
+> **Type**: Sequence
 > **Last Updated**: 2026-01-23
 > **Covers**: How HTTP requests are processed end-to-end
 
@@ -192,6 +204,10 @@ flowchart TD
 
 - Auth is checked at middleware level, not inside handlers
 - UserService owns all DB interactions for user data
+
+## Notes
+
+Additional context, constraints, or cross-references to other diagrams.
 ```
 
 ---
