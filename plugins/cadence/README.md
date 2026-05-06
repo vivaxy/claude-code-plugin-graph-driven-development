@@ -148,7 +148,7 @@ For a `feature-dev` session, the flow walks through `### Clarification → ### P
    clarify ─→ analyze ─→ plan ─→ implement ─→ review ─→ deliver
                                                             │
                                                             ▼
-                                                    ## Final Summary
+                                            Final Summary (conversation only)
 ```
 
 `session.md` is the state. Each agent owns one section, ticks its `- [ ]` items as `- [x]`, and routing always reads top-to-bottom to pick the next owner. Documents and diagrams live in `docs/`. They change first, code follows.
@@ -213,7 +213,7 @@ Each agent owns one `### <Sub-section>` under `## CheckList` (and where applicab
 | `plan` | `### Plan` | `## Plan` | Propose document and diagram updates; manage plan mode internally; runs a subagent diagram review loop until `APPROVED` or `APPROVED_WITH_NOTES` |
 | `implement` | `### Implementation` | (work-item sub-bullets, in `### Implementation` itself) | Read `## Plan` and the relevant diagrams, then write code that follows the defined boundaries and flow order |
 | `review` | `### Review` | `## Review` | Run a code review (doc/diagram alignment plus code quality), fix critical issues, and re-review until `APPROVED` or `APPROVED_WITH_NOTES` |
-| `deliver` | `### Delivery` | `## Delivery` | Run a retrospective, consolidate learnings, and write the final summary |
+| `deliver` | `### Delivery` | `## Delivery` (Retrospective only) | Run a retrospective into `## Delivery`, consolidate learnings, and return the Final Summary as conversational handoff text (never written to `session.md`) |
 
 You can rely on the routing skill to spawn these agents at the right time. Manual invocation is rarely needed.
 

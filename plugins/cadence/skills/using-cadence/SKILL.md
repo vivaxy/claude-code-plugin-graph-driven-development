@@ -47,7 +47,7 @@ Cadence is active — routing this turn.
 
 1. **Find session folder.** Project root via `git rev-parse --show-toplevel` (fallback `pwd`). Search `<project>/.claude/sessions/` for `YYYY-MM-DD-*/`. Newest by name (lexicographic max — folder names are date-prefixed and sortable) = active.
 2. **Confirm resume vs. new** when a folder exists. `AskUserQuestion`: "An in-progress Cadence session was found at `<path>`. Continue or start new?" with options `["Continue existing", "Start new"]`. On "Start new", fall through to step 4.
-3. **Walk `## CheckList` in `session.md` top-to-bottom.** Find the first `### <Sub-section>` whose item list contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `### Answer`, the main thread answers and ticks items. If every sub-section is ticked, surface `### Final Summary` under `## Delivery` (or `## Answer` body) to the user.
+3. **Walk `## CheckList` in `session.md` top-to-bottom.** Find the first `### <Sub-section>` whose item list contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `### Answer`, the main thread answers and ticks items. If every sub-section is ticked, surface the deliver agent's Final Summary handoff text (or the `## Answer` body) to the user — the Final Summary lives in conversation only and is never read back from `session.md`.
 4. **Spawn `clarify`** when no `session.md` exists. It creates the session folder, writes a minimal `session.md` with a ticked `### Clarification` under `## CheckList` plus a filled `## Clarification` body, and returns a session-type hint.
 5. **Confirm session type and copy template** (after step 4 only). See "Post-Clarify Template Copy".
 6. **Re-route** to step 3.

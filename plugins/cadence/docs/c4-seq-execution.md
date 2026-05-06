@@ -50,8 +50,8 @@ sequenceDiagram
     end
   end
 
-  Routing->>Folder: All ### sub-sections ticked — surface terminal body content (## Delivery → ### Final Summary, or main-thread answer)
-  Routing-->>User: Final summary
+  Routing->>Folder: All ### sub-sections ticked — pick terminal output (deliver agent handoff for build/analysis sessions, ## Answer body for trivial sessions)
+  Routing-->>User: Final summary (from deliver handoff text or ## Answer body — never read from a ### Final Summary block)
 ```
 
 ## Key Decisions

@@ -19,8 +19,8 @@
 ### Delivery
 
 - [ ] Read `session.md` end-to-end (including `## Analysis` findings) and `git log --oneline -20`
-- [ ] Compose the Retrospective and Final Summary; offer to persist Learnings and Open Items per `agents/deliver.md`
-- [ ] Replace every `<!-- TODO: filled by deliver agent -->` placeholder under `## Delivery` with the drafted content, tick this sub-section, and return the terminal handoff line
+- [ ] Compose the Retrospective body and the conversational Final Summary; offer to persist Learnings and Open Items per `agents/deliver.md`
+- [ ] Replace every `<!-- TODO: filled by deliver agent -->` placeholder under `## Delivery` with the drafted Retrospective content, tick this sub-section, and return the terminal handoff line carrying the Final Summary inline
 
 ## Clarification
 
@@ -115,25 +115,3 @@
 #### Open Items
 
 <!-- TODO: filled by deliver agent — `None.` or bullet list -->
-
-### Final Summary
-
-#### Investigated
-
-<!-- TODO: filled by deliver agent — one-line description -->
-
-#### Top Findings
-
-<!-- TODO: filled by deliver agent — bullet list of root causes and key questions -->
-
-#### Recommended Next Investigation
-
-<!-- TODO: filled by deliver agent — one-line pointer to highest-priority key question -->
-
-#### Open Items
-
-<!-- TODO: filled by deliver agent — `None.` or bullet list -->
-
-#### Closing
-
-<!-- TODO: filled by deliver agent — write the literal line `Analysis complete.` -->

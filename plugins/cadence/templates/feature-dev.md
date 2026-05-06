@@ -31,8 +31,8 @@
 ### Delivery
 
 - [ ] Read `session.md` end-to-end (including `## Review` verdict) and `git log --oneline -20`
-- [ ] Compose the Retrospective and Final Summary; offer to persist Learnings and Open Items per `agents/deliver.md`
-- [ ] Replace every `<!-- TODO: filled by deliver agent -->` placeholder under `## Delivery` with the drafted content, tick this sub-section, and return the terminal handoff line
+- [ ] Compose the Retrospective body and the conversational Final Summary; offer to persist Learnings and Open Items per `agents/deliver.md`
+- [ ] Replace every `<!-- TODO: filled by deliver agent -->` placeholder under `## Delivery` with the drafted Retrospective content, tick this sub-section, and return the terminal handoff line carrying the Final Summary inline
 
 ## Clarification
 
@@ -163,29 +163,3 @@
 #### Open Items
 
 <!-- TODO: filled by deliver agent — `None.` or bullet list -->
-
-### Final Summary
-
-#### Built
-
-<!-- TODO: filled by deliver agent — one-line description -->
-
-#### Tests
-
-<!-- TODO: filled by deliver agent — `all passing` or `<N> passing` -->
-
-#### What Was Built
-
-<!-- TODO: filled by deliver agent — 2–3 sentences -->
-
-#### Files Changed
-
-<!-- TODO: filled by deliver agent — key files modified or created -->
-
-#### Open Items
-
-<!-- TODO: filled by deliver agent — `None.` or bullet list -->
-
-#### Closing
-
-<!-- TODO: filled by deliver agent — write the literal line `Workflow complete.` -->
