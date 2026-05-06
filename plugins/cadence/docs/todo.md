@@ -1,6 +1,4 @@
-- [x] Final Summary should only live in conversation, not in markdown files.
-- [x] **M1. Rewrite `README.md:157-194` `docs/ Directory Layout` section to match the C4 model.** README still describes `overview.md`, `flow-*.md`, `arch-*.md` with a `flowchart TD` example, contradicting `CLAUDE.md:11-30` (C4 names: `c4-context.md`, `c4-containers.md`, `c4-component-{name}.md`, `c4-seq-{flow-name}.md`).
-- [ ] **M2. Replace the `flowchart TD` example in `README.md:178-188` with `sequenceDiagram`.** The example is labeled "Request Flow" but uses the wrong Mermaid type per `CLAUDE.md:60-63`.
+- [x] **M2. Replace the `flowchart TD` example in `README.md:178-188` with `sequenceDiagram`.** The example is labeled "Request Flow" but uses the wrong Mermaid type per `CLAUDE.md:60-63`.
 - [ ] **M3. Resolve the "Goal-Driven Execution" credit in `README.md:265`.** Only `Simplicity First` and `Surgical Changes` appear in the codebase (`agents/code-review.md:95, 102`). Either add the missing principle to an agent or remove the credit.
 - [ ] **M4. Add `probe`, `check`, `code-review`, `verify` to the C4 component diagram (`docs/c4-component-plugin.md:13-22`) and the container description (`docs/c4-containers.md:17`).** These four utility subagents exist as agent files and are spawned by phase agents (clarify spawns probe; review spawns check, verify, code-review) but are absent from the architectural docs.
 - [ ] **M5. Document the four utility subagents in `README.md:204-216` agent table.** Mark them as "internal" or expand the public surface — but tell users they exist.

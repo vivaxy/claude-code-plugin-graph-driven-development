@@ -188,16 +188,26 @@ Each diagram `.md` file follows this structure:
 ## Diagram
 
 \`\`\`mermaid
-flowchart TD
-    Client -->|HTTP POST /api/users| Router
-    Router --> AuthMiddleware
-    AuthMiddleware -->|valid token| UserHandler
-    AuthMiddleware -->|invalid token| E_401[401 Unauthorized]
-    UserHandler --> UserService
-    UserService --> Database
-    Database -->|result| UserService
-    UserService -->|user object| UserHandler
-    UserHandler -->|200 OK| Client
+sequenceDiagram
+    participant Client
+    participant Router
+    participant AuthMiddleware
+    participant UserHandler
+    participant UserService
+    participant Database
+
+    Client->>Router: HTTP POST /api/users
+    Router->>AuthMiddleware: forward
+    alt invalid token
+        AuthMiddleware-->>Client: 401 Unauthorized
+    else valid token
+        AuthMiddleware->>UserHandler: forward
+        UserHandler->>UserService: create user
+        UserService->>Database: query
+        Database-->>UserService: result
+        UserService-->>UserHandler: user object
+        UserHandler-->>Client: 200 OK
+    end
 \`\`\`
 
 ## Key Decisions
