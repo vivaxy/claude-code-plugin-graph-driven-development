@@ -53,3 +53,4 @@ All plugin content — commands, skills, hooks, docs, output messages, and comme
 - Mermaid diagrams in docs use `<br>` for line breaks inside node labels (not `\n`)
 - Hook scripts must handle both Claude Code (`CLAUDE_PLUGIN_ROOT`) and Cursor (`CURSOR_PLUGIN_ROOT`) environments
 - The `session-start` hook reads the plugin's orientation skill and injects it as session context via `additionalContext`
+- Agent prompts that ask the user to approve content (e.g. selecting destinations for a learning) must embed the verbatim content inside the `AskUserQuestion` question string as a Markdown blockquote, so the user reads what they are approving instead of recalling it from memory

@@ -73,7 +73,7 @@ When `## Review` records `block`, skip drafting and go straight to the "Delivery
 
 Before writing the bodies to `session.md`, run the persistence prompts so destination writes complete before the inline edit:
 
-1. **For each Learning bullet** (drafted in Step 2), call `AskUserQuestion` once with `multiSelect: true` and these options:
+1. **For each Learning bullet** (drafted in Step 2), always build a question string that opens with a fixed lead phrase asking where to save the learning and embeds the verbatim learning bullet text on its own line as a Markdown blockquote (`> <verbatim learning text>`), then call `AskUserQuestion` once with `multiSelect: true` and these options:
    - `Project memory` — append to the auto-memory index. Resolve the directory by taking the project absolute path (`git rev-parse --show-toplevel`), replacing every `/` with `-`, and using `~/.claude/projects/<encoded>/memory/`. Create the directory with `mkdir -p` if missing. Write the learning to a new `feedback_<slug>.md` file (slug derived from the learning text, lowercase ASCII, non-alphanumerics collapsed to `-`, max 50 chars). Then add or prepend a one-line entry to `MEMORY.md` of the form `- [<title>](<file>) — <one-line hook>`; create `MEMORY.md` if absent.
    - `Project CLAUDE.md` — append the learning as a bullet under a "## Learnings" section in `<project-root>/CLAUDE.md`; create the section at the end of the file if it does not exist.
    - `User CLAUDE.md` — append the learning as a bullet under a "## Learnings" section in `~/.claude/CLAUDE.md`; create the section at the end of the file if it does not exist.
@@ -164,5 +164,6 @@ The Final Summary block above is conversational output only — never persist it
 - Always tick every `- [ ]` item under `## CheckList` → `### Delivery` after the retrospective blanks are filled
 - Always preserve the `### Retrospective` sub-heading and its `####` children under `## Delivery` exactly as the template defines them
 - Always run the per-learning multiSelect `AskUserQuestion` and the per-open-item `AskUserQuestion` in Step 3 before filling the retrospective blanks in Step 4, so destination writes complete first
+- Always build each per-Learning `AskUserQuestion` prompt by embedding the verbatim learning bullet text as a Markdown blockquote inside the question string, so the user reads the full learning content before selecting destinations
 - Always resolve the project memory directory by replacing every `/` with `-` in the project absolute path and using `~/.claude/projects/<encoded>/memory/`; create the directory and `MEMORY.md` index with `mkdir -p` / `Write` if either is missing
 - Always write each chosen learning to every selected destination (project memory, project `CLAUDE.md`, user `CLAUDE.md`) and append each chosen open item to `<project-root>/docs/todo.md`; treat `None` as exclusive when selected for a learning
