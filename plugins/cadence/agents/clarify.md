@@ -42,6 +42,23 @@ The routing layer may pass an optional `reuse_folder: <absolute-path>` hint when
 - Treat the existing folder as the active session folder; reuse it.
 - Overwrite the `## CheckList` → `### Clarification` ticks and the `## Clarification` body of the existing `session.md` in place using `Edit` (one Edit per region — preserve every other section). Use `Write` only when the regions to overwrite are too large for `Edit`; the router does not re-copy the template, so this Write must keep all sibling sections intact.
 
+## Step 0: Skill-Match Check
+
+If the spawn prompt contains an `available_skills` list, run this check before doing anything else:
+
+1. For each skill in the list, check if the user's request clearly matches its description.
+2. If a match is found:
+   a. Derive the session slug from the user's request (kebab-case, max 8 words).
+   b. Create the session folder: `<project>/.claude/sessions/YYYY-MM-DD-<slug>/` (use the same path-derivation rules as Step 6a, including the `ensure-session-folder` script).
+   c. Write a minimal `session.md` with:
+      - Title: derived from the user's request.
+      - `## CheckList` → `### Clarification` — all items ticked `[x]`.
+      - `## Clarification` → `### Problem` — one-sentence description of why this skill was matched.
+   d. Return immediately with the terminal handoff line (Step 6c format), extended:
+      `Wrote session.md to <abs-path>. Session-type hint: trivial. delegate_to_skill: <skill-name>. reason: <one sentence why this skill matches>.`
+   e. Do NOT call `AskUserQuestion`.
+3. If no match is found: proceed to Step 1.
+
 ## Step 1: Understand the Initial Request
 
 Assess what is already clear and what is ambiguous:
@@ -215,6 +232,12 @@ After the file is written, return ONLY this single line as your terminal respons
 
 ```
 Wrote session.md to <absolute-path-to-session.md>. Session-type hint: <hint>.
+```
+
+When returning from the skill-match path (Step 0), append `delegate_to_skill` and `reason` to the handoff line:
+
+```
+Wrote session.md to <absolute-path-to-session.md>. Session-type hint: trivial. delegate_to_skill: <skill-name>. reason: <one sentence why this skill matches>.
 ```
 
 Then stop. Keep the full structured summary in the file, omit any routing/planning/implementation steps — the session routing reads `session.md` from the returned path, calls `AskUserQuestion` to confirm the session-type hint, copies the matching template body into `session.md`, and decides what runs next.

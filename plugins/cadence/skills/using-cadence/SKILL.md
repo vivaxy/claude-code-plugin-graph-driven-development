@@ -55,6 +55,18 @@ Cadence is active — routing this turn.
 
 After `clarify` returns for a brand-new session:
 
+**Before calling `AskUserQuestion` for session-type confirmation:**
+Check if the clarify handoff line contains `delegate_to_skill: <skill-name>`.
+If it does:
+1. Skip `AskUserQuestion` — session type is trivial.
+2. Extract `<skill-name>` from the handoff.
+3. Copy the trivial template: `cp "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/trivial.md" "<session-folder>/session.md"`.
+4. Re-apply `### Clarification` ticks and `## Clarification` body (same as normal trivial path).
+5. In the `### Answer` checklist item in session.md, append a note: `invoke \`<skill-name>\``.
+6. Route to main thread — main thread invokes the matched skill directly.
+
+If the handoff does not contain `delegate_to_skill`, proceed with the normal session-type confirmation below.
+
 1. **Confirm session type** via `AskUserQuestion` (pre-select the agent's hint):
    - `trivial` — small change or factual question; ends after `### Answer` is fully ticked
    - `feature-dev` — new behavior or doc work; full plan/implement/review/deliver
@@ -73,6 +85,12 @@ Cadence drives the workflow regardless of plan mode. The `plan` agent owns plan 
 
 1. Announce: "Cadence is active — spawning `<agent>` agent." (or "answering directly under `## Answer`.")
 2. Spawn via `Agent` tool. Always pass the session folder absolute path in the prompt.
+   When spawning the `clarify` agent for a brand-new session, also extract the installed skill list from the current session system-reminder block (the block that lists "Available skills" with descriptions). Include each skill's name and description in the spawn prompt under the key `available_skills`, formatted as:
+   ```
+   Available skills (name → description):
+   - <skill-name>: <description>
+   ...
+   ```
 3. Inspect terminal output. If the first line begins with `NEEDS_CLARIFICATION:`, run "Plan Rejection Recovery" below. Otherwise re-run routing.
 
 ## Plan Rejection Recovery

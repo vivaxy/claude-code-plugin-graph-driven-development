@@ -1,7 +1,7 @@
 # cadence Skill Execution Flow
 
 > **Type**: Sequence
-> **Last Updated**: 2026-05-06
+> **Last Updated**: 2026-05-07
 > **Covers**: End-to-end flow from user describing a feature to delivery, driven by checklists in a single `session.md` per session
 
 ## Diagram
@@ -20,14 +20,22 @@ sequenceDiagram
   User->>Routing: Describes a feature task
   Routing->>Routing: Read session folder path from conversation context (if any)
   alt No session.md
-    Routing->>Clarify: Spawn (no template yet)
-    Clarify->>User: AskUserQuestion — clarifying questions
-    User-->>Clarify: Answers
-    Clarify->>Folder: Create folder + write minimal session.md with ### Clarification ticked under ## CheckList and ## Clarification body filled
-    Clarify-->>Routing: Wrote session.md to <path>. <type-hint>.
-    Routing->>User: AskUserQuestion — confirm session type
-    User-->>Routing: Confirms type
-    Routing->>Folder: Copy templates/<type>.md into session.md, then re-apply ticked ### Clarification + filled ## Clarification body
+    Routing->>Clarify: Spawn (no template yet, passes available_skills list)
+    alt Request matches installed skill
+      Clarify->>Folder: Create folder + write minimal session.md<br>(### Clarification ticked, ## Clarification body filled)
+      Clarify-->>Routing: Wrote session.md to <path>. hint: trivial. delegate_to_skill: <name>. reason: <one sentence>.
+      Routing->>Folder: Copy trivial template into session.md,<br>re-apply ticked ### Clarification + filled ## Clarification body
+      Routing->>Routing: Annotate ### Answer item with "invoke <skill-name>"
+      Routing->>User: Invoke matched skill directly (no AskUserQuestion)
+    else No skill match — normal Q&A
+      Clarify->>User: AskUserQuestion — clarifying questions
+      User-->>Clarify: Answers
+      Clarify->>Folder: Create folder + write minimal session.md<br>(### Clarification ticked, ## Clarification body filled)
+      Clarify-->>Routing: Wrote session.md to <path>. <type-hint>.
+      Routing->>User: AskUserQuestion — confirm session type
+      User-->>Routing: Confirms type
+      Routing->>Folder: Copy templates/<type>.md into session.md,<br>re-apply ticked ### Clarification + filled ## Clarification body
+    end
   end
 
   loop Until every ### sub-section under ## CheckList is fully ticked
@@ -61,7 +69,7 @@ sequenceDiagram
 - `plan` agent uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate; the body shown to the user is the same body written into `## Plan` of `session.md` — code only changes after approval (from plan: cadence-template-driven-checklists)
 - `review` runs the full test suite as part of end-to-end acceptance
 - Implement is invoked once per `- [ ]` item under `## CheckList` → `### Implementation`; resume identifies the next step from the first remaining unchecked item (from plan: cadence-template-driven-checklists, cadence-checklist-collapse)
-- After clarify returns, the routing skill calls `AskUserQuestion` to confirm session type and copies the matching template into `session.md` before spawning the next agent (from plan: cadence-template-driven-checklists)
+- After clarify returns, the routing skill calls `AskUserQuestion` to confirm session type and copies the matching template into `session.md` before spawning the next agent; when `delegate_to_skill` is present in the handoff, the fast path skips `AskUserQuestion` and routes directly to the matched skill (from plan: cadence-template-driven-checklists)
 
 ## Notes
 
