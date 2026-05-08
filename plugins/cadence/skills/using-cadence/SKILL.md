@@ -1,6 +1,6 @@
 ---
 name: cadence:using-cadence
-description: Routing skill for Cadence — read at session start to detect or create a session and spawn the agent that owns the next unchecked section of session.md
+description: Cadence workflow router — invoke when starting any feature, bugfix, or analysis task.
 ---
 
 <SUBAGENT-STOP>

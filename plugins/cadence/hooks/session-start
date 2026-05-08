@@ -1,20 +1,44 @@
 #!/usr/bin/env bash
 # SessionStart hook for cadence plugin
 #
-# Emits a one-line activation marker. Full routing rules live in the
-# cadence:using-cadence skill body — the model loads them when the
-# UserPromptSubmit hook nudges it to invoke the skill on the first turn.
+# Reads the routing rules from skills/using-cadence/SKILL.md and emits them
+# as session context so the model follows Cadence without a skill invocation.
 
 set -euo pipefail
 
-context="<IMPORTANT>Cadence is active. Invoke the \`cadence:using-cadence\` skill on the first turn to load routing rules.</IMPORTANT>"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-}}"
+SKILL_FILE="${PLUGIN_ROOT}/skills/using-cadence/SKILL.md"
 
-if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
-  printf '{"additional_context": "%s"}\n' "$context"
-elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
-  printf '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "%s"}}\n' "$context"
+if [ -f "$SKILL_FILE" ]; then
+  skill_content="$(cat "$SKILL_FILE")"
 else
-  printf '{"additionalContext": "%s"}\n' "$context"
+  skill_content="Cadence is active. Session routing rules unavailable (SKILL.md not found at: ${SKILL_FILE})."
+fi
+
+raw_context="<IMPORTANT>Cadence is active. Routing rules follow.
+
+${skill_content}</IMPORTANT>"
+
+# Use Python for safe JSON serialization — raw SKILL.md content contains
+# newlines, quotes, and backslashes that break naive printf-based encoding.
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  python3 -c "
+import json, sys
+context = sys.stdin.read()
+print(json.dumps({'additional_context': context}))
+" <<< "$raw_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  python3 -c "
+import json, sys
+context = sys.stdin.read()
+print(json.dumps({'hookSpecificOutput': {'hookEventName': 'SessionStart', 'additionalContext': context}}))
+" <<< "$raw_context"
+else
+  python3 -c "
+import json, sys
+context = sys.stdin.read()
+print(json.dumps({'additionalContext': context}))
+" <<< "$raw_context"
 fi
 
 exit 0
