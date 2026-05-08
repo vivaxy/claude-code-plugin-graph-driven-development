@@ -45,8 +45,8 @@ SESSIONS_DIR="$(dirname "${SESSION_FOLDER}")"
 CLAUDE_DIR="$(dirname "${SESSIONS_DIR}")"
 GITIGNORE="${CLAUDE_DIR}/.gitignore"
 
-touch "${GITIGNORE}"
-if ! grep -qxF "sessions/" "${GITIGNORE}"; then
+if ! grep -qxF "sessions/" "${GITIGNORE}" 2>/dev/null; then
+  touch "${GITIGNORE}"
   # Ensure file ends with a newline before appending.
   if [ -s "${GITIGNORE}" ] && [ "$(tail -c1 "${GITIGNORE}"; echo x)" != $'\nx' ]; then
     printf '\n' >> "${GITIGNORE}"
