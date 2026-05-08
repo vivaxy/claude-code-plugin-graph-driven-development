@@ -40,7 +40,7 @@ Run on every user prompt — including natural-language requests, explicit `/ski
 Before any tool work, post one visible line per turn:
 
 ```
-Cadence is active — routing this turn.
+Cadence is active.
 ```
 
 ## Routing Algorithm
