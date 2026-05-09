@@ -54,3 +54,7 @@ All plugin content — commands, skills, hooks, docs, output messages, and comme
 - Hook scripts must handle both Claude Code (`CLAUDE_PLUGIN_ROOT`) and Cursor (`CURSOR_PLUGIN_ROOT`) environments
 - The `session-start` hook reads the plugin's orientation skill and injects it as session context via `additionalContext`
 - Agent prompts that ask the user to approve content (e.g. selecting destinations for a learning) must embed the verbatim content inside the `AskUserQuestion` question string as a Markdown blockquote, so the user reads what they are approving instead of recalling it from memory
+
+## Learnings
+
+- Placement of agent-guidance items that depend on prior information gathering: position them after the step that gathers the required facts (e.g., after "Probe technical unknowns") so the evaluation has the context it needs before it fires — a good pattern for any conditional agent rule in Cadence templates

@@ -1,4 +1,3 @@
 .remote-coding
-.claude/plans
-.claude/sessions/
 node_modules/
+*.local.*
