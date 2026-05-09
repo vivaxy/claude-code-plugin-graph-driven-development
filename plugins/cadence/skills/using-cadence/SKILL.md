@@ -33,20 +33,12 @@ Single source of truth for routing. The mapped sub-section lives under `## Check
 
 ## When Routing Runs
 
-Run on every user prompt — including natural-language requests, explicit `/skill-name` slash commands, and meta-questions about Cadence ("is Cadence active?"). Skip only when the user explicitly opts out ("skip the workflow", "just answer"). When in doubt, run routing.
-
-## Activation Announcement
-
-Before any tool work, post one visible line per turn:
-
-```
-Cadence is active.
-```
+Run on every user prompt — including natural-language requests, explicit `/skill-name` slash commands, and meta-questions about Cadence ("is Cadence active?"). Meta-questions always start the `clarify` agent (step 3) rather than answering inline. Skip only when the user explicitly opts out ("skip the workflow", "just answer"). When in doubt, run routing.
 
 ## Routing Algorithm
 
 1. **Identify the active session folder.** Read the session folder absolute path from the current conversation context — parent-agent prompt, earlier turn, or user-supplied path. When a path is present, take it as the active session folder and proceed to step 2. When no path is present, record that no active session was found and fall through to step 3.
-2. **Walk `## CheckList` in `session.md` top-to-bottom.** Find the first `### <Sub-section>` whose item list contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `### Answer`, the main thread answers and ticks items. If every sub-section is ticked, surface the deliver agent's Final Summary handoff text (or the `## Answer` body) to the user — the Final Summary lives in conversation only and is never read back from `session.md`.
+2. **Walk `## CheckList` in `session.md` top-to-bottom.** Find the first `### <Sub-section>` whose item list contains any `- [ ]`. Spawn its owner (see "How to Spawn"). If `### Answer`, the main thread answers and ticks items. If every sub-section is ticked, ask the user via `AskUserQuestion` whether to start a new session; if yes, fall through to step 3.
 3. **Spawn `clarify`** when no `session.md` exists. It creates the session folder, writes a minimal `session.md` with a ticked `### Clarification` under `## CheckList` plus a filled `## Clarification` body, and returns a session-type hint.
 4. **Confirm session type and copy template** (after step 3 only). See "Post-Clarify Template Copy".
 5. **Re-route** to step 2.
@@ -79,7 +71,7 @@ If the handoff does not contain `delegate_to_skill`, proceed with the normal ses
 
 ## How to Spawn
 
-1. Announce: "Cadence is active — spawning `<agent>` agent." (or "answering directly under `## Answer`.")
+1. Print one line: `Cadence is active.` then spawn or answer. No other preamble.
 2. Spawn via `Agent` tool. Always pass the session folder absolute path in the prompt.
    When spawning the `clarify` agent for a brand-new session, also extract the installed skill list from the current session system-reminder block (the block that lists "Available skills" with descriptions). Include each skill's name and description in the spawn prompt under the key `available_skills`, formatted as:
    ```
@@ -102,7 +94,7 @@ Reuse session folder: <abs-path>
 On detection:
 
 1. Strip `Reuse session folder: ` from line 3 to get the absolute path.
-2. Announce: "Cadence is active — re-spawning `clarify` agent to address the rejected clarification."
+2. Print: `Cadence is active.` then re-spawn.
 3. Re-spawn `clarify` via `Agent` with `reuse_folder: <path>` plus the gap and user feedback. Clarify overwrites `## Clarification` in place.
 4. Re-route to step 2 of the Routing Algorithm.
 
