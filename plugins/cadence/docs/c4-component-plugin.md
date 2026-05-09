@@ -1,7 +1,7 @@
 # cadence Plugin — Components
 
 > **Type**: C4 Component
-> **Last Updated**: 2026-05-07
+> **Last Updated**: 2026-05-09
 > **Covers**: Internal components of the Skills & Agents container
 
 ## Diagram
@@ -15,7 +15,7 @@ C4Component
     Component(usingCadence, "using-cadence", "Routing skill", "Walks ## CheckList in session.md top-to-bottom; spawns owner of first ### sub-section with any unchecked item")
     Component(clarify, "clarify agent", "Clarification agent", "Owns ## CheckList → ### Clarification and ## Clarification body — derives slug, creates session folder, ticks clarification checklist, fills body blanks; runs skill-match check before Q&A when available_skills list is provided")
     Component(analyze, "analyze-problem agent", "Diagnostic agent", "Owns ## CheckList → ### Analysis and ## Analysis body — runs facts/model/questions, fills body blanks, ticks checklist")
-    Component(plan, "plan agent", "Planning agent", "Owns ## CheckList → ### Plan and ## Plan body — fills plan blanks, populates ### Implementation work items, gets approval via ExitPlanMode, ticks plan checklist")
+    Component(plan, "plan agent", "Planning agent", "Owns ## CheckList → ### Plan and ## Plan body — fills plan blanks, populates ### Implementation work items, gets approval via AskUserQuestion, ticks plan checklist")
     Component(implement, "implement agent", "Step executor", "Owns ## CheckList → ### Implementation — applies code changes per work item and ticks each item with files-touched/verification sub-bullets")
     Component(review, "review agent", "Review agent", "Owns ## CheckList → ### Review and ## Review body — runs parallel checks, fills body blanks, ticks checklist")
     Component(deliver, "deliver agent", "Delivery agent", "Owns ## CheckList → ### Delivery and ## Delivery body — fills retrospective + final summary blanks, ticks checklist")

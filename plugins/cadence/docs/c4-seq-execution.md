@@ -1,7 +1,7 @@
 # cadence Skill Execution Flow
 
 > **Type**: Sequence
-> **Last Updated**: 2026-05-07
+> **Last Updated**: 2026-05-09
 > **Covers**: End-to-end flow from user describing a feature to delivery, driven by checklists in a single `session.md` per session
 
 ## Diagram
@@ -45,7 +45,7 @@ sequenceDiagram
       Routing->>Plan: Spawn (passes session folder path)
       Plan->>Folder: Read session.md (Clarification section)
       Plan->>Plan: Draft plan body
-      Plan-->>User: ExitPlanMode — show plan body for approval
+      Plan-->>User: Print plan as Markdown in conversation,<br>then AskUserQuestion — Approve / Reject
       User-->>Plan: Approves
       Plan->>Folder: Fill ## Plan blanks, populate ### Implementation work items, tick ### Plan
       Plan-->>Routing: Wrote ## Plan to session.md. <one-line summary>
@@ -66,7 +66,7 @@ sequenceDiagram
 
 - Each phase agent owns one `### <Sub-section>` under `## CheckList` and (where applicable) the matching `## <Section>` body; the agent ticks checklist items in place and replaces `<!-- TODO: ... -->` placeholders; subagent returns are one-line handoffs pointing at `session.md` (from plan: cadence-template-driven-checklists, cadence-checklist-collapse)
 - Resume is detection: a fresh session reads `session.md`, walks `## CheckList` top-to-bottom, finds the first `### <Sub-section>` with any `- [ ]` item, and spawns its owner per the sub-section→owner mapping (from plan: cadence-template-driven-checklists, cadence-checklist-collapse)
-- `plan` agent uses `EnterPlanMode`/`ExitPlanMode` as the user approval gate; the body shown to the user is the same body written into `## Plan` of `session.md` — code only changes after approval (from plan: cadence-template-driven-checklists)
+- `plan` agent prints the plan body as Markdown in the conversation then calls `AskUserQuestion` (Approve / Reject) as the user approval gate; the body shown to the user is the same body written into `## Plan` of `session.md` — code only changes after approval (from plan: cadence-template-driven-checklists)
 - `review` runs the full test suite as part of end-to-end acceptance
 - Implement is invoked once per `- [ ]` item under `## CheckList` → `### Implementation`; resume identifies the next step from the first remaining unchecked item (from plan: cadence-template-driven-checklists, cadence-checklist-collapse)
 - After clarify returns, the routing skill calls `AskUserQuestion` to confirm session type and copies the matching template into `session.md` before spawning the next agent; when `delegate_to_skill` is present in the handoff, the fast path skips `AskUserQuestion` and routes directly to the matched skill (from plan: cadence-template-driven-checklists)

@@ -77,10 +77,6 @@ If the handoff does not contain `delegate_to_skill`, proceed with the normal ses
 4. **Re-apply** via one `Edit` pass: tick every `- [ ]` item under `## CheckList` → `### Clarification` to `- [x]`, and replace the template's `## Clarification` body blanks with the captured filled body.
 5. **Re-route** to step 2.
 
-## Plan Mode
-
-Cadence drives the workflow regardless of plan mode. The `plan` agent owns plan mode internally — always spawn `plan` rather than calling `EnterPlanMode` on the main thread. If plan mode is active when routing fires, call `ExitPlanMode` first to unblock `Agent`, then spawn `plan`.
-
 ## How to Spawn
 
 1. Announce: "Cadence is active — spawning `<agent>` agent." (or "answering directly under `## Answer`.")
@@ -105,11 +101,10 @@ Reuse session folder: <abs-path>
 
 On detection:
 
-1. Call `ExitPlanMode` to unblock `Agent` (no-op if already inactive).
-2. Strip `Reuse session folder: ` from line 3 to get the absolute path.
-3. Announce: "Cadence is active — re-spawning `clarify` agent to address the rejected clarification."
-4. Re-spawn `clarify` via `Agent` with `reuse_folder: <path>` plus the gap and user feedback. Clarify overwrites `## Clarification` in place.
-5. Re-route to step 2 of the Routing Algorithm.
+1. Strip `Reuse session folder: ` from line 3 to get the absolute path.
+2. Announce: "Cadence is active — re-spawning `clarify` agent to address the rejected clarification."
+3. Re-spawn `clarify` via `Agent` with `reuse_folder: <path>` plus the gap and user feedback. Clarify overwrites `## Clarification` in place.
+4. Re-route to step 2 of the Routing Algorithm.
 
 ## Instruction Priority
 
