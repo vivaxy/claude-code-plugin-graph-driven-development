@@ -103,7 +103,17 @@ There are four session types. Each has a template under `plugins/cadence/templat
 - **`bugfix`** — broken behavior. CheckList sub-sections: `### Clarification`, `### Analysis`, `### Plan`, `### Implementation`, `### Review`, `### Delivery`. Body sections: `## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery`.
 - **`analysis`** — diagnostic/exploratory. CheckList sub-sections: `### Clarification`, `### Analysis`, `### Delivery`. Body sections: `## Clarification`, `## Analysis`, `## Delivery`.
 
-After `clarify` runs, the routing skill calls `AskUserQuestion` to confirm the session type, then copies the matching template into `session.md`.
+After `clarify` runs, the routing skill calls `AskUserQuestion` to confirm the session type, then runs `build-templates.sh` to assemble the matching template directly into `session.md`.
+
+## Template Fragment System
+
+The four session templates are assembled from reusable fragment files rather than maintained as monolithic files. This keeps shared sections in a single place and prevents divergence.
+
+- **Fragments**: plain Markdown snippets in `plugins/cadence/templates/fragments/`. Each fragment covers one `## Section` or `### Sub-section` checklist block.
+- **Recipes**: `fragments/recipe-<type>.txt` lists fragment filenames in assembly order, one per line.
+- **Build script**: `plugins/cadence/templates/build-templates.sh` reads a recipe and concatenates the listed fragments into the output template. Accepts an optional `<type>` argument (defaults to all four) and an optional `<dest>` path (defaults to `templates/<type>.md`). Requires `CLAUDE_PLUGIN_ROOT` or `CURSOR_PLUGIN_ROOT`.
+
+To update a shared section, edit the relevant fragment file and re-run `build-templates.sh`. To add a new template variant, write new fragment files, add a recipe, and extend the build script's `TYPES` array.
 
 ## Session Folder
 

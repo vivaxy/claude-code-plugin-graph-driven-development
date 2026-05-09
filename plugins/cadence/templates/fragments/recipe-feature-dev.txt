@@ -1,0 +1,10 @@
+header-feature-dev.md
+checklist-clarification-standard.md
+checklist-plan-feature-dev.md
+checklist-implementation.md
+checklist-review-standard.md
+checklist-delivery-standard.md
+body-clarification-standard.md
+body-plan.md
+body-review-standard.md
+body-delivery-standard.md

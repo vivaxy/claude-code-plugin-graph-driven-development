@@ -1,0 +1,4 @@
+header-trivial.md
+checklist-clarification-standard.md
+checklist-answer.md
+body-clarification-standard.md

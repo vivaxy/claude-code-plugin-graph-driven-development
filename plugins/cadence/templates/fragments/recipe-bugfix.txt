@@ -1,0 +1,12 @@
+header-bugfix.md
+checklist-clarification-bugfix.md
+checklist-analysis.md
+checklist-plan-bugfix.md
+checklist-implementation.md
+checklist-review-bugfix.md
+checklist-delivery-standard.md
+body-clarification-bugfix.md
+body-analysis.md
+body-plan.md
+body-review-bugfix.md
+body-delivery-standard.md

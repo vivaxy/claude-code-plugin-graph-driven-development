@@ -62,18 +62,18 @@ Every Cadence run creates a per-session folder inside the user's project contain
 
 ### Session types
 
-There are four session types, each with a template under `plugins/cadence/templates/` that defines its `## CheckList` sub-sections and body sections:
+There are four session types. Each is assembled on the fly from fragment files by `build-templates.sh <type> <dest>` and written directly into `session.md` — no pre-built template file is read or required:
 
-| Session type | Template | CheckList sub-sections | Body sections |
+| Session type | Fragment recipe | CheckList sub-sections | Body sections |
 |---|---|---|---|
-| `trivial` | `templates/trivial.md` | `### Clarification`, `### Answer` | `## Clarification` |
-| `feature-dev` | `templates/feature-dev.md` | `### Clarification`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Plan`, `## Review`, `## Delivery` |
-| `bugfix` | `templates/bugfix.md` | `### Clarification`, `### Analysis`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery` |
-| `analysis` | `templates/analysis.md` | `### Clarification`, `### Analysis`, `### Delivery` | `## Clarification`, `## Analysis`, `## Delivery` |
+| `trivial` | `fragments/recipe-trivial.txt` | `### Clarification`, `### Answer` | `## Clarification` |
+| `feature-dev` | `fragments/recipe-feature-dev.txt` | `### Clarification`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Plan`, `## Review`, `## Delivery` |
+| `bugfix` | `fragments/recipe-bugfix.txt` | `### Clarification`, `### Analysis`, `### Plan`, `### Implementation`, `### Review`, `### Delivery` | `## Clarification`, `## Analysis`, `## Plan`, `## Review`, `## Delivery` |
+| `analysis` | `fragments/recipe-analysis.txt` | `### Clarification`, `### Analysis`, `### Delivery` | `## Clarification`, `## Analysis`, `## Delivery` |
 
 `feature-dev` covers both new behavior and documentation work — the implement agent handles both source code (with type-check/test verification) and docs (with structural verification).
 
-Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then copies the matching template into `session.md`. From there, routing walks `## CheckList` top-to-bottom and spawns owners sub-section by sub-section.
+Every session begins with the `clarify` agent writing a minimal `session.md`. After clarify runs, the routing skill calls `AskUserQuestion` to confirm the session type with the user, then runs `build-templates.sh <type> <dest>` to assemble the matching template from fragments directly into `session.md`. From there, routing walks `## CheckList` top-to-bottom and spawns owners sub-section by sub-section.
 
 The plan body lives in `## Plan` of `session.md` — the plan is part of the session file itself.
 
@@ -100,7 +100,7 @@ Add user authentication with JWT tokens
 The `using-cadence` skill activates at session start and routes the request:
 
 1. **Clarify** — the `clarify` agent writes a minimal `session.md` capturing your intent and any open questions.
-2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the four session types (`trivial`, `feature-dev`, `bugfix`, `analysis`), then copies the matching template into `session.md`.
+2. **Confirm session type** — the routing skill calls `AskUserQuestion` to confirm one of the four session types (`trivial`, `feature-dev`, `bugfix`, `analysis`), then runs `build-templates.sh <type> <dest>` to assemble the matching template from fragments directly into `session.md`.
 3. **Walk the checklist** — routing reads `## CheckList` in `session.md` top-to-bottom, finds the first `### <Sub-section>` with any `- [ ]` item, and spawns that sub-section's owner. Each agent ticks its items as `- [x]` and fills the matching body-section blanks after completing the work.
 4. **Deliver** — the final `### Delivery` items get ticked and `## Delivery` body produces the summary handed back to you.
 
@@ -134,7 +134,7 @@ For a `feature-dev` session, the flow walks through `### Clarification → ### P
             │ confirm session type │
             └──────────────────────┘
                        │
-        cp templates/<type>.md → session.md
+    build-templates.sh <type> session.md
                        │
                        ▼
             ┌──────────────────────┐

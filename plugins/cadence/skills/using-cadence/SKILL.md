@@ -60,7 +60,7 @@ Check if the clarify handoff line contains `delegate_to_skill: <skill-name>`.
 If it does:
 1. Skip `AskUserQuestion` — session type is trivial.
 2. Extract `<skill-name>` from the handoff.
-3. Copy the trivial template: `cp "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/trivial.md" "<session-folder>/session.md"`.
+3. Copy the trivial template: `bash "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/build-templates.sh" trivial "<session-folder>/session.md"`.
 4. Re-apply `### Clarification` ticks and `## Clarification` body (same as normal trivial path).
 5. In the `### Answer` checklist item in session.md, append a note: `invoke \`<skill-name>\``.
 6. Route to main thread — main thread invokes the matched skill directly.
@@ -73,7 +73,7 @@ If the handoff does not contain `delegate_to_skill`, proceed with the normal ses
    - `bugfix` — broken behavior; analysis runs before plan
    - `analysis` — diagnostic; ends after `### Delivery` is fully ticked
 2. **Capture** the filled `## Clarification` body that clarify just wrote. (The `### Clarification` ticks are deterministic — clarify always ticks every item before returning — so they do not need to be captured.)
-3. **Copy template via `cp`**: `cp "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/<type>.md" "<session-folder>/session.md"`. Use `cp`, not `Write` (Write guard rails reject filenames containing "analysis").
+3. **Copy template via `build-templates.sh`**: `bash "${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/templates/build-templates.sh" <type> "<session-folder>/session.md"`. This assembles the template from fragments and writes it directly to the session file. Use the script, not `Write` (Write guard rails reject filenames containing "analysis").
 4. **Re-apply** via one `Edit` pass: tick every `- [ ]` item under `## CheckList` → `### Clarification` to `- [x]`, and replace the template's `## Clarification` body blanks with the captured filled body.
 5. **Re-route** to step 2.
 

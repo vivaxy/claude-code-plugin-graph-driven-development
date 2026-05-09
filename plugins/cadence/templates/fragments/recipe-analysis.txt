@@ -1,0 +1,7 @@
+header-analysis.md
+checklist-clarification-standard.md
+checklist-analysis.md
+checklist-delivery-analysis.md
+body-clarification-standard.md
+body-analysis.md
+body-delivery-analysis.md
