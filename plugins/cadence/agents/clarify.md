@@ -168,10 +168,10 @@ Otherwise, derive the path:
   - On `"Start fresh"`: append `-2` to the slug-suffix and re-check; if `-2` exists, try `-3`, then `-4`, and so on until you find a free path. Use the first free path.
 - If it does not exist, use the default path.
 
-Once the path is finalized, run the `ensure-session-folder` script via Bash. It is idempotent (safe when reusing) and handles both folder creation and the sibling `.claude/.gitignore`:
+Once the path is finalized, run the `ensure-session-folder` script via Bash. It is idempotent (safe when reusing) and handles both folder creation and the sibling `.claude/.gitignore`. Use the `cadence_plugin_root` value from your spawn prompt as the literal path (do not expand shell variables — use the exact value passed in):
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT:-$CURSOR_PLUGIN_ROOT}/scripts/ensure-session-folder" "<session-folder>"
+"<cadence_plugin_root>/scripts/ensure-session-folder" "<session-folder>"
 ```
 
 The script creates `<session-folder>` via `mkdir -p` and ensures `<project-root>/.claude/.gitignore` contains the line `sessions/` so per-session scratch space stays untracked by default. Re-runs do not duplicate the entry; existing `.gitignore` content is preserved. Users who want to commit session folders can remove the `sessions/` line (or delete the file) afterwards.

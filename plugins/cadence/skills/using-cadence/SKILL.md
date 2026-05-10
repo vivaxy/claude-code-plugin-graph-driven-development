@@ -73,6 +73,7 @@ If the handoff does not contain `delegate_to_skill`, proceed with the normal ses
 
 1. Print one line: `Cadence is active.` then spawn or answer. No other preamble.
 2. Spawn via `Agent` tool. Always pass the session folder absolute path in the prompt.
+   Always include `cadence_plugin_root: <value>` in every spawn prompt, using the value from the `cadence_plugin_root:` line at the top of these instructions.
    When spawning the `clarify` agent for a brand-new session, also extract the installed skill list from the current session system-reminder block (the block that lists "Available skills" with descriptions). Include each skill's name and description in the spawn prompt under the key `available_skills`, formatted as:
    ```
    Available skills (name → description):

@@ -10,12 +10,17 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-}}"
 SKILL_FILE="${PLUGIN_ROOT}/skills/using-cadence/SKILL.md"
 
 if [ -f "$SKILL_FILE" ]; then
-  skill_content="$(cat "$SKILL_FILE")"
+  # Substitute the shell variable placeholder with the actual resolved path so
+  # agents see a literal path in their instructions — CLAUDE_PLUGIN_ROOT and
+  # CURSOR_PLUGIN_ROOT are not set in the agent's Bash tool environment.
+  skill_content="$(sed "s|\${CLAUDE_PLUGIN_ROOT:-\$CURSOR_PLUGIN_ROOT}|${PLUGIN_ROOT}|g" "$SKILL_FILE")"
 else
   skill_content="Cadence is active. Session routing rules unavailable (SKILL.md not found at: ${SKILL_FILE})."
 fi
 
 raw_context="<IMPORTANT>Cadence is active. Routing rules follow.
+
+cadence_plugin_root: ${PLUGIN_ROOT}
 
 ${skill_content}</IMPORTANT>"
 
