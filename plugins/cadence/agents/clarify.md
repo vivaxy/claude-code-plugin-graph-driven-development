@@ -200,26 +200,26 @@ Use the `Write` tool to write `<session-folder>/session.md` with this exact stru
 <one-line problem statement>
 
 ### In Scope
-- ...
+- ... (source: user:"<exact words>")
 
 ### Out of Scope
-- ...
+- ... (source: user:"<exact words>")
 
 ### Constraints
-- ...
+- ... (source: codebase:<absolute-path>:<line>)
 
 ### Success Criteria
-- ...
+- ... (source: user:"<exact words>")
 ```
 
 For `bugfix` hints, append these sub-sections after `### Success Criteria` (still inside `## Clarification`):
 
 ```markdown
 ### Reproduction Steps
-<exact steps to trigger the bug, or "unconfirmed" if not established>
+<exact steps to trigger the bug, or "unconfirmed" if not established — each step ending with (source: user:"<exact words>") or (source: codebase:<absolute-path>:<line>)>
 
 ### Root Cause
-<one-sentence diagnosis>
+<one-sentence diagnosis (source: user:"<exact words>") or (source: codebase:<absolute-path>:<line>)>
 ```
 
 `<hint>` must be one of `trivial`, `feature-dev`, `bugfix`, `analysis`. `<YYYY-MM-DD>` is the same date used in the folder path. `<Session Title>` is a short human-readable title derived from the Problem statement.
@@ -253,4 +253,8 @@ Then stop. Keep the full structured summary in the file, omit any routing/planni
 - Always confirm the user's understanding before writing the final summary
 - If the user says "just proceed" or "skip clarification", write a minimal summary from what you know and stop
 - Whenever you need to ask the user a question, always use the `AskUserQuestion` tool.
+- Append a `(source: <type>:<location>)` annotation to every conclusion bullet written under `### In Scope`, `### Out of Scope`, `### Constraints`, `### Success Criteria`, `### Reproduction Steps`, and `### Root Cause`. Use exactly one of these three types — bare labels without a location are not allowed, and `probe` is retired:
+  - `user:"<exact words>"` — quote the user's exact words that support the claim
+  - `web:<url>` — a URL to the web resource consulted
+  - `codebase:<absolute-path>:<line>` — absolute file path and line number of the fact in the codebase
 - Auto mode is not a license to skip load-bearing design questions. Even when auto mode is active and the request looks tractable from precedent, always ask one `AskUserQuestion` when the choice you would otherwise assume determines the API surface (a new function argument, a required field, a public interface shape) — especially when the design is justified by symmetry with an existing pattern. Cost asymmetry: one clarifying question is cheap; a full plan + implementation + review + revision driven by the wrong frame is expensive. Auto mode minimizes interruptions for routine decisions, and reserves explicit confirmation for load-bearing ones.

@@ -55,11 +55,11 @@ Return exactly this format:
 ```
 **Question**: [the question you were given]
 
-**Codebase**: [what exists in the project — file:line references, or "not found"]
+**Codebase**: [what exists in the project — one entry per finding, each ending with (source: codebase:<absolute-path>:<line>), or "not found"]
 
-**Popular implementations**: [how well-known projects handle this — library/project name and approach]
+**Popular implementations**: [how well-known projects handle this — one entry per source, each ending with (source: web:<url>)]
 
-**Official docs**: [what the official documentation recommends — source URL]
+**Official docs**: [what the official documentation recommends — one entry per source, each ending with (source: web:<url>)]
 
 **Experiment**: [the minimal command run and the observed output — include this field only when Section 4 was run]
 
@@ -75,5 +75,6 @@ Use `user-input-required` only if none of the sources yields a usable answer.
 - Always run the three core investigations (codebase, popular implementations, official docs); add the experiment when the claim is empirically verifiable
 - Always treat the project tree as read-only — codebase search is purely read; experiments may use network or temp files but must not write to project files
 - Be specific: cite file:line for codebase, library names for implementations, URLs for docs, and the exact command for experiments
+- Tag every finding with its source location: `(source: codebase:<absolute-path>:<line>)` for codebase findings, `(source: web:<url>)` for web findings — so the calling agent can lift the tag verbatim into clarification bullets
 - Keep Synthesis concise: 1-3 sentences that directly answer the question
 - When sources conflict, note the tension in Synthesis; if an experiment resolves it, prefer the observed result
