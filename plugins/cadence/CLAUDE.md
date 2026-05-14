@@ -111,9 +111,9 @@ The four session templates are assembled from reusable fragment files rather tha
 
 - **Fragments**: plain Markdown snippets in `plugins/cadence/templates/fragments/`. Each fragment covers one `## Section` or `### Sub-section` checklist block.
 - **Recipes**: `fragments/recipe-<type>.txt` lists fragment filenames in assembly order, one per line.
-- **Build script**: `plugins/cadence/templates/build-templates.sh` reads a recipe and concatenates the listed fragments into the output template. Accepts an optional `<type>` argument (defaults to all four) and an optional `<dest>` path (defaults to `templates/<type>.md`). Requires `CLAUDE_PLUGIN_ROOT` or `CURSOR_PLUGIN_ROOT`.
+- **Build script**: `plugins/cadence/templates/build-templates.sh` reads a recipe and concatenates the listed fragments into the output file. Requires exactly two arguments: `<type>` and `<dest>`. Always call it as `bash "<cadence-plugin-root>/templates/build-templates.sh" <type> "<project>/.claude/sessions/<folder>/session.md"`. The script never writes into the plugin's own `templates/` directory — that directory contains only fragments and recipes.
 
-To update a shared section, edit the relevant fragment file and re-run `build-templates.sh`. To add a new template variant, write new fragment files, add a recipe, and extend the build script's `TYPES` array.
+To update a shared section, edit the relevant fragment file. To add a new template variant, write new fragment files and add a recipe.
 
 ## Session Folder
 
